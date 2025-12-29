@@ -11,6 +11,8 @@ src/
 │ │ ├── client/ # 前台系統圖標 (如：飲食類別 Icon、藥盒圖)
 │ │ ├── admin/ # 後台專用圖標 (如：數據分析插圖 icon)
 │ │ └── common/ # 全站共用 (Logo, 預設頭像, 404圖片)
+│ │ │ ├── icons/
+│ │ │ └── SvgIcon.vue # <--- 新增：全域 SVG 圖標組件
 │ └── styles/ # 樣式管理
 │ ├── \_variables.scss # 顏色與斷點變數
 │ ├── \_mixins.scss # 常用 CSS 技巧 (如: 垂直置中)
@@ -47,11 +49,12 @@ src/
 │ ├── cart.js # 購物車列表、總金額計算
 │ └── ui.js # 全域燈箱狀態、RWD 選單開關
 ├── views/ # 頁面入口 (View 組件)
-│ ├── public/ # --- 公共/入口區 ---
-│ │ ├── LandingPage.vue # 【頁 1】產品功能介紹(Landing Page)
-│ │ ├── PortalView.vue # 【頁 2】入口選擇 (前/後台大按鈕)
-│ │ └── auth/ # 後臺登入頁//燈箱??
-│ ├── client/ # --- 前台系統 (13 個獨立頁面) ---
+├── public/ # --- 公共/訪客區 (不需權限) ---
+│ ├── LandingPage.vue # 頁 1: 產品功能介紹
+│ ├── PortalView.vue # 頁 2: 入口選擇頁 (前/後台大按鈕)
+│ └── LoginView.vue # 前台登入/註冊頁
+│
+├── client/ # --- 前台系統 (13 個獨立頁面) ---
 │ │ ├── HomeView.vue # 1. 首頁 (戰情室)
 │ │ ├── DietLog.vue # 2. 飲食日記
 │ │ ├── Medicine.vue # 3. 數位藥箱
@@ -68,6 +71,7 @@ src/
 │ │ │ └── ProfileEdit.vue # 12. 個人資料
 │ │ └── Support.vue # 13. 幫助中心
 │ └── admin/ # --- 後台管理 (11 個獨立頁面) ---
+│ ├── LoginView.vue # <--- 新增：後台管理員專用登入頁 (獨立樣式)
 │ ├── BackDashboard.vue # 1. 數據儀表板
 │ ├── users/ # ---使用者管理子模組 ---
 │ │ ├── UserList.vue # 2. 使用者管理(列表)
