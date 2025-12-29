@@ -1,18 +1,17 @@
-import { fileURLToPath, URL } from 'node:url'
-
+// vite.config.js
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import path from 'path'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+  plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
+      '@': path.resolve(__dirname, './src'),
+      '@api': path.resolve(__dirname, './src/api'),
+      '@comp': path.resolve(__dirname, './src/components'),
+      '@assets': path.resolve(__dirname, './src/assets'),
+      '@store': path.resolve(__dirname, './src/stores'),
+    }
+  }
 })
