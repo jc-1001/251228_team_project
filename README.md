@@ -71,7 +71,7 @@ src/
 │ │ │ └── ProfileEdit.vue # 12. 個人資料
 │ │ └── Support.vue # 13. 幫助中心
 │ └── admin/ # --- 後台管理 (11 個獨立頁面) ---
-│ ├── LoginView.vue # <--- 新增：後台管理員專用登入頁 (獨立樣式)
+│ ├── LoginView.vue #
 │ ├── BackDashboard.vue # 1. 數據儀表板
 │ ├── users/ # ---使用者管理子模組 ---
 │ │ ├── UserList.vue # 2. 使用者管理(列表)
