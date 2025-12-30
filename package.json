@@ -18,9 +18,13 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@types/node": "^25.0.3",
     "@vitejs/plugin-vue": "^6.0.3",
+    "fast-glob": "^3.3.3",
     "prettier": "3.7.4",
+    "sass": "^1.97.1",
     "vite": "^7.3.0",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-vue-devtools": "^8.0.5"
   }
 }

@@ -1,17 +1,29 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    // 設定 SVG 圖標插件，指向你存放 svg 的目錄
+    createSvgIconsPlugin({
+      iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
+      symbolId: 'icon-[name]',
+    }),
+  ],
   resolve: {
     alias: {
+      // 統一使用 @ 代表 src 資料夾
       '@': path.resolve(__dirname, './src'),
-      '@api': path.resolve(__dirname, './src/api'),
-      '@comp': path.resolve(__dirname, './src/components'),
-      '@assets': path.resolve(__dirname, './src/assets'),
-      '@store': path.resolve(__dirname, './src/stores'),
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // 自動注入全域變數，組員不必在每個組件手動 @import
+        additionalData: `@import "@/assets/styles/_variables.scss"; @import "@/assets/styles/_mixins.scss";`
+      }
     }
   }
 })
