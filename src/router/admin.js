@@ -16,9 +16,7 @@ export default [
             // 系統通知
             { path: 'notices', name: 'AdminNoticeList', component: () => import('@/views/admin/notices/NoticeList.vue') },
             { path: 'notices/edit/:id?', name: 'AdminNoticeEdit', component: () => import('@/views/admin/notices/NoticeEdit.vue') },
-            // 聯絡我們
-            { path: 'contact', name: 'AdminContactInbox', component: () => import('@/views/admin/contact/ContactInbox.vue') },
-            { path: 'contact/:id', name: 'AdminContactDetail', component: () => import('@/views/admin/contact/ContactDetail.vue') },
+
         ]
     }
 ]
