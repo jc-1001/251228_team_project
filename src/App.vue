@@ -1,16 +1,29 @@
-<template>
-  <router-view />
-</template>
-
 <script setup>
-// 這裡目前不需要匯入任何組件
+import { RouterView } from 'vue-router'
+import TheSidebar from './components/common/TheSidebar.vue'
+
 </script>
 
-<style>
-/* 基礎重置，確保切版時不會被預設邊距干擾 */
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+<template>
+  <div class="app_layout">
+    <TheSidebar />
+    <main class="main_content">
+      <RouterView />
+    </main>
+  </div>
+</template>
+
+<style lang="scss">
+.app_layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: $bgBody;
+}
+
+.main_content {
+  flex: 1;
+  padding: 32px 80px;
+  height: 100vh;
+  overflow-y: auto;
 }
 </style>
