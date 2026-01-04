@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router'
 const menuItems = ref([
   { name: '首頁戰情室', icon: 'dashboard', path: '/' },
   { name: '飲食日記', icon: 'restaurant', path: '/' },
-  { name: '數位藥箱', icon: 'medication', path: '/' },
+  { name: '數位藥箱', icon: 'medication', path: '/medicine' },
   { name: '身體數值中心', icon: 'bar_chart', path: '/' },
   { name: '樂活商城', icon: 'storefront', path: '/' },
   { name: '幫助中心', icon: 'help', path: '/' },
@@ -15,17 +15,16 @@ const menuItems = ref([
 <template>
   <aside class="sidebar">
     <div class="sidebar_logo">
-      <img src="/src/assets/images/logo.svg" alt="UniCare品牌logo">
+      <img src="/src/assets/images/logo.svg" alt="UniCare品牌logo" />
     </div>
     <RouterLink v-for="item in menuItems" :key="item.name" :to="item.path" class="menu_item">
       <span class="material-icons-round menu_icon">{{ item.icon }}</span>
       <span class="menu_name">{{ item.name }}</span>
     </RouterLink>
     <div class="sidebar_deco">
-      <img src="/src/assets/images/sidebar_deco.svg" alt="sidebar裝飾圖形">
+      <img src="/src/assets/images/sidebar_deco.svg" alt="sidebar裝飾圖形" />
     </div>
   </aside>
-
 </template>
 
 <style lang="scss" scoped>
@@ -57,7 +56,7 @@ const menuItems = ref([
     @include body1(true);
     color: $primaryDark;
     border-radius: 10px;
-    transition: background .3s;
+    transition: background 0.3s;
 
     &:hover {
       color: $white;
