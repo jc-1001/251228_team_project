@@ -1,4 +1,3 @@
-import path from 'node:path'
 import { createRouter, createWebHistory } from 'vue-router'
 // 匯入你的各模組路由設定（目前先留空或匯入基礎頁面）
 // import clientRoutes from './client'
@@ -8,20 +7,33 @@ const routes = [
   {
     path: '/',
     name: 'Landing',
-    // 指向你 views/public 下的 LandingPage.vue
+    // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
+    meta: { showTopIcon: false },
   },
   {
-    path: '/portal',
-    name: 'Portal',
-    component: () => import('@/views/public/PortalView.vue'),
+    path: '/HomeView',
+    name: 'Home',
+    component: () => import('@/views/client/HomeView.vue'),
+    meta: { showHeader: true },
+    meta: { showTopIcon: true },
+  },
+  {
+    path: '/shop',
+    name: 'shop',
+    component: () => import('@/views/client/shop/ShopView.vue'),
+  },
+  {
+    path: '/product/:id',
+    name: 'productDetail',
+    component: () => import('@/views/client/shop/ProductDetail.vue'),
   },
   {
     path: '/medicine',
     name: 'Medicine',
     component: () => import('@/views/client/MedicineView.vue'),
   },
-  // 這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
+  // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
     redirect: '/',
