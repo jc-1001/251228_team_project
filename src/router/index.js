@@ -7,13 +7,16 @@ const routes = [
   {
     path: '/',
     name: 'Landing',
-    // 指向你 views/public 下的 LandingPage.vue
-    component: () => import('@/views/public/LandingPage.vue')
+    // 指向 views/public 下的 LandingPage.vue
+    component: () => import('@/views/public/LandingPage.vue'),
+    meta: { showTopIcon: false },
   },
   {
-    path: '/portal',
-    name: 'Portal',
-    component: () => import('@/views/public/PortalView.vue')
+    path: '/HomeView',
+    name: 'Home',
+    component: () => import('@/views/client/HomeView.vue'),
+    meta: { showHeader: true },
+    meta: { showTopIcon: true },
   },
   {
     path: '/shop',
