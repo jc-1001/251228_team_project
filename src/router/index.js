@@ -15,11 +15,21 @@ const routes = [
     name: 'Portal',
     component: () => import('@/views/public/PortalView.vue')
   },
-  // 這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
+  {
+    path: '/shop',
+    name: 'shop',
+    component: () => import('@/views/client/shop/ShopView.vue')
+  },
+  {
+    path: '/product/:id',
+    name: 'productDetail',
+    component: () => import('@/views/client/shop/ProductDetail.vue')
+  },
+  // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
     redirect: '/'
-  }
+  },
 ]
 
 const router = createRouter({
