@@ -16,9 +16,11 @@ const routes = [
     name: 'Portal',
     component: () => import('@/views/public/PortalView.vue'),
   },
-  { path: '/medicine', 
-    name: 'Medicine', 
-    component: () => import('@/views/client/Medicine.vue') },
+  {
+    path: '/medicine',
+    name: 'Medicine',
+    component: () => import('@/views/client/MedicineView.vue'),
+  },
   // 這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
