@@ -42,7 +42,7 @@ const changeBg = computed(()=>{
 
 .main_content {
   flex: 1;
-  padding: 32px 54px; // 原先是 padding: 32px 80px; 如果有人已經開始切版，而且大跑版請跟NLee說!
+  padding: 24px 54px; // 原先是 padding: 32px 80px; 如果有人已經開始切版，而且大跑版請跟NLee說!
   height: 100vh;
   overflow-y: auto;
   background-repeat: no-repeat;

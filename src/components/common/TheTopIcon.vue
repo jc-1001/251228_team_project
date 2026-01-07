@@ -30,6 +30,7 @@ const topIcons = ref([
 // 頂部icon
 .global-top-bar {
   display: flex;
+  margin-bottom: 16px;
   justify-content: end;
   gap: 12px;
 }
