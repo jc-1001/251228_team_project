@@ -1,12 +1,14 @@
+<!-- 補充: 關於組件名稱，官方推薦使用大駝峰寫法，用以區分vue組件和原生html元素 -->
 <script setup>
-// 設定props主要是為了可以拿取即時更新的資料
+// 設定props主要是為了宣告接收權，元件只會接收下面寫的幾種資料
 defineProps({
   id: Number,
+  category: String,
   image: String,
   title: String,
   spec: String, // 商品規格
   price: Number,
-  tag: String
+  tag: String,
 })
 
 // 加入購物車
@@ -22,12 +24,15 @@ const addToCart = () => {
       <div v-else class="no_img">尚無圖片</div>
       <div v-if="tag" class="product_tag">{{ tag }}</div>
     </div>
-
     <div class="card_body">
-      <h3 class="product_title">{{ title }}</h3>
+      <div class="product_txt">
+        <h3 class="product_title">{{ title }}</h3>
+        <p class="product_spec">{{ spec }}</p>
+      </div>
       <p class="product_price">${{ price }}</p>
       <div class="card_button">
-        <button type="button" @click.prevent="addToCart">加入購物車</button>
+        <!-- 筆記: @click.prevent(阻擋預設行為)/@click.stop(阻擋冒泡) 此為"事件修飾符" -->
+        <button type="button" @click.stop.prevent="addToCart">加入購物車</button>
       </div>
     </div>
   </router-link>
@@ -35,13 +40,14 @@ const addToCart = () => {
 
 <style lang="scss" scoped>
 .product_card {
-  display: block;       
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
   color: inherit;
   box-shadow: $shadow;
   border-radius: 10px;
   background-color: $white;
-  transition: transform 0.3s;
+  transition: all 0.3s;
 
   &:hover {
     transform: translateY(-5px);
@@ -63,9 +69,9 @@ const addToCart = () => {
 
     .product_tag {
       position: absolute;
-      left: 12px;
-      top: 12px;
-      padding: 5px 16px;
+      left: 8px;
+      top: 8px;
+      padding: 2px 16px;
       background-color: $accent;
       color: $white;
       @include body3;
@@ -74,18 +80,32 @@ const addToCart = () => {
   }
 
   .card_body {
-    padding: 24px;
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
 
-    .product_title {
-      @include subtitle2(true);
-      color: $primaryDark;
+    .product_txt {
+      .product_title {
+        margin-bottom: 8px;
+        @include subtitle2(true);
+        color: $primaryDark;
+      }
+      .product_spec {
+        display: inline-block;
+        padding: 0 12px;
+        @include body3(true);
+        color: $primaryDark;
+        color: $grayDark;
+        background-color: $grayLight;
+        border: 2px solid $gray;
+        border-radius: 100px
+      }
     }
 
     .product_price {
       @include body1(true);
+      color: $black;
     }
 
     .card_button {
@@ -99,9 +119,9 @@ const addToCart = () => {
       }
 
       button {
-        width: 100%;       
-        border: none;      
-        background: none;  
+        width: 100%;
+        border: none;
+        background: none;
         color: $white;
         padding: 8px;
         cursor: pointer;

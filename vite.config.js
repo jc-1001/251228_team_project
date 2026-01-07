@@ -22,7 +22,9 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         // 自動注入全域變數，組員不必在每個組件手動 @import
-        additionalData: `@import "@/assets/styles/_variables.scss"; @import "@/assets/styles/_mixins.scss";`
+        additionalData: `@import "@/assets/styles/_variables.scss"; @import "@/assets/styles/_mixins.scss";`,
+        // 用來暫時屏蔽啟動localhost時的警告
+        silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'if-function'],
       }
     }
   }
