@@ -19,6 +19,13 @@ const routes = [
     meta: { showTopIcon: true },
   },
   {
+    path: '/DietLog',
+    name: 'Diet',
+    component: () => import('@/views/client/DietLog.vue'),
+    meta: { showHeader: true },
+    meta: { showTopIcon: true },
+  },
+  {
     path: '/shop',
     name: 'shop',
     component: () => import('@/views/client/shop/ShopView.vue'),
