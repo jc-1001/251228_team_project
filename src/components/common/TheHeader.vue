@@ -17,7 +17,7 @@ defineProps({
 <template>
   <header class="header-banner">
     <div class="content">
-      <h1 class="greeting">{{ title }}</h1>
+      <h2 class="greeting">{{ title }}</h2>
       <p class="subtext">{{ subtitle }}</p>
     </div>
     <div class="illustration">
@@ -28,7 +28,7 @@ defineProps({
 
 <style lang="scss" scoped>
 .header-banner {
-  margin-top: 20px;
+  // margin-top: 20px;
   width: 100%;
   height: 120px;
   //   height: 19vh;
@@ -42,8 +42,8 @@ defineProps({
 }
 .greeting {
   line-height: $lineHeightHeading;
-  @include title3(true); /* title1字體太大!! */
-  font-size: 24px;
+  // @include title3(true); /* title1字體太大!! */
+  // font-size: 24px;
   color: $primaryDark;
   padding: 0px 0 10px 30px;
   letter-spacing: 5%;
