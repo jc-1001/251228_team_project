@@ -1,5 +1,5 @@
 <script setup>
-import MedicineCard from '@/components/Medicine/MedicineCard.vue'
+import MedicineCard from '@/components/Medicine/MedicineSection.vue'
 // import MedicineCard from '@/components/Medicine/HealthCard.vue'
 </script>
 
