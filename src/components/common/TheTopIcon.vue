@@ -82,6 +82,7 @@ const isDropdownOpen = ref(false) // 控制選單顯示
 // 頂部icon
 .global-top-bar {
   display: flex;
+  margin-bottom: 16px;
   justify-content: end;
   gap: 12px;
   margin-bottom: 20px; //與下方物件的距離

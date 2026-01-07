@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { allProducts } from '@/data/shop/productInfo'
 import ProductCard from '@/components/shop/ProductCard.vue'
+import TheTopIcon from '@/components/common/TheTopIcon.vue'
 import bannerImage from '@/assets/images/shop/banner_img_shop.svg'
 
 // 商品列表
@@ -29,6 +30,7 @@ const filteredProducts = computed(() => {
 
 <template>
   <div class="mall_page">
+    <TheTopIcon/>
     <div class="banner">
       <div class="banner_txt">
         <h2>樂活商城</h2>
