@@ -63,7 +63,19 @@ const todayLog = ref([
         </div>
       </section>
       <!-- 右欄 -->
-      <section class="right-block"></section>
+      <section class="right-block">
+        <div class="today-med">
+          <div class="block-title">
+            <p>今日服藥提醒</p>
+          </div>
+        </div>
+        <div class="med-stock">
+          <div class="block-title">
+            <span class="material-icons"></span>
+            <p>藥物庫存警示</p>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </template>
@@ -77,6 +89,34 @@ main {
 }
 .right-block {
   width: 40%;
+  margin-left: 40px;
+}
+// 右欄
+.today-med {
+  background-color: $white;
+  border-radius: $radius_md;
+  height: 300px;
+  width: 100%;
+  margin-top: 65px;
+  .block-title {
+    padding: 20px;
+    color: $primaryDark;
+    @include subtitle1(true);
+    font-size: 18px; // 有改字體大小
+  }
+}
+.med-stock {
+  background-color: $white;
+  border-radius: $radius_md;
+  height: 150px;
+  width: 100%;
+  margin-top: 20px;
+  .block-title {
+    padding: 20px;
+    color: $primaryDark;
+    @include subtitle1(true);
+    font-size: 18px; // 有改字體大小
+  }
 }
 .today-button,
 .today-state {
