@@ -8,7 +8,7 @@ const menuItems = ref([
   { name: '首頁戰情室', icon: 'dashboard', path: '/HomeView' },
   { name: '飲食日記', icon: 'restaurant', path: '/' },
   { name: '數位藥箱', icon: 'medication', path: '/medicine' },
-  { name: '身體數值中心', icon: 'bar_chart', path: '/' },
+  { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
   { name: '樂活商城', icon: 'storefront', path: '/shop' },
   { name: '幫助中心', icon: 'help', path: '/' },
 ])
