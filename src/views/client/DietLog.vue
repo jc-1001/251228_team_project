@@ -11,4 +11,6 @@ import TheHeader from '@/components/common/TheHeader.vue'
     <router-view />
     </div>
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+    
+</style>
