@@ -61,6 +61,11 @@ const routes = [
   // --- 後台管理系統 ---
   // 直接展開匯入的 adminRoutes
   adminRoutes,
+  {
+    path: '/metrics',
+    name: 'Metrics',
+    component: () => import('@/views/client/Metrics.vue'),
+  },
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
