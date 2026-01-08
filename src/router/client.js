@@ -10,7 +10,9 @@ export default [
         name: 'Medicine',
         component: () => import('@/views/client/MedicineView.vue'),
       },
-      { path: 'metrics', name: 'Metrics', component: () => import('@/views/client/Metrics.vue') },
+      { path: 'metrics', 
+        name: 'Metrics', 
+        component: () => import('@/views/client/Metrics.vue') },
       // 商城子模組
       {
         path: 'shop',

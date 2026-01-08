@@ -1,16 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import sidebarLogo from '@/assets/images/common/logo.svg'
+import sidebarLogo from '@/assets/images/common/logo-white.svg'
 import sidebarDeco from '@/assets/images/common/sidebar_deco.svg'
-
+// 其他子頁面必須包含父層路徑
 const menuItems = ref([
-  { name: '首頁戰情室', icon: 'dashboard', path: '/HomeView' },
-  { name: '飲食日記', icon: 'restaurant', path: '/DietLog' },
-  { name: '數位藥箱', icon: 'medication', path: '/medicine' },
-  { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
-  { name: '樂活商城', icon: 'storefront', path: '/shop' },
-  { name: '幫助中心', icon: 'help', path: '/' },
+  { name: '數據儀錶板', icon: 'insights', path: '/admin' },
+  { name: '使用者管理', icon: 'contact_page', path: '/admin/users' },
+  { name: '商品管理', icon: 'storefront', path: '/admin/products' },
+  { name: '訂單管理', icon: 'assignment', path: '/admin/orders' },
+  { name: '系統通知', icon: 'forum', path: '/admin/notices' },
 ])
 </script>
 
@@ -38,7 +37,7 @@ const menuItems = ref([
   width: 250px;
   // width: 303px;
   height: 100vh;
-  background-color: $white;
+  background-color: $primary;
   box-shadow: $shadow;
   border-radius: 0 20px 20px 0;
   position: sticky;
@@ -59,14 +58,14 @@ const menuItems = ref([
     gap: 6px;
     padding: 16px 24px;
     @include body1(true);
-    color: $primaryDark;
+    color: $white;
     border-radius: 10px;
     transition: background 0.3s;
 
     &:hover,
-    &.router-link-active {
-      color: $white;
-      background: $linear2;
+    &.router-link-exact-active {
+      color: $primaryDark;
+      background: $white;
     }
   }
 
