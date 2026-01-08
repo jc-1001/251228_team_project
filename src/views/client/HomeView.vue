@@ -12,11 +12,47 @@ const fastButton = ref([
 ])
 // 今日狀態
 const todayLog = ref([
-  { name: '體重', icon: 'monitor_weight', type: true, num: '', record: true, log: 'green' },
-  { name: '血氧', icon: 'water_drop', type: true, num: '', record: true, log: 'green' },
-  { name: '血糖', icon: 'bloodtype', type: true, num: '', record: true, log: 'green' },
-  { name: '心律', icon: 'favorite', type: true, num: '', record: true, log: 'green' },
-  { name: '血壓', icon: 'favorite', type: true, num: '', record: true, log: 'green' },
+  {
+    name: '體重',
+    icon: 'monitor_weight',
+    num: '--',
+    unit: 'kg',
+    statusText: '尚未量測',
+    statusType: 'none',
+  },
+  {
+    name: '血氧',
+    icon: 'water_drop',
+    num: '95',
+    unit: '%',
+    statusText: '含氧量佳',
+    statusType: 'good',
+  },
+  {
+    name: '血糖',
+    icon: 'bloodtype',
+    num: '--',
+    unit: 'mg/dL',
+    statusText: '尚未量測',
+    statusType: 'none',
+  },
+  {
+    name: '心律',
+    icon: 'favorite',
+    num: '80',
+    unit: 'bpm',
+    statusText: '心律穩定',
+    statusType: 'good',
+  },
+  {
+    name: '血壓',
+    icon: 'favorite',
+    num: '140/80',
+    unit: 'mmHg',
+    statusText: '血壓偏高',
+    statusType: 'danger', // 用於控制紅色外框與背景
+    isWide: true, // 用於控制 RWD 跨欄
+  },
 ])
 </script>
 <template>
@@ -53,11 +89,24 @@ const todayLog = ref([
             <p>今日狀態</p>
           </div>
           <div class="todayLog-cardlist">
-            <div class="todayLog-card" v-for="item2 in todayLog" :key="item2.name">
-              <span class="material-icons">{{ item2.icon }}</span>
-              <span class="log-name">{{ item2.name }}</span>
-              <span class="log-num">{{ item2.num }}</span>
-              <span class="state">{{ item2.log }}</span>
+            <div
+              :class="['todayLog-card', `status-${item2.statusType}`, { 'is-wide': item2.isWide }]"
+              v-for="item2 in todayLog"
+              :key="item2.name"
+            >
+              <div class="card-icon">
+                <span class="material-icons">{{ item2.icon }}</span>
+              </div>
+              <div class="card-title">
+                <span class="log-name">{{ item2.name }}</span>
+              </div>
+
+              <div class="card-body">
+                <span class="log-num">{{ item2.num }}</span>
+                <span class="unit">{{ item2.unit }}</span>
+              </div>
+
+              <div class="state-badge">{{ item2.statusText }}</div>
             </div>
           </div>
         </div>
@@ -81,16 +130,23 @@ const todayLog = ref([
 </template>
 <style lang="scss" scoped>
 main {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  // justify-content: center;
+  // 設定兩欄，左側較寬，右側較窄。當寬度不足時自動換行
+  grid-template-columns: 1.5fr minmax(300px, 400px);
+  gap: 30px;
+  // padding: 20px;
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
-.left-block {
-  width: 60%;
-}
+.left-block,
 .right-block {
-  width: 40%;
-  margin-left: 40px;
+  width: 100%;
+  margin-left: 0;
 }
+
 // 右欄
 .today-med {
   background-color: $white;
@@ -112,27 +168,32 @@ main {
   width: 100%;
   margin-top: 20px;
   .block-title {
-    padding: 20px;
+    padding: 0 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小
   }
 }
+// 左欄
 .today-button,
 .today-state {
   margin: 20px 0;
 }
+// 各個標題
 .block-title {
   margin: 20px 0;
   color: $primaryDark;
   @include subtitle1(true);
   font-size: 18px; // 有改字體大小
 }
-.buttonlist {
+.buttonlist,
+.todayLog-cardlist {
   display: grid;
+  gap: 12px;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px; // 卡片之間的間距
-  // padding: 16px 20px;
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 button {
   border: none;
@@ -164,33 +225,52 @@ button {
   background-color: #f3f7ec; // 獨立使用
   border: 1px solid $gray;
 }
-// 今日狀態
-.todayLog-cardlist {
-  width: 100%;
-  // background-color: white;
-  // border: 1px solid black;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px; // 卡片之間的間距
-}
+// 今日狀態樣式
 .todayLog-card {
+  box-sizing: border-box;
   background-color: $white;
-  @include subtitle2(true);
+  @include subtitle2(false);
   font-size: 16px; //material-icons 要一起更動、大小字體一致
-  text-align: center;
   padding: 15px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 5px;
-  height: 180px;
+  height: auto; // 讓高度隨內容撐開
+  min-height: 160px;
   box-shadow: $shadow;
   border-radius: $radius_md;
   cursor: default;
-  .material-icons {
+  .card-icon {
+    display: flex;
+    justify-content: end;
+    .material-icons {
+      @include subtitle2(true);
+      font-size: 16px; //card 要一起更動、大小字體一致
+    }
+  }
+  .card-body {
     @include subtitle2(true);
-    font-size: 16px; //card 要一起更動、大小字體一致
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px; // 數字與單位間距
+    .log-num {
+      font-size: 24px;
+      margin: 5px 0; // 卡片內容上下距離
+    }
+  }
+  .state-badge {
+    border: 1px solid black;
+    background-color: white;
+    width: fit-content;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 100px;
+  }
+  .is-Wide {
+    grid-column: span 2; // 寬螢幕時佔兩格
+    flex-direction: row; // 內容改為橫向排列
+    justify-content: space-around;
   }
 }
 </style>
