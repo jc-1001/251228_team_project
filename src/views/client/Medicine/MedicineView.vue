@@ -2,8 +2,8 @@
 import TheTopIcon from '@/components/common/TheTopIcon.vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import MedicineSection from '@/views/client/Medicine/common/MedicineSection.vue'
+import SupplementSection from '@/views/client/Medicine/common/SupplementSection.vue';
 
-// import MedicineCard from '@/components/Medicine/HealthCard.vue'
 </script>
 
 <template>
@@ -15,6 +15,7 @@ import MedicineSection from '@/views/client/Medicine/common/MedicineSection.vue'
     imageSrc="/src/assets/images/Banner_mdc.svg"
     />
     <MedicineSection />
+    <SupplementSection />
   </section>
 </template>
 <style lang="scss" scoped></style>

@@ -13,12 +13,23 @@ const usageOptionsBySlot = (slot) => {
   }
   return usageOptions;
 };
+
+const closeModal = () => {
+  emit("closeModal");
+};
+const emit = defineEmits(["closeModal"]);
+const onOverlayClick = () => closeModal()
+const onKeydown = (e) => {
+  if (e.key === "Escape") closeModal()
+}
+
+
 </script>
 
 <template>
-  <div class="medicine-modal__overlay">
-    <div class="medicine-modal__card">
-      <button class="medicine-modal__close" type="button" aria-label="關閉">×</button>
+  <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0"> >
+    <div class="medicine-modal__card" @click.stop>
+      <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">×</button>
       <h1 class="medicine-modal__title">新增藥品</h1>
 
       <form class="medicine-modal__content" action="#">
@@ -48,8 +59,8 @@ const usageOptionsBySlot = (slot) => {
             </div>
 
             <div class="form-group">
-              <label for="notes">效用</label>
-              <input id="notes" type="text" placeholder="例如：抗凝血" />
+              <label for="notes">備註</label>
+              <input id="notes" type="text"/>
             </div>
 
             <p class="medicine-modal__hint">
@@ -100,7 +111,7 @@ const usageOptionsBySlot = (slot) => {
   inset: 0;
   background: rgba(0, 0, 0, 0.12);
   display: grid;
-  place-items: center;
+  place-items:start center;
   z-index: 1000;
 
   .medicine-modal__card {

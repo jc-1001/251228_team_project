@@ -4,12 +4,13 @@ const { item } = defineProps({
     type: Object,
     required: true,
   },
-})
+});
+
 </script>
 <template>
   <div class="card">
     <div class="medicine-img">
-      <img src="https://picsum.photos/id/300/300/300" alt="" />
+      <img :src="item.image" alt="" />
     </div>
     {{ item.name }}
     <div class="label">

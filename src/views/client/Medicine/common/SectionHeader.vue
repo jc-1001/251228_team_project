@@ -1,12 +1,15 @@
 <script setup>
-const emit = defineEmits(['createClick'])
-
-defineProps({
+  defineProps({
   title: {
     type: String,
     default: '區塊標題',
   },
 })
+
+
+const emit = defineEmits(['createClick'])
+
+
 </script>
 <template>
   <div class="medicine-header">
