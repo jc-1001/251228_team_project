@@ -52,7 +52,6 @@ const routes = [
     path: '/medicine',
     name: 'Medicine',
     component: () => import('@/views/client/Medicine/MedicineView.vue'),
-    component: () => import('@/views/client/MedicineView.vue'),
     meta: {
       // showTopIcon: true,
       // showHeader: true,
