@@ -78,7 +78,7 @@ const todayLog = ref([
               :key="item.name"
               :class="['record-card', `is-${item.type}`]"
             >
-              <span class="material-icons">{{ item.icon }}</span>
+              <span class="material-symbols-rounded">{{ item.icon }}</span>
               <span class="button-text">{{ item.name }}</span>
             </button>
           </div>
@@ -95,7 +95,7 @@ const todayLog = ref([
               :key="item2.name"
             >
               <div class="card-icon">
-                <span class="material-icons">{{ item2.icon }}</span>
+                <span class="material-symbols-rounded">{{ item2.icon }}</span>
               </div>
               <div class="card-title">
                 <span class="log-name">{{ item2.name }}</span>
@@ -120,7 +120,7 @@ const todayLog = ref([
         </div>
         <div class="med-stock">
           <div class="block-title">
-            <span class="material-icons"></span>
+            <span class="material-symbols-rounded"></span>
             <p>藥物庫存警示</p>
           </div>
         </div>
@@ -199,7 +199,7 @@ button {
   border: none;
   background-color: $white;
   @include subtitle2(true);
-  font-size: 16px; //material-icons 要一起更動、大小字體一致
+  font-size: 16px; //material-symbols-rounded 要一起更動、大小字體一致
   text-align: center;
   padding: 15px;
   display: flex;
@@ -210,7 +210,7 @@ button {
   box-shadow: $shadow;
   border-radius: $radius_md;
   cursor: pointer;
-  .material-icons {
+  .material-symbols-rounded {
     @include subtitle2(true);
     font-size: 16px; //button 要一起更動、大小字體一致
   }
@@ -230,7 +230,7 @@ button {
   box-sizing: border-box;
   background-color: $white;
   @include subtitle2(false);
-  font-size: 16px; //material-icons 要一起更動、大小字體一致
+  font-size: 16px; //material-symbols-rounded 要一起更動、大小字體一致
   padding: 15px;
   display: flex;
   flex-direction: column;
@@ -243,7 +243,7 @@ button {
   .card-icon {
     display: flex;
     justify-content: end;
-    .material-icons {
+    .material-symbols-rounded {
       @include subtitle2(true);
       font-size: 16px; //card 要一起更動、大小字體一致
     }

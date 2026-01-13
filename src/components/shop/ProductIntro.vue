@@ -1,0 +1,130 @@
+<script setup>
+import { ref, computed } from 'vue'
+import QuantitySelector from '@/components/shop/QuantitySelector.vue'
+
+const props = defineProps({
+  product: {
+    type: Object,
+    required: true,
+    default: () => ({})
+  }
+})
+
+
+// 庫存警示判斷
+const isLowStock = computed(()=>{
+  const stock = props.product.stock_quantity
+  return stock > 0 && stock <= 3 
+})
+
+// 售完判斷
+const isSoldOut = computed(()=>{
+  return props.product.stock_quantity === 0
+})
+
+</script>
+<template>
+  <div class="product_body">
+    <div class="product_content">
+      <div class="product_txt">
+        <p v-if="product.tag" class="product_tag">{{ product.tag }}</p>
+        <h3 class="product_title">{{ product.title }}</h3>
+        <p class="product_desc">{{ product.desc }}</p>
+      </div>
+      <div class="product_price_info">
+        <p>價格: <span class="product_price">${{ product.price }}</span></p>
+        <p class="point_reminder"><span
+            class="material-symbols-rounded point_remind_icon">check_circle</span>本商品符合積分折抵資格(結帳時使用)</p>
+      </div>
+    </div>
+    <div class="product_action">
+      <p v-if="isLowStock" class="stock_warning"><span class="material-symbols-rounded warning_icon">warning</span>庫存量剩餘: {{ product.stock_quantity }}</p>
+      <div class="action_row">
+        <QuantitySelector />
+        <button class="btn_add_to_cart" :disabled="isSoldOut" :class="{'disabled':isSoldOut}">{{ isSoldOut ? '補貨中':'加入購物車' }}</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.product_body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 200px;
+  .product_content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    .product_txt {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      .product_tag {
+        padding: 2px 8px;
+        @include body3;
+        color: $white;
+        background-color: $accent;
+        border-radius: $radius-sm;
+      }
+      .product_title {
+        margin-bottom: 12px;
+        @include title2;
+        color: $primaryDark;
+      }
+      .product_desc {
+        @include body2;
+      }
+    }
+    .product_price_info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 40px;
+      padding: 16px 24px;
+      color: $primaryDark;
+      background: $linear1;
+      border: 1px solid $gray;
+      border-radius: $radius-md;
+      .product_price {
+        @include subtitle1(true);
+      }
+      .point_reminder {
+        @include body3(true);
+        .point_remind_icon {
+          @include body1;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+  .product_action {
+    .stock_warning {
+      margin-bottom: 4px;
+      @include body3;
+      color: $accent;
+      .warning_icon {
+        margin-right: 4px;
+        font-size: 15px;
+      }
+    }
+    .action_row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      .btn_add_to_cart {
+        flex: 1;
+        border: none;
+        border-radius: $radius-sm;
+        color: $white;
+        background-color: $primaryDark;
+        &.disabled {
+          background-color: $gray;
+        }
+      }
+    }
+  }
+}
+</style>

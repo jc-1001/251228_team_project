@@ -1,150 +1,264 @@
-<script setup></script>
+<script setup>
+const timeSlots = ["早上", "中午", "晚上", "睡前"];
+const usageOptions = [
+  { label: "餐前", value: "before" },
+  { label: "餐後", value: "after" },
+  { label: "睡前", value: "bedtime" }
+];
+const quantityOptions = [1, 2, 3];
+
+const usageOptionsBySlot = (slot) => {
+  if (slot === "睡前") {
+    return [{ label: "睡前", value: "bedtime" }];
+  }
+  return usageOptions;
+};
+
+const closeModal = () => {
+  emit("closeModal");
+};
+const emit = defineEmits(["closeModal"]);
+const onOverlayClick = () => closeModal()
+const onKeydown = (e) => {
+  if (e.key === "Escape") closeModal()
+}
+
+
+</script>
+
 <template>
-  <div class="create-medicine-modal">
-    <h1>新增藥品</h1>
-    <form action="#">
-        <div class="medicine-create">
-      <div>
-        <label for="medicine-image">藥品圖片：</label>
-        <input type="file" id="medicine-image" name="medicine-image" />
-        <div class="input-image"><span>點擊或拖曳上傳藥品照片</span></div>
-      </div>
-      <div>
-        <label for="medicine-name">藥品名稱 ：</label>
-        <input type="text" id="medicine-name" name="medicine-name" />
+  <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0"> >
+    <div class="medicine-modal__card" @click.stop>
+      <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">×</button>
+      <h1 class="medicine-modal__title">新增藥品</h1>
 
-        <label for="quantity">藥品數量：</label>
-        <input type="text" id="quantity" name="quantity" />
+      <form class="medicine-modal__content" action="#">
+        <div class="medicine-modal__body">
+          <section class="medicine-modal__image">
+            <input type="file" id="medicine-image" class="medicine-modal__file" />
+            <label class="medicine-modal__image-drop" for="medicine-image">
+              點擊或拖曳上傳藥品照片
+            </label>
+          </section>
 
-        <label for="expiration-date">有效期限：</label>
-        <input type="date" id="expiration-date" name="expiration-date" />
+          <section class="medicine-modal__form">
+            <div class="form-group">
+              <label for="medicine-name">藥品名</label>
+              <input id="medicine-name" type="text" placeholder="例如：阿斯匹靈" />
+            </div>
 
-        <label for="notes">備註：</label>
-        <textarea id="notes" name="notes"></textarea>
-      </div>
-      <div>
-        <span>服用時間</span> <span>醫囑用法</span> <span>服用數量</span>
-        <label for="">早上</label>
-        <select name="morning-tips" id="morning-tips">
-          <option value="飯前">飯前</option>
-          <option value="飯後">飯後</option>
-          <option value="睡前">睡前</option>
-        </select>
-        <select name="morning-quantity" id="morning-quantity">
-          <option value="1">1份</option>
-          <option value="2">2份</option>
-          <option value="3">3份</option>
-          <option value="4">4份</option>
-          <option value="5">5份</option>
-        </select>
-        <label for="noon">中午</label>
-        <select name="noon-tips" id="noon-tips">
-          <option value="飯前">飯前</option>
-          <option value="飯後">飯後</option>
-          <option value="睡前">睡前</option>
-        </select>
-        <select name="noon-quantity" id="noon-quantity">
-          <option value="1">1份</option>
-          <option value="2">2份</option>
-          <option value="3">3份</option>
-          <option value="4">4份</option>
-          <option value="5">5份</option>
-        </select>
-        <label for="evening">晚上</label>
-        <select name="evening-tips" id="evening-tips">
-          <option value="飯前">飯前</option>
-          <option value="飯後">飯後</option>
-          <option value="睡前">睡前</option>
-        </select>
-        <select name="evening-quantity" id="evening-quantity">
-          <option value="1">1份</option>
-          <option value="2">2份</option>
-          <option value="3">3份</option>
-          <option value="4">4份</option>
-          <option value="5">5份</option>
-        </select>
-        <label for="before-bed">睡前</label>
-        <select name="before-bed-tips" id="before-bed-tips">
-          <option value="睡前">睡前</option>
-        </select>
-        <select name="before-bed-quantity" id="before-bed-quantity">
-          <option value="1">1份</option>
-          <option value="2">2份</option>
-          <option value="3">3份</option>
-          <option value="4">4份</option>
-          <option value="5">5份</option>
-        </select>
-      </div>
-      </div>
-      <button type="submit">儲存</button>
-      
-    </form>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="expiration-date">有效期限</label>
+                <input id="expiration-date" type="date" />
+              </div>
+              <div class="form-group">
+                <label for="quantity">藥品數量</label>
+                <input id="quantity" type="text" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">備註</label>
+              <input id="notes" type="text"/>
+            </div>
+
+            <p class="medicine-modal__hint">
+              當藥品數量低於七日用量或離有效期限小於 30 日會發出提醒
+            </p>
+
+            <div class="medicine-modal__schedule">
+              <div class="schedule__head"></div>
+              <div class="schedule__head">醫囑用法</div>
+              <div class="schedule__head">服用數量</div>
+
+              <template v-for="slot in timeSlots" :key="slot">
+                <div class="schedule__row-label">{{ slot }}</div>
+                <select class="schedule__select">
+                  <option
+                    v-for="opt in usageOptionsBySlot(slot)"
+                    :key="opt.value"
+                    :value="opt.value"
+                  >
+                    {{ opt.label }}
+                  </option>
+                </select>
+                <select class="schedule__select">
+                  <option v-for="qty in quantityOptions" :key="qty" :value="qty">
+                    {{ qty }}
+                  </option>
+                </select>
+              </template>
+            </div>
+          </section>
+        </div>
+
+        <div class="medicine-modal__footer">
+          <button class="btn-primary" type="submit">儲存</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.create-medicine-modal {
+* {
+  box-sizing: border-box;
+}
+
+.medicine-modal__overlay {
   position: fixed;
-  background-color: $white;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.12);
+  display: grid;
+  place-items:start center;
   z-index: 1000;
-  width: 1200px;
-  height: 800px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 24px;
-  border-radius: $radius_md;
-  box-shadow: $shadowDark;
-  form {
-    display: flex;
-    flex-direction: column;
 
-    .medincine-create {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-    }
-    label {
-      margin-top: 16px;
-      @include body2;
+  .medicine-modal__card {
+    position: relative;
+    width: 1200px;
+    max-width: 90vw;
+    min-height: 720px;
+    background-color: $white;
+    border-radius: $radius_md;
+    box-shadow: $shadowDark;
+    padding: 32px 40px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 16px;
+
+    .medicine-modal__title {
+      @include title2;
       color: $primaryDark;
+      text-align: center;
+      margin: 0;
+    }
 
-    }
-    input,
-    textarea {
-      margin-top: 8px;
-      padding: 8px;
-      border: 1px solid $primaryDark;
-      border-radius: $radius_sm;
-      @include body3;
-    }
-    button {
-      margin-top: 24px;
-      padding: 12px;
+    .medicine-modal__close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
       background-color: $primaryDark;
       color: $white;
-      border: none;
-      border-radius: $radius_md;
       cursor: pointer;
-      @include body2;
-      &:hover {
-        background-color: $white;
-        color: $primaryDark;
-      }
     }
-    .input-image {
-      width: 500px;
-      height: 500px;
-      margin-top: 8px;
-      border: 1px solid $primaryDark;
-      border-radius: $radius_sm;
-      background-color:$primaryLight;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      span {
-        @include body3;
-        color: $white;
+
+    .medicine-modal__content {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 24px;
+
+      .medicine-modal__body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        align-items: center;
+
+        .medicine-modal__image {
+          display: flex;
+          justify-content: center;
+
+          .medicine-modal__file {
+            display: none;
+          }
+
+          .medicine-modal__image-drop {
+            width: 100%;
+            max-width: 520px;
+            height: 520px;
+            border-radius: $radius_sm;
+            border: 1px solid $primaryDark;
+            background-color: $primaryLight;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: $primaryDark;
+            @include body3;
+          }
+        }
+
+        .medicine-modal__form {
+          display: grid;
+          gap: 16px;
+
+          .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+          }
+
+          .form-group {
+            display: grid;
+            gap: 8px;
+          }
+
+          label {
+            @include body2;
+            color: $primaryDark;
+          }
+
+          input,
+          select {
+            padding: 10px 12px;
+            border: 1px solid $primaryDark;
+            border-radius: $radius_sm;
+            @include body3;
+          }
+
+          .medicine-modal__hint {
+            margin: 0;
+            color: $primaryDark;
+            @include body3;
+          }
+
+          .medicine-modal__schedule {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr;
+            gap: 10px 12px;
+            padding: 16px;
+            border-radius: $radius_sm;
+            background-color: $grayLight;
+
+            .schedule__head {
+              @include body3;
+              color: $primaryDark;
+              text-align: center;
+            }
+
+            .schedule__row-label {
+              @include body3;
+              color: $primaryDark;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+
+            .schedule__select {
+              width: 100%;
+            }
+          }
+        }
+      }
+
+      .medicine-modal__footer {
+        display: flex;
+        justify-content: center;
+
+        .btn-primary {
+          min-width: 200px;
+          padding: 12px 24px;
+          background-color: $primaryDark;
+          color: $white;
+          border: none;
+          border-radius: $radius_md;
+          cursor: pointer;
+          @include body2;
+        }
       }
     }
   }
