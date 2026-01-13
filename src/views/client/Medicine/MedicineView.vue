@@ -2,8 +2,8 @@
 import TheTopIcon from '@/components/common/TheTopIcon.vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import MedicineSection from '@/views/client/Medicine/common/MedicineSection.vue'
+import SupplementSection from '@/views/client/Medicine/common/SupplementSection.vue';
 
-// import MedicineCard from '@/components/Medicine/HealthCard.vue'
 </script>
 
 <template>
