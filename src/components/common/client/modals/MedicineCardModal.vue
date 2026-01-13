@@ -222,7 +222,7 @@ const onKeydown = (e) => {
             gap: 10px 12px;
             padding: 16px;
             border-radius: $radius_sm;
-            background-color:$white;
+            background-color: $grayLight;
 
             .schedule__head {
               @include body3;

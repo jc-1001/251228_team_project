@@ -15,7 +15,6 @@ import SupplementSection from '@/views/client/Medicine/common/SupplementSection.
     imageSrc="/src/assets/images/Banner_mdc.svg"
     />
     <MedicineSection />
-    <SupplementSection />
   </section>
 </template>
 <style lang="scss" scoped></style>
