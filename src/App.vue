@@ -20,12 +20,7 @@ const changeBg = computed(() => {
 <template>
   <div class="app_layout">
     <TheSidebar v-if="$route.meta.showSidebar" />
-    <!-- 後台間距設定:如果有admin存在就會padding=0 -->
-    <main
-      class="main_content"
-      :class="{ 'is-admin-root': $route.path.includes('admin') }"
-      :style="changeBg"
-    >
+    <main class="main_content" :style="changeBg">
       <TheHeader
         v-if="$route.meta.showHeader"
         :title="$route.meta.title"
@@ -50,9 +45,5 @@ const changeBg = computed(() => {
   height: 100vh;
   overflow-y: auto;
   background-repeat: no-repeat;
-  // 後台的外圍間距(!!!)
-  &.is-admin-root {
-    padding: 0 !important;
-  }
 }
 </style>

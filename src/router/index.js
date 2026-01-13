@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// 匯入你的各模組路由設定（目前先留空或匯入基礎頁面）
-// import clientRoutes from './client'
-import adminRoutes from './admin'
+
 
 const routes = [
   {
@@ -63,13 +61,19 @@ const routes = [
       showSidebar: true,
     }
   },
-  // --- 後台管理系統 ---
-  // 直接展開匯入的 adminRoutes
-  adminRoutes,
   {
     path: '/metrics',
     name: 'Metrics',
     component: () => import('@/views/client/Metrics.vue'),
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/client/profile/ProfileEdit.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
   },
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
