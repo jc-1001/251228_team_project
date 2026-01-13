@@ -39,7 +39,7 @@ const routes = [
     component: () => import('@/views/client/shop/ShopView.vue'),
     meta: {
       // showHeader: true,
-      // showTopIcon: true,
+      showTopIcon: true,
       showSidebar: true,
     }
   },
@@ -47,6 +47,11 @@ const routes = [
     path: '/product/:id',
     name: 'productDetail',
     component: () => import('@/views/client/shop/ProductDetail.vue'),
+    meta: {
+      // showHeader: true,
+      showTopIcon: true,
+      showSidebar: true,
+    }
   },
   {
     path: '/medicine',
@@ -71,6 +76,10 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  scrollBehavior (to, from, savedPosition) {
+		// 始終滾到最上面
+    return { top: 0 }
+  },
 })
 
 export default router

@@ -3,32 +3,34 @@
 </script>
 
 <template>
-<div class="quantity_selector">
-  <button class="qty_btn minus">-</button>
-  <input type="number" class="qty_input" value="1">
-  <button class="qty_btn plus">+</button>
-</div>
+  <div class="quantity_selector">
+    <button class="qty_btn minus">-</button>
+    <input type="text" class="qty_input" value="1">
+    <button class="qty_btn plus">+</button>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .quantity_selector {
-  flex: 1 1 200px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 24px;
+  width: 150px;
   height: 40px;
   border: 1px solid $black;
+  border-radius: $radius-sm;
+
   .qty_btn {
-    padding: 24px;
     border: none;
     background-color: transparent;
     @include subtitle2(true);
     color: $black;
     cursor: pointer;
   }
+
   .qty_input {
     width: 50px;
-    padding: 0;
     border: none;
     text-align: center;
   }
