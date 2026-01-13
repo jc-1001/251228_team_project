@@ -8,7 +8,7 @@ const menuItems = ref([
   { name: '首頁戰情室', icon: 'dashboard', path: '/HomeView' },
   { name: '飲食日記', icon: 'restaurant', path: '/DietLog' },
   { name: '數位藥箱', icon: 'medication', path: '/medicine' },
-  { name: '身體數值中心', icon: 'bar_chart', path: '/' },
+  { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
   { name: '樂活商城', icon: 'storefront', path: '/shop' },
   { name: '幫助中心', icon: 'help', path: '/' },
 ])
@@ -20,7 +20,7 @@ const menuItems = ref([
       <img :src="sidebarLogo" alt="UniCare品牌logo" />
     </div>
     <RouterLink v-for="item in menuItems" :key="item.name" :to="item.path" class="menu_item">
-      <span class="material-icons-round menu_icon">{{ item.icon }}</span>
+      <span class="material-symbols-rounded menu_icon">{{ item.icon }}</span>
       <span class="menu_name">{{ item.name }}</span>
     </RouterLink>
     <div class="sidebar_deco">
