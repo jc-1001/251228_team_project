@@ -12,7 +12,7 @@ const topIcons = ref([
     hasDropdown: true,
   },
   { name: '購物車', icon: 'shopping_cart', path: '/', badge: 100 },
-  { name: '頭像', icon: 'account_circle', path: '/', badge: 0 },
+  { name: '頭像', icon: 'account_circle', path: '/profile', badge: 0 },
 ])
 // 個人通知假資料(正式要刪)
 const notifications = ref([

@@ -2,21 +2,11 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-// 1. 匯入 Element Plus 自動引入相關插件
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
 
 export default defineConfig({
   plugins: [
     vue(),
-    // 加入自動引入設定
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-    }),
     // 設定 SVG 圖標插件，指向你存放 svg 的目錄
     createSvgIconsPlugin({
       iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
