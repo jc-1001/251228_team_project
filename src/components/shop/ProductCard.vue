@@ -2,13 +2,35 @@
 <script setup>
 // 設定props主要是為了宣告接收權，元件只會接收下面寫的幾種資料
 defineProps({
-  id: Number,
-  category: String,
-  image: String,
-  title: String,
-  spec: String, // 商品規格
-  price: Number,
-  tag: String,
+  id: {
+    type: Number,
+    required: true,
+  },
+  title: {
+    type: String,
+    default: '未命名商品'
+  },
+  image: {
+    type: String,
+    default: ''
+  },
+  price: {
+    type: Number,
+    default: 0
+  },
+  spec: {
+    type: String, 
+    default: ''
+  },
+  tag: {
+    type: String,
+    default: ''
+  },
+  // 用來判斷按鈕狀態
+  stock_quantity: {
+    type: Number,
+    default: 0
+  },
 })
 
 // 加入購物車

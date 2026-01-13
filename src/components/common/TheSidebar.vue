@@ -20,7 +20,7 @@ const menuItems = ref([
       <img :src="sidebarLogo" alt="UniCare品牌logo" />
     </div>
     <RouterLink v-for="item in menuItems" :key="item.name" :to="item.path" class="menu_item">
-      <span class="material-icons-round menu_icon">{{ item.icon }}</span>
+      <span class="material-symbols-rounded menu_icon">{{ item.icon }}</span>
       <span class="menu_name">{{ item.name }}</span>
     </RouterLink>
     <div class="sidebar_deco">
