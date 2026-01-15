@@ -24,7 +24,29 @@ export const useMedicineStore = defineStore('medicine', () => {
         oneTime: '2',
         image: '/src/assets/images/mdc1_2.jpg',
       },
+      {
+        id: 3,
+        name: '感冒藥',
+        dayEat: 3,
+        oneTime: '1',
+        image: '/src/assets/images/mdc1_3.jpg',
+      },
+      {
+        id: 4,
+        name: '魚油',
+        dayEat: 1,
+        oneTime: '3',
+        image: '/src/assets/images/mdc1_4.jpg',
+      },
+    {
+        id: 5,
+        name: '鈣片',
+        dayEat: 2,
+        oneTime: '2',
+        image: '/src/assets/images/mdc1_3.jpg',
+    }
+
     ]
   }
-  return { items, fetchItems }
+  return { items, fetchItems}
 })

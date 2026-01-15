@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 // 快速紀錄
 const fastButton = ref([
-  { name: '吃藥', icon: 'medication', type: 'green' },
-  { name: '飲食日記', icon: 'restaurant', type: 'green' },
+  { name: '吃藥', icon: 'medication', type: 'green'},
+  { name: '飲食日記', icon: 'restaurant', type: 'green'},
   { name: '體重', icon: 'monitor_weight', type: 'alert' },
   { name: '血糖', icon: 'bloodtype', type: 'alert' },
   { name: '血氧', icon: 'water_drop', type: 'green' },

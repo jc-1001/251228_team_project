@@ -6,9 +6,7 @@
   },
 })
 
-
 const emit = defineEmits(['createClick'])
-
 
 </script>
 <template>
@@ -17,6 +15,8 @@ const emit = defineEmits(['createClick'])
     <button @click="emit('createClick')">新增</button>
   </div>
 </template>
+
+
 <style scoped lang="scss">
 .medicine-header {
   display: flex;

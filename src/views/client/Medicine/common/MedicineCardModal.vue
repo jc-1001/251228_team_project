@@ -13,15 +13,22 @@ const usageOptionsBySlot = (slot) => {
   }
   return usageOptions;
 };
+const emit = defineEmits(['closeModal'])
 
 const closeModal = () => {
   emit("closeModal");
 };
-const emit = defineEmits(["closeModal"]);
-const onOverlayClick = () => closeModal()
-const onKeydown = (e) => {
-  if (e.key === "Escape") closeModal()
-}
+
+const onOverlayClick = () => {
+  closeModal();
+};
+
+const onKeydown = (event) => {
+  if (event.key === "Escape") {
+    closeModal();
+  }
+};
+
 
 
 </script>
@@ -32,7 +39,7 @@ const onKeydown = (e) => {
       <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">×</button>
       <h1 class="medicine-modal__title">新增藥品</h1>
 
-      <form class="medicine-modal__content" action="#">
+      <form class="medicine-modal__content" action="#" >
         <div class="medicine-modal__body">
           <section class="medicine-modal__image">
             <input type="file" id="medicine-image" class="medicine-modal__file" />
