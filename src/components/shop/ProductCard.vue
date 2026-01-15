@@ -1,7 +1,10 @@
 <!-- 補充: 關於組件名稱，官方推薦使用大駝峰寫法，用以區分vue組件和原生html元素 -->
 <script setup>
+import { computed } from 'vue'
+import { useCartStore } from '@/stores/cart';
+
 // 設定props主要是為了宣告接收權，元件只會接收下面寫的幾種資料
-defineProps({
+const props = defineProps({
   id: {
     type: Number,
     required: true,
@@ -19,7 +22,7 @@ defineProps({
     default: 0
   },
   spec: {
-    type: String, 
+    type: String,
     default: ''
   },
   tag: {
@@ -33,9 +36,29 @@ defineProps({
   },
 })
 
+const cartStore = useCartStore()
+
+// 售完狀態
+const isSoldOut = computed(() => {
+  return props.stock_quantity === 0
+})
+
 // 加入購物車
 const addToCart = () => {
-  console.log('加入購物車，但不會跳轉頁面！');
+  if (isSoldOut.value) return
+
+  const productObj = {
+    id: props.id,
+    title: props.title,
+    price: props.price,
+    image: props.image,
+    spec: props.spec,
+    stock_quantity: props.stock_quantity
+  }
+
+  cartStore.addToCart(productObj)
+
+  alert(`${props.title} 已加入購物車！`)
 }
 
 </script>
@@ -54,7 +77,7 @@ const addToCart = () => {
       <p class="product_price">${{ price }}</p>
       <div class="card_button">
         <!-- 筆記: @click.prevent(阻擋預設行為)/@click.stop(阻擋冒泡) 此為"事件修飾符" -->
-        <button type="button" @click.stop.prevent="addToCart">加入購物車</button>
+        <button type="button" @click.stop.prevent="addToCart" :disabled="isSoldOut" :class="{'disabled':isSoldOut}">{{ isSoldOut ? '補貨中' : '加入購物車' }}</button>
       </div>
     </div>
   </router-link>
@@ -113,6 +136,7 @@ const addToCart = () => {
         @include subtitle2(true);
         color: $primaryDark;
       }
+
       .product_spec {
         display: inline-block;
         padding: 0 12px;
@@ -131,23 +155,23 @@ const addToCart = () => {
     }
 
     .card_button {
-      background-color: $primaryDark;
-      text-align: center;
-      border-radius: 5px;
-      transition: all .3s;
-
-      &:hover {
-        background-color: $primary;
-      }
-
       button {
         width: 100%;
+        height: 40px;
         border: none;
-        background: none;
-        color: $white;
-        padding: 8px;
-        cursor: pointer;
+        border-radius: 5px;
         @include body2(true);
+        color: $white;
+        background-color: $primaryDark;
+        cursor: pointer;
+        transition: all .3s;
+        &:hover {
+          background-color: $primary;
+        }
+        &.disabled {
+          background-color: $disabled;
+          cursor: not-allowed;
+        }
       }
     }
   }

@@ -5,5 +5,6 @@
 <style lang="scss" scoped>
 .greeting {
   color: $primaryDark;
+  margin-bottom: 20px;
 }
 </style>

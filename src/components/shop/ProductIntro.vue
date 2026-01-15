@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import QuantitySelector from '@/components/shop/QuantitySelector.vue'
+// 引入pinia的store
+import { useCartStore } from '@/stores/cart'
 
 const props = defineProps({
   product: {
@@ -10,6 +12,11 @@ const props = defineProps({
   }
 })
 
+// 啟用store
+const cartStore = useCartStore()
+
+// 用來暫存使用者目前選擇數量(不會直接存入qty)
+const buyCount = ref(1)
 
 // 庫存警示判斷
 const isLowStock = computed(()=>{
@@ -21,6 +28,26 @@ const isLowStock = computed(()=>{
 const isSoldOut = computed(()=>{
   return props.product.stock_quantity === 0
 })
+
+// 接收加入購物車函式
+const handleAddToCart = ()=>{
+  cartStore.addToCart(props.product, buyCount.value)
+  
+  alert('成功加入購物車!')
+}
+
+// 處理暫存購買數量
+const handleAdd = ()=> {
+  if( buyCount.value < props.product.stock_quantity ) {
+    buyCount.value ++
+  }
+}
+
+const handleMinus = ()=> {
+  if( buyCount.value > 1 ) {
+    buyCount.value --
+  }
+}
 
 </script>
 <template>
@@ -40,8 +67,8 @@ const isSoldOut = computed(()=>{
     <div class="product_action">
       <p v-if="isLowStock" class="stock_warning"><span class="material-symbols-rounded warning_icon">warning</span>庫存量剩餘: {{ product.stock_quantity }}</p>
       <div class="action_row">
-        <QuantitySelector />
-        <button class="btn_add_to_cart" :disabled="isSoldOut" :class="{'disabled':isSoldOut}">{{ isSoldOut ? '補貨中':'加入購物車' }}</button>
+        <QuantitySelector :qty="buyCount" @add="handleAdd" @minus="handleMinus"/>
+        <button type="button" class="btn_add_to_cart" :disabled="isSoldOut" :class="{'disabled':isSoldOut}" @click="handleAddToCart">{{ isSoldOut ? '補貨中':'加入購物車' }}</button>
       </div>
     </div>
   </div>
@@ -120,8 +147,15 @@ const isSoldOut = computed(()=>{
         border-radius: $radius-sm;
         color: $white;
         background-color: $primaryDark;
+        @include body2(true);
+        transition: all .3s;
+        cursor: pointer;
+        &:hover {
+          background-color: $primary;
+        }
         &.disabled {
-          background-color: $gray;
+          background-color: $disabled;
+          cursor: not-allowed;
         }
       }
     }

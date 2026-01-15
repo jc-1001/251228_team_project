@@ -11,7 +11,7 @@ const topIcons = ref([
     badge: true,
     hasDropdown: true,
   },
-  { name: '購物車', icon: 'shopping_cart', path: '/', badge: 100 },
+  { name: '購物車', icon: 'shopping_cart', path: '/cart', badge: 3 },
   { name: '頭像', icon: 'person', path: '/profile', badge: 0 }, // 原本是account_circle，但因為預設就是空心的，所以先改成person
 ])
 // 個人通知假資料(正式要刪)
