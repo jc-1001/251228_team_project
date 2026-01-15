@@ -1,6 +1,94 @@
 <script setup>
 import TheHeader from '@/components/common/TheHeader.vue'
+import { ref, computed } from 'vue'
+import dayjs from 'dayjs';
+
+const currentViewDate = ref(dayjs());
+const filledDates = ref(['2025-11-30','2025-12-01', '2025-12-02', '2025-12-03', '2025-12-04', '2025-12-05','2025-12-06', '2025-12-08', '2025-12-09', '2025-12-10', '2025-12-11', '2025-12-12', '2025-12-13', '2025-12-14', '2025-12-15', '2025-12-17', '2025-12-18', '2025-12-19']);//未來需調整
+
+const isYearPickerOpen = ref(false);
+// 產生前後10年list
+const years = computed(() => {
+    const startYear = 2025;
+    return Array.from({ length: 6 }, (_, i) => startYear + i);
+});
+const selectYear = (year) => {
+    if (year >= 2025) {
+        currentViewDate.value = currentViewDate.value.year(year);
+        isYearPickerOpen.value = false;
+    }
+};
+
+// 計算月曆要的所有日期
+const calendarDays = computed(() => {
+    const startOfMonth = currentViewDate.value.startOf('month');
+    const endOfMonth = currentViewDate.value.endOf('month'); 
+    const startDay = startOfMonth.day();
+    const daysInMonth = currentViewDate.value.daysInMonth();
+    const days = [];
+
+    // 補足前月日期
+    for (let i = startDay; i > 0; i--) {
+        days.push({
+            date: startOfMonth.subtract(i, 'day'),
+            isCurrentMonth: false
+        });
+    }
+
+    // 本月的日子
+    for (let i = 1; i <= daysInMonth; i++) {
+        days.push({
+            date: startOfMonth.date(i),
+            isCurrentMonth: true
+        });
+    }
+
+    // 補足後月的日期，確保高度一致(視情況增減排數)
+    const totalSlots = days.length > 35 ? 42 : 35;
+    const remainingSlots = totalSlots - days.length;
+    for (let i = 1; i <= remainingSlots; i++) {
+        days.push({ date: endOfMonth.add(i, 'day'), isCurrentMonth: false });
+    }
+    return days;
+});
+
+// 切換月份的功能
+const prevMonth = () => {
+    const prevDate = currentViewDate.value.subtract(1, 'month');
+    // 年份小於2025不執行
+    if (prevDate.year() < 2025) {
+        return;
+    }
+    currentViewDate.value = prevDate;
+};
+const nextMonth = () => { currentViewDate.value = currentViewDate.value.add(1, 'month'); };
+
+const handleDateClick = (date) => {
+    // 如果是未來日期，不執行動作
+    if (date.isAfter(dayjs(), 'day')) return;
+    
+    // 否則執行開啟燈箱邏輯
+    console.log("開啟燈箱:", date.format('YYYY-MM-DD'));
+};
+
+const getDayClass = (item) => {
+    const dateStr = item.date.format('YYYY-MM-DD');
+    const isFilled = filledDates.value.includes(dateStr);
+    const isToday = item.date.isSame(dayjs(), 'day');
+    const isFuture = item.date.isAfter(dayjs(), 'day');
+
+    return {
+        'today': isToday,
+        'this-month-f': item.isCurrentMonth && isFilled,
+        'other-month-f': !item.isCurrentMonth && isFilled,
+        'this-month-n': item.isCurrentMonth && !isFilled,
+        'other-month-n': !item.isCurrentMonth && !isFilled,
+        'future': isFuture,
+    };
+};
+
 </script>
+
 <template>
     <TheHeader
     title="飲食日記"
@@ -8,16 +96,27 @@ import TheHeader from '@/components/common/TheHeader.vue'
     imageSrc="/src/assets/images/Banner_diary.svg"
     />
     <router-view />
+
     <!-- 日曆 -->
     <main class="diet-calendar">
         <!-- 年、月 -->
         <div class="calendar-header">
             <div class="month-selector">
-                <button class="arrow">&lt;</button>
-                <span class="month-text">12月</span>
-                <button class="arrow">&gt;</button>
+                <button v-if="!(currentViewDate.year() === 2025 && currentViewDate.month() === 0)"
+                    @click="prevMonth" class="arrow">&lt;</button>
+                <span class="month-text">{{ currentViewDate.format('MM月') }}</span>
+                <button @click="nextMonth" class="arrow">&gt;</button>
             </div>
-            <div class="year-text">2025</div>
+            <div class="year-container" style="position: relative;">
+                <div class="year-text" @click="isYearPickerOpen = !isYearPickerOpen">
+                    {{ currentViewDate.format('YYYY') }}
+                </div>
+                <div v-if="isYearPickerOpen" class="year-dropdown">
+                    <div v-for="y in years" :key="y" class="year-option" @click="changeYear(y)">
+                        {{ y }}
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- 主區塊 -->
         <div class="calendar-body">
@@ -28,41 +127,13 @@ import TheHeader from '@/components/common/TheHeader.vue'
             </div>
 
             <div class="days-grid">
-                <div class="day-cell other-month-f">30</div>
-                <div class="day-cell this-month-f">1</div>
-                <div class="day-cell this-month-f">2</div>
-                <div class="day-cell this-month-f">3</div>
-                <div class="day-cell this-month-f">4</div>
-                <div class="day-cell this-month-f">5</div>
-                <div class="day-cell this-month-f">6</div>
-                <div class="day-cell this-month-n">7</div>
-                <div class="day-cell this-month-f">8</div>
-                <div class="day-cell this-month-f">9</div>
-                <div class="day-cell this-month-f">10</div>
-                <div class="day-cell this-month-f">11</div>
-                <div class="day-cell this-month-f">12</div>
-                <div class="day-cell this-month-f">13</div>
-                <div class="day-cell this-month-f">14</div>
-                <div class="day-cell this-month-f">15</div>
-                <div class="day-cell this-month-n">16</div>
-                <div class="day-cell this-month-f">17</div>
-                <div class="day-cell this-month-f">18</div>
-                <div class="day-cell this-month-f">19</div>
-                <div class="day-cell today">20</div>
-                <div class="day-cell this-month-n">21</div>
-                <div class="day-cell this-month-n">22</div>
-                <div class="day-cell this-month-n">23</div>
-                <div class="day-cell this-month-n">24</div>
-                <div class="day-cell this-month-n">25</div>
-                <div class="day-cell this-month-n">26</div>
-                <div class="day-cell this-month-n">27</div>
-                <div class="day-cell this-month-n">28</div>
-                <div class="day-cell this-month-n">29</div>
-                <div class="day-cell this-month-n">30</div>
-                <div class="day-cell this-month-n">31</div>
-                <div class="day-cell other-month-n">1</div>
-                <div class="day-cell other-month-n">2</div>
-                <div class="day-cell other-month-n">3</div>
+                <div v-for="item in calendarDays" 
+                    :key="item.date.format('YYYY-MM-DD')"
+                    class="day-cell"
+                    :class="getDayClass(item)"
+                    @click="handleDateClick(item.date)">
+                    {{ item.date.date() }}
+                </div>
             </div>
         </div>
     </main>
@@ -71,6 +142,7 @@ import TheHeader from '@/components/common/TheHeader.vue'
         <div class="legend-item"><span class="dot today-dot"></span>今日</div>
         <div class="legend-item"><span class="dot filled-dot"></span>已填寫</div>
     </div>
+    
 </template>
 
 <style lang="scss" scoped>
@@ -103,6 +175,30 @@ import TheHeader from '@/components/common/TheHeader.vue'
     .year-text {
         cursor: pointer;
         @include title3(true);
+    }
+
+    .year-container {
+        position: relative;
+    }
+
+    .year-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: $white;
+        color: $black;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: $shadow;
+        z-index: 10;
+        width: 100px;
+    }
+
+    .year-option {
+        padding: 8px;
+        text-align: center;
+        cursor: pointer;
+        &:hover { background-color: $accentLight; }
     }
 
     .arrow {
@@ -167,9 +263,11 @@ import TheHeader from '@/components/common/TheHeader.vue'
             color: $white;
         }
         &.this-month-n {
-
+            color: $black;
         }
-
+        &.future {
+        cursor: default;
+        }
         &:hover {
         background-color: $white;
         border-radius: 50%;
@@ -182,7 +280,7 @@ import TheHeader from '@/components/common/TheHeader.vue'
         justify-content: flex-end;
         margin: 24px 80px;
         gap: 40px;
-        font-size: 0.9rem;
+        @include body1;
     }
 
     .legend-item {
@@ -195,6 +293,7 @@ import TheHeader from '@/components/common/TheHeader.vue'
         width: 32px;
         height: 32px;
         border-radius: 50%;
+        flex-shrink: 0;
     }
 
     .today-dot {
@@ -207,7 +306,7 @@ import TheHeader from '@/components/common/TheHeader.vue'
 
     /* RWD */
 
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
 
         .diet-calendar {
             width: 95%;
@@ -244,14 +343,22 @@ import TheHeader from '@/components/common/TheHeader.vue'
         }
 
         .day-cell {
-        max-width: 36px;
-        margin: 4px auto;
-        @include body1(true);
+            max-width: 36px;
+            margin: 4px auto;
+            @include body1(true);
         }
 
+        .calendar-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin: 24px 80px;
+            gap: 40px;
+            @include body3;
+        }
         .dot {
-        width: 24px;
-        height: 24px;
+            display: flex;
+            width: 24px;
+            height: 24px;
     }
 
     }
