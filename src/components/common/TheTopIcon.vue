@@ -11,8 +11,8 @@ const topIcons = ref([
     badge: true,
     hasDropdown: true,
   },
-  { name: '購物車', icon: 'shopping_cart', path: '/', badge: 100 },
-  { name: '頭像', icon: 'account_circle', path: '/', badge: 0 },
+  { name: '購物車', icon: 'shopping_cart', path: '/cart', badge: 3 },
+  { name: '頭像', icon: 'person', path: '/profile', badge: 0 }, // 原本是account_circle，但因為預設就是空心的，所以先改成person
 ])
 // 個人通知假資料(正式要刪)
 const notifications = ref([
@@ -46,7 +46,7 @@ const isDropdownOpen = ref(false) // 控制選單顯示
       @mouseenter="item.id === 'notice' ? (isDropdownOpen = true) : null"
       @mouseleave="isDropdownOpen = false"
     >
-      <span class="material-icons">{{ item.icon }}</span>
+      <span class="material-symbols-rounded">{{ item.icon }}</span>
       <!-- 數字紅點 -->
       <div v-if="typeof item.badge === 'number' && item.badge > 0" class="badge-number">
         {{ item.badge > 99 ? '99+' : item.badge }}
@@ -100,7 +100,7 @@ const isDropdownOpen = ref(false) // 控制選單顯示
   cursor: pointer;
   position: relative;
 }
-.material-icons {
+.material-symbols-rounded {
   color: $primaryDark;
 }
 // 提醒紅點

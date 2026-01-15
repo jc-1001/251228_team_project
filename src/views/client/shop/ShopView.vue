@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { allProducts } from '@/data/shop/productInfo'
 import ProductCard from '@/components/shop/ProductCard.vue'
-import TheTopIcon from '@/components/common/TheTopIcon.vue'
+import TheHeader from '@/components/common/TheHeader.vue'
 import bannerImage from '@/assets/images/shop/banner_img_shop.svg'
 
 // 商品列表
@@ -30,23 +30,16 @@ const filteredProducts = computed(() => {
 
 <template>
   <div class="mall_page">
-    <TheTopIcon/>
-    <div class="banner">
-      <div class="banner_txt">
-        <h2>樂活商城</h2>
-        <p>用健康積分兌換好禮，照顧自己也照顧家人!</p>
-      </div>
-      <div class="banner_pic">
-        <img :src=bannerImage alt="">
-      </div>
-    </div>
+    <TheHeader
+      title="樂活商城"
+      subtitle="用健康積分兌換好禮，照顧自己也照顧家人!"
+      :imageSrc="bannerImage"
+    class="banner" />
     <div class="category_btns">
-      <button v-for="cat in categories" :key="cat" class="category_btns_el"
-        :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
+      <button v-for="cat in categories" :key="cat" class="category_btns_el" :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
     </div>
     <div class="product_card_list">
-      <ProductCard v-for="item in filteredProducts" :key="item.id" :category="item.category" :image="item.image"
-        :title="item.title" :spec="item.spec" :price="item.price" :tag="item.tag" />
+      <ProductCard v-for="item in filteredProducts" :key="item.id" v-bind="item"/>
     </div>
   </div>
 </template>
@@ -54,39 +47,7 @@ const filteredProducts = computed(() => {
 <style lang="scss" scoped>
 .mall_page {
   .banner {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
     margin-bottom: 40px;
-    color: $primaryDark;
-    background: $linear1;
-    border: 2px solid $white;
-    border-radius: 10px;
-    box-shadow: $shadow;
-
-    .banner_txt {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 32px 40px;
-
-      h2 {
-        @include title3(true);
-      }
-
-      p {
-        @include body2;
-      }
-    }
-
-    .banner_pic {
-      padding: 8px 24px 0 0;
-
-      img {
-        object-fit: cover;
-        width: 80%;
-      }
-    }
   }
 
   .category_btns {

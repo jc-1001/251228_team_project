@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// 匯入你的各模組路由設定（目前先留空或匯入基礎頁面）
-// import clientRoutes from './client'
-import adminRoutes from './admin'
+
 
 const routes = [
   {
@@ -39,7 +37,7 @@ const routes = [
     component: () => import('@/views/client/shop/ShopView.vue'),
     meta: {
       // showHeader: true,
-      // showTopIcon: true,
+      showTopIcon: true,
       showSidebar: true,
     }
   },
@@ -47,20 +45,42 @@ const routes = [
     path: '/product/:id',
     name: 'productDetail',
     component: () => import('@/views/client/shop/ProductDetail.vue'),
+    meta: {
+      // showHeader: true,
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/cart',
+    name: 'cartView',
+    component: () => import('@/views/client/shop/CartView.vue'),
+    meta: {
+      // showHeader: true,
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/checkout',
+    name: 'checkoutView',
+    component: () => import('@/views/client/shop/CheckoutView.vue'),
+    meta: {
+      // showHeader: true,
+      showTopIcon: true,
+      showSidebar: true,
+    }
   },
   {
     path: '/medicine',
     name: 'Medicine',
-    component: () => import('@/views/client/MedicineView.vue'),
+    component: () => import('@/views/client/Medicine/MedicineView.vue'),
     meta: {
       showTopIcon: true,
       // showHeader: true,
       showSidebar: true,
     }
   },
-  // --- 後台管理系統 ---
-  // 直接展開匯入的 adminRoutes
-  adminRoutes,
   {
     path: '/metrics',
     name: 'Metrics',
@@ -72,6 +92,33 @@ const routes = [
     }
 
   },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/client/profile/ProfileEdit.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/mypoint',
+    name: 'mypoint',
+    component: () => import('@/views/client/profile/MyPoints.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/orderlist',
+    name: 'orderlist',
+    component: () => import('@/views/client/profile/OrderList.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
@@ -82,6 +129,10 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // 始終滾到最上面
+    return { top: 0 }
+  },
 })
 
 export default router
