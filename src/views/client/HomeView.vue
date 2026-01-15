@@ -1,8 +1,12 @@
 <script setup>
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
+
 // 引入燈箱元件
 // 快速紀錄
+
+import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
+
 const fastButton = ref([
   { name: '吃藥', icon: 'medication', type: 'green'},
   { name: '飲食日記', icon: 'restaurant', type: 'green'},
@@ -95,7 +99,7 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <MedicineCardModal :info="popupInfo" @close="closePopup" />
+                   <NewMedicineModals :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
