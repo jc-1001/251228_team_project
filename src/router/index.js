@@ -75,6 +75,24 @@ const routes = [
       showSidebar: true,
     }
   },
+  {
+    path: '/mypoint',
+    name: 'mypoint',
+    component: () => import('@/views/client/profile/MyPoints.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/orderlist',
+    name: 'orderlist',
+    component: () => import('@/views/client/profile/OrderList.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
@@ -85,8 +103,8 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior (to, from, savedPosition) {
-		// 始終滾到最上面
+  scrollBehavior(to, from, savedPosition) {
+    // 始終滾到最上面
     return { top: 0 }
   },
 })
