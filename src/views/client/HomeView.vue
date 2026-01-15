@@ -4,12 +4,12 @@ import TheHeader from '@/components/common/TheHeader.vue'
 // 引入燈箱元件
 // 快速紀錄
 const fastButton = ref([
-  { name: '吃藥', icon: 'medication', type: 'green' },
-  { name: '飲食日記', icon: 'restaurant', type: 'green' },
-  { name: '體重', icon: 'monitor_weight', type: 'alert' },
-  { name: '血糖', icon: 'bloodtype', type: 'alert' },
-  { name: '血氧', icon: 'water_drop', type: 'green' },
-  { name: '血壓/心律', icon: 'favorite', type: 'green' },
+  { name: '吃藥', icon: 'medication' },
+  { name: '飲食日記', icon: 'restaurant' },
+  { name: '體重', icon: 'monitor_weight' },
+  { name: '血糖', icon: 'bloodtype' },
+  { name: '血氧', icon: 'water_drop' },
+  { name: '血壓/心律', icon: 'favorite' },
 ])
 // 今日狀態
 const todayLog = ref([
@@ -19,7 +19,7 @@ const todayLog = ref([
     num: '--',
     unit: 'kg',
     statusText: '尚未量測',
-    statusType: 'none',
+    statusType: 'none', //橘色
   },
   {
     name: '血氧',
@@ -27,7 +27,7 @@ const todayLog = ref([
     num: '95',
     unit: '%',
     statusText: '含氧量佳',
-    statusType: 'good',
+    statusType: 'good', // 綠色
   },
   {
     name: '血糖',
@@ -42,8 +42,8 @@ const todayLog = ref([
     icon: 'favorite',
     num: '80',
     unit: 'bpm',
-    statusText: '心律穩定',
-    statusType: 'good',
+    statusText: '心律偏低',
+    statusType: 'low', //藍色 + Icon
   },
   {
     name: '血壓',
@@ -51,8 +51,7 @@ const todayLog = ref([
     num: '140/80',
     unit: 'mmHg',
     statusText: '血壓偏高',
-    statusType: 'danger', // 用於控制紅色外框與背景
-    isWide: true, // 用於控制 RWD 跨欄
+    statusType: 'danger', // 橘紅色+icon
   },
 ])
 
@@ -111,13 +110,14 @@ const closePopup = () => {
           </div>
           <div class="todayLog-cardlist">
             <div
-              :class="['todayLog-card', `status-${item2.statusType}`, { 'is-wide': item2.isWide }]"
+              :class="['todayLog-card', `status-${item2.statusType}`]"
               v-for="item2 in todayLog"
               :key="item2.name"
             >
               <div class="card-icon">
                 <span class="material-symbols-rounded">{{ item2.icon }}</span>
               </div>
+
               <div class="card-title">
                 <span class="log-name">{{ item2.name }}</span>
               </div>
@@ -127,7 +127,15 @@ const closePopup = () => {
                 <span class="unit">{{ item2.unit }}</span>
               </div>
 
-              <div class="state-badge">{{ item2.statusText }}</div>
+              <div class="state-footer">
+                <div class="state-badge">{{ item2.statusText }}</div>
+                <span
+                  v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
+                  class="material-symbols-rounded warning-icon"
+                >
+                  {{ item2.statusType === 'danger' ? 'trending_up' : 'trending_down' }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -175,6 +183,9 @@ main {
   height: 300px;
   width: 100%;
   margin-top: 65px;
+  @media (max-width: 1025px) {
+    margin-top: 0px;
+  }
   .block-title {
     padding: 20px;
     color: $primaryDark;
@@ -212,6 +223,7 @@ main {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(3, 1fr);
+
   @media (max-width: 767px) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -230,6 +242,7 @@ button {
   gap: 5px;
   box-shadow: $shadow;
   border-radius: $radius_md;
+  color: $primaryDark;
   cursor: pointer;
   .material-symbols-rounded {
     @include subtitle2(true);
@@ -237,22 +250,13 @@ button {
   }
 }
 
-// 動態顏色
-.is-green {
-  color: $primaryDark;
-}
-.is-alert {
-  color: $primaryDark;
-  background-color: #f3f7ec; // 獨立使用
-  border: 1px solid $gray;
-}
 // 今日狀態樣式
 .todayLog-card {
   box-sizing: border-box;
   background-color: $white;
   @include subtitle2(false);
-  font-size: 16px; //material-symbols-rounded 要一起更動、大小字體一致
-  padding: 15px;
+  font-size: 12px; //material-symbols-rounded 要一起更動、大小字體一致
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -276,22 +280,91 @@ button {
     flex-direction: row;
     gap: 5px; // 數字與單位間距
     .log-num {
-      font-size: 24px;
+      font-size: 16px;
       margin: 5px 0; // 卡片內容上下距離
     }
+    .unit {
+      font-size: 16px;
+    }
   }
-  .state-badge {
-    border: 1px solid black;
+  // 狀態：正常 (good)
+  &.status-good {
+    .material-symbols-rounded {
+      color: $primaryDark;
+    } // 讓右上角 icon 變色
+    .state-badge {
+      padding: 5px;
+      background-color: $primaryLight;
+      color: $primaryDark;
+      border: none;
+      border-radius: 100px;
+    }
+  }
+
+  // 狀態：偏高 (danger)
+  &.status-danger {
+    border: 1px solid #ff5252;
+    background-color: $white;
+    .material-symbols-rounded {
+      color: $accent;
+    }
+    .state-badge {
+      padding: 5px;
+      background-color: $accent;
+      color: white;
+      border: none;
+      border-radius: 100px;
+    }
+    .warning-icon {
+      color: $accent;
+    }
+  }
+
+  // 狀態：偏低 (low)
+  &.status-low {
+    border: 1px solid #518fe7;
     background-color: white;
-    width: fit-content;
-    padding: 4px;
-    font-size: 12px;
-    border-radius: 100px;
+    .material-symbols-rounded {
+      color: #518fe7;
+    }
+    .state-badge {
+      padding: 5px;
+      background-color: #518fe7;
+      color: white;
+      border: none;
+      border-radius: 100px;
+    }
+    .warning-icon {
+      color: #518fe7;
+    }
   }
-  .is-Wide {
-    grid-column: span 2; // 寬螢幕時佔兩格
-    flex-direction: row; // 內容改為橫向排列
-    justify-content: space-around;
+
+  // 狀態：尚未測量 (none)
+  &.status-none {
+    // .log-num,
+    // .unit {
+    //   color: #9e9e9e;
+    // }
+    .material-symbols-rounded {
+      color: $accent;
+    }
+    .state-badge {
+      padding: 5px;
+      background-color: $accentLight;
+      color: $accent;
+      border: 1px solid #e0e0e0;
+      border-radius: 100px;
+    }
   }
+}
+.state-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto; // 確保對齊底部
+}
+
+.warning-icon {
+  font-size: 18px;
 }
 </style>
