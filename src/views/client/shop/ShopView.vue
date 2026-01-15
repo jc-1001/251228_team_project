@@ -33,13 +33,13 @@ const filteredProducts = computed(() => {
     <TheHeader
       title="樂活商城"
       subtitle="用健康積分兌換好禮，照顧自己也照顧家人!"
-      imageSrc="/src/assets/images/shop/banner_img_shop.svg"
+      :imageSrc="bannerImage"
     class="banner" />
     <div class="category_btns">
       <button v-for="cat in categories" :key="cat" class="category_btns_el" :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
     </div>
     <div class="product_card_list">
-      <ProductCard v-for="item in filteredProducts" :key="item.id" :category="item.category" :image="item.image" :title="item.title" :spec="item.spec" :price="item.price" :tag="item.tag" :to="`/product/${item.id}`"/>
+      <ProductCard v-for="item in filteredProducts" :key="item.id" v-bind="item"/>
     </div>
   </div>
 </template>

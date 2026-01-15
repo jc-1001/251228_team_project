@@ -52,6 +52,26 @@ const routes = [
     }
   },
   {
+    path: '/cart',
+    name: 'cartView',
+    component: () => import('@/views/client/shop/CartView.vue'),
+    meta: {
+      // showHeader: true,
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/checkout',
+    name: 'checkoutView',
+    component: () => import('@/views/client/shop/CheckoutView.vue'),
+    meta: {
+      // showHeader: true,
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
     path: '/medicine',
     name: 'Medicine',
     component: () => import('@/views/client/Medicine/MedicineView.vue'),

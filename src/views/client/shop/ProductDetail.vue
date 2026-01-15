@@ -21,8 +21,8 @@ const currentProduct = computed(() => {
   <div class="product_datail_page">
     <div class="breadcrumb">
       <router-link :to="'/shop'" class="breadcrumb_location">樂活商城</router-link>
-      <router-link class="breadcrumb_category">{{ currentProduct.category }}</router-link>
-      <router-link class="breadcrumb_product">{{ currentProduct.title }}</router-link>
+      <span class="breadcrumb_category">{{ currentProduct.category }}</span>
+      <span class="breadcrumb_product">{{ currentProduct.title }}</span>
     </div>
     <section class="product_detail_card">
       <ProductGallery :gallery="currentProduct?.gallery"/>

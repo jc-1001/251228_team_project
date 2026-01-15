@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
+import TheHeader from './components/common/TheHeader.vue'
 import TheSidebar from './components/common/TheSidebar.vue'
 import TheTopIcon from './components/common/TheTopIcon.vue'
 // 背景圖引入區
@@ -21,11 +22,7 @@ const changeBg = computed(() => {
   <div class="app_layout">
     <TheSidebar v-if="$route.meta.showSidebar" />
     <main class="main_content" :style="changeBg">
-      <TheHeader
-        v-if="$route.meta.showHeader"
-        :title="$route.meta.title"
-        :subtitle="$route.meta.subtitle"
-      />
+      <TheHeader v-if="$route.meta.showHeader" :title="$route.meta.title" :subtitle="$route.meta.subtitle" />
       <TheTopIcon v-if="$route.meta.showTopIcon" />
       <RouterView />
     </main>
@@ -41,9 +38,13 @@ const changeBg = computed(() => {
 
 .main_content {
   flex: 1;
-  padding: 24px 54px; // 原先是 padding: 32px 80px; 如果有人已經開始切版，而且大跑版請跟NLee說!
+  padding: 24px 54px;
   height: 100vh;
   overflow-y: auto;
   background-repeat: no-repeat;
+
+  @media screen and (max-width: 1024px) {
+    padding: 24px 32px;
+  }
 }
 </style>
