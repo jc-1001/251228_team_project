@@ -76,7 +76,7 @@ const routes = [
     name: 'Medicine',
     component: () => import('@/views/client/Medicine/MedicineView.vue'),
     meta: {
-      // showTopIcon: true,
+      showTopIcon: true,
       // showHeader: true,
       showSidebar: true,
     }
@@ -85,6 +85,12 @@ const routes = [
     path: '/metrics',
     name: 'Metrics',
     component: () => import('@/views/client/Metrics.vue'),
+    meta: {
+      showTopIcon: true,
+      // showHeader: true,
+      showSidebar: true,
+    }
+
   },
   {
     path: '/profile',

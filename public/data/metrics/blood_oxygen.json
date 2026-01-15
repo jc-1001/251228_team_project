@@ -1,0 +1,26 @@
+[
+    {
+        "bloodOxygen": 96,
+        "recorded_at": "2025-12-30 14:30:00"
+    },
+    {
+        "bloodOxygen": 97,
+        "recorded_at": "2025-12-29 18:30:00"
+    },
+    {
+        "bloodOxygen": 97,
+        "recorded_at": "2025-12-28 15:30:00"
+    },
+    {
+        "bloodOxygen": 94,
+        "recorded_at": "2025-12-27 12:30:00"
+    },
+    {
+        "bloodOxygen": 98,
+        "recorded_at": "2025-12-26 08:30:00"
+    },
+    {
+        "bloodOxygen": 95,
+        "recorded_at": "2025-12-25 09:30:00"
+    }
+]
