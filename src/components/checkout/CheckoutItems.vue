@@ -10,7 +10,7 @@ const cartStore = useCartStore()
       購買清單
     </h3>
     <ul class="item_list">
-      <li v-for="item in cartStore.cartList" :key="item.id" class="item_row">
+      <li v-for="item in cartStore.checkoutList" :key="item.id" class="item_row">
         <div class="item_img">
           <img :src="item.image" alt="item.title">
         </div>
