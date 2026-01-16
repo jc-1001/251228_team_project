@@ -36,7 +36,7 @@ const onKeydown = (event) => {
 <template>
   <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0"> >
     <div class="medicine-modal__card" @click.stop>
-      <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">×</button>
+      <button  @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">×</button>
       <h1 class="medicine-modal__title">新增藥品</h1>
 
       <form class="medicine-modal__content" action="#" >
@@ -130,28 +130,20 @@ const onKeydown = (event) => {
     border-radius: $radius_md;
     box-shadow: $shadowDark;
     padding: 32px 40px;
-    display: grid;
-    grid-template-rows: auto 1fr;
+
     gap: 16px;
 
     .medicine-modal__title {
       @include title2;
       color: $primaryDark;
       text-align: center;
-      margin: 0;
+      margin-bottom: 16px;
+      
     }
 
     .medicine-modal__close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: none;
-      background-color: $primaryDark;
-      color: $white;
-      cursor: pointer;
+      @include closeButton;
+    
     }
 
     .medicine-modal__content {

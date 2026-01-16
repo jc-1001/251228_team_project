@@ -127,3 +127,17 @@ $radius_md: 10px;  // 中圓角
 $shadow: 0 4px 6px -1px rgba(0, 0, 0, .10);
 $shadowDark: 0 4px 6px -1px rgba(0, 0, 0, .15);
 $shadowHover: 0 4px 6px -1px rgba(0, 0, 0, .25);
+
+//關閉燈箱按鈕XX
+@mixin closeButton{
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background-color: $primaryDark;
+      color: $white;
+      cursor: pointer;
+}
