@@ -1,8 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import NewMedicineTime from '@/components/common/client/NewMedicineTime.vue'
 const activeTab = ref()
-
+activeTab.value = 0
 const tabs = [
   { key: 'morning', label: '早上' },
   { key: 'noon', label: '中午' },
