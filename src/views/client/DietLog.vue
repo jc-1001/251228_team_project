@@ -121,8 +121,9 @@ const getDayClass = (item) => {
         <!-- 主區塊 -->
         <div class="calendar-body">
             <div class="weekdays-grid">
-                <div v-for="day in ['週日', '週一', '週二', '週三', '週四', '週五', '週六']" :key="day" class="weekday">
-                {{ day }}
+                <div v-for="day in ['日', '一', '二', '三', '四', '五', '六']" :key="day" class="weekday">
+                    <span class="week-prefix">週</span>
+                    {{ day }}
                 </div>
             </div>
 
@@ -223,6 +224,10 @@ const getDayClass = (item) => {
     .weekday {
         color: $primaryDark;
         @include subtitle2(true);
+
+        .week-prefix {
+            display: inline;
+        }
     }
 
     .days-grid {
@@ -278,9 +283,11 @@ const getDayClass = (item) => {
     .calendar-footer {
         display: flex;
         justify-content: flex-end;
-        margin: 24px 80px;
+        width: 80%;
+        margin: 24px auto;
         gap: 40px;
         @include body1;
+        
     }
 
     .legend-item {
@@ -306,7 +313,7 @@ const getDayClass = (item) => {
 
     /* RWD */
 
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
 
         .diet-calendar {
             width: 95%;
@@ -334,7 +341,11 @@ const getDayClass = (item) => {
         }
 
         .weekday {
-            @include body1(true);
+            @include body2(true);
+
+            .week-prefix {
+                display: none;
+            }
         }
 
         .days-grid {
@@ -349,10 +360,7 @@ const getDayClass = (item) => {
         }
 
         .calendar-footer {
-            display: flex;
-            justify-content: flex-end;
-            margin: 24px 80px;
-            gap: 40px;
+            width: 70%;
             @include body3;
         }
         .dot {
