@@ -1,13 +1,16 @@
+
 <script setup>
+import { useUserStore } from '@/views/public/user';
+const userStore = useUserStore()
+
 import { ref } from 'vue';
 
-const username = ref('');
+const account = ref('');
 const password = ref('');
+const login = () => {
+    userStore.login(account.value, password.value)
+}
 
-const handleLogin = () => {
-  console.log('嘗試登入:', username.value);
-  // 在此處理登入邏輯
-};
 </script>
 
 <template>
@@ -22,17 +25,17 @@ const handleLogin = () => {
 
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="input-group">
-          <i class="icon-user"></i>
+          <!-- <i class="icon-user"></i> -->
           <input 
             type="text" 
-            v-model="username" 
+            v-model="account" 
             placeholder="輸入管理員帳號" 
             required 
           />
         </div>
 
         <div class="input-group">
-          <i class="icon-lock"></i>
+          <!-- <i class="icon-lock"></i> -->
           <input 
             type="password" 
             v-model="password" 
@@ -40,8 +43,9 @@ const handleLogin = () => {
             required 
           />
         </div>
-
+        {{ userStore.isLogin ? 1 : 0 }}
         <button type="submit" class="login-btn">登入</button>
+        {{ userStore.errorMsg}}
       </form>
     </div>
   </div>
