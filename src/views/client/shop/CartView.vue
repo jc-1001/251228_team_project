@@ -29,6 +29,10 @@ const isAllSelected = computed({
 </script>
 <template>
   <div class="cart_page">
+    <div class="breadcrumb">
+      <router-link :to="'/shop'" class="breadcrumb_location" v-if="cartStore.cartList.length > 0">&lt 繼續購物</router-link>
+    </div>
+    <h3 class="cart_page_title" v-if="cartStore.cartList.length > 0">我的購物車</h3>
     <section class="cart_container">
       <header class="cart_row cart_header" v-if="cartStore.cartList.length > 0">
         <div class="col_check"><input type="checkbox" v-model="isAllSelected"></div>
@@ -86,12 +90,24 @@ const isAllSelected = computed({
         </div>
       </footer>
     </section>
-
-
   </div>
 </template>
 <style lang="scss" scoped>
 .cart_page {
+  .breadcrumb_location {
+    display: inline-block;
+    margin-bottom: 12px;
+    @include body3;
+    transition: all .3s;
+    &:hover {
+      color: $primary;
+    }
+  }
+  .cart_page_title {
+    margin-bottom: 16px;
+    @include subtitle1(true);
+    color: $primaryDark;
+  }
   .cart_container {
     .cart_row {
       display: grid;
