@@ -1,10 +1,12 @@
 <script setup>
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
+import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 
 // 引入燈箱元件
 // 快速紀錄
-
+import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionModal.vue'
+import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
 
 const fastButton = ref([
@@ -70,6 +72,7 @@ const closePopup = () => {
 }
 </script>
 <template>
+  <!-- <HomeCommonModal /> -->
   <div class="home-container">
     <TheHeader
       title="早上好，陳小姐！"
@@ -98,6 +101,17 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
+              <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
+              <ConfirmActionModal
+                ref="productModal"
+                title="確定要下架此商品嗎？"
+                confirmText="商品已成功下架"
+                denyText="商品維持上架狀態"
+                icon="warning"
+                @confirmed="handleProductLogic"
+                :info="popupInfo"
+                @close="closePopup"
+              />
               <NewMedicineModals :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}

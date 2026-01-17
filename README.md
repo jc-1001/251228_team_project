@@ -30,10 +30,13 @@ src/
 │ │ └── modals/ # --- 全站共用燈箱 ---
 │ │ └── ConfirmBox.vue # 全域確認彈窗 (如: 確定刪除嗎?)
 │ ├── client/ # 【前台專屬使用組件】(如: 飲食卡片、藥盒零件...)
-│ │ └── modals/ # 【前台專屬燈箱】
+│ │ └── modals/ # 【前台專屬燈箱】(燈箱集中處)
+| | |└──successMessageModal.vue(成功彈窗)
+| | |└──confirmActionModal.vue(確認/取消彈窗)
+| | |└──errorMessageModal.vue(失敗彈窗)
 │ └── admin/ # 【後台專屬使用組件】(如: 管理表格、數據看板卡片)
 │
-├── data                  # 用來放物件資料，在還沒串資料庫前，用於前台資料展示
+├── data # 用來放物件資料，在還沒串資料庫前，用於前台資料展示
 │
 │
 ├── hooks/ # 組合式邏輯 (Composition API)
@@ -73,21 +76,5 @@ src/
 │ │ │ ├── MyPoints.vue # 11. 我的積分
 │ │ │ └── ProfileEdit.vue # 12. 個人資料
 │ │ └── Support.vue # 13. 幫助中心
-│ └── admin/ # --- 後台管理 (11 個獨立頁面) ---
-│ ├── LoginView.vue # 後台登入頁
-│ ├── BackDashboard.vue # 1. 數據儀表板
-│ ├── users/ # --- 使用者管理子模組 ---
-│ │ ├── UserList.vue # 2. 使用者管理(列表)
-│ │ └── UserDetail.vue# 3. 使用者詳細資訊
-│ ├── products/ # --- 商品管理子模組 ---
-│ │ ├── ProductList.vue # 4. 商品管理(列表)
-│ │ └── ProductEdit.vue # 5. 編輯商品資訊
-│ ├── orders/ # --- 訂單管理子模組 ---
-│ │ ├── OrderList.vue # 6. 訂單管理(列表)
-│ │ └── OrderDetail.vue # 7. 訂單詳細資訊
-│ └── notices/ # --- 系統通知子模組 ---
-│ ├── NoticeList.vue # 8. 系統通知(列表)
-│ └── NoticeEdit.vue # 9. 編輯系統通知
-
 ├── App.vue # 根組件
 └── main.js # 專案初始化
