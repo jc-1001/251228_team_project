@@ -1,5 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+
+const userStore = useUserStore()
 
 const form = ref({
   user: {
@@ -20,6 +23,106 @@ const form = ref({
   invoiceTaxId: '', // 統一編號 (三聯才要填)
   invoiceMobile: '' // 手機條碼 (載具才要填)
 })
+
+// 表單驗證資料
+const errors = ref({
+  user: {
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+  },
+  note: '',
+  paymentType: 'credit', 
+  creditInfo: { 
+    cardNumber: '',
+    expiry: '',
+    cvc: '',
+  },
+  invoiceType: 'personal',
+  invoiceTaxId: '',
+  invoiceMobile: ''
+})
+
+// 表單驗證函式
+const validateField = (fieldCategory, fieldName)=>{
+  let value = ''
+  if( fieldCategory === 'invoice' ) {
+    value = form.value[fieldName]
+  }else {
+    value = form.value[fieldCategory][fieldName]
+  }
+
+  let errorMsg = ''
+
+  // 1. 收件人
+  if(fieldCategory === 'user') {
+    switch (fieldName) {
+      case 'name':
+        if(!value) errorMsg = '請輸入真實姓名'
+        break
+      case 'phone':
+        if(!value) errorMsg = '請輸入手機號碼'
+        // Regex 正規表達式
+        else if (!/^09\d{8}$/.test(value) && !/^09\d{2}-\d{3}-\d{3}$/.test(value))
+          errorMsg = '格式錯誤 (09xx-xxx-xxx)'
+        break
+      case 'email':
+        if(!value) errorMsg = '請輸入Email'
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          errorMsg = 'Email 格式不正確'
+        break
+      case 'address':
+        if (!value) errorMsg = '請輸入地址'
+        break
+    }
+  }
+  // 2. 信用卡驗證
+  if(fieldCategory === 'creditInfo' && form.value.paymentType === 'credit') {
+    switch(fieldName) {
+      case 'cardNumber':
+        if(!value) errorMsg = '必填'
+        else if (!/^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/.test(value)) errorMsg = '卡號格式錯誤'
+        break 
+      case 'expiry':
+        if(!value) errorMsg = '必填'
+        else if (!/^\d{4}$/.test(value)) errorMsg = '4碼數字'
+        break
+      case 'cvc':
+        if(!value) errorMsg = '必填'
+        else if (!/^\d{3}$/.test(value)) errorMsg = '3碼數字'
+        break
+    }
+  }
+  // 3. 發票驗證
+  if(fieldCategory === 'invoice') {
+    if(fieldName === 'invoiceTaxId' && form.value.invoiceType === 'company') {
+      if(!value) errorMsg = '請輸入統編'
+      else if (!/^\d{8}$/.test(value)) errorMsg = '統編為8碼數字'
+    }
+    if(fieldName === 'invoiceTaxId' && form.value.invoiceType === 'mobile') {
+      if(!value) errorMsg = '請輸入載具號碼'
+      else if (!/^\/[0-9A-Z.+-]{7}$/.test(value)) errorMsg = '格式錯誤 (ex: /ABC+123)'
+    }
+  }
+
+  if(fieldCategory === 'invoice') {
+    errors.value[fieldName] = errorMsg
+  } else {
+    errors.value[fieldCategory][fieldName] = errorMsg
+  }
+}
+
+// 資料自動填入
+onMounted(()=>{
+  if(userStore.isLoggedIn) {
+    form.value.user.name = userStore.userData.name
+    form.value.user.phone = userStore.userData.phone
+    form.value.user.email = userStore.userData.email
+    form.value.user.address = userStore.userData.address
+  }
+})
+
 </script>
 <template>
   <div class="checkout_form">
@@ -30,24 +133,38 @@ const form = ref({
       </h3>
       <div class="form_grid">
         <div class="form_group">
-          <label for="name">姓名</label>
-          <input type="text" id="name" placeholder="請輸入真實姓名" v-model="form.user.name">
+          <div class="label_container">
+            <label for="name">姓名</label>
+            <span class="error_text" v-if="errors.user.name">{{ errors.user.name }}</span>
+          </div>
+            <input type="text" id="name" placeholder="請輸入真實姓名" v-model="form.user.name" :class="{'error_border' : errors.user.name}" @blur="validateField('user', 'name')" @input="validateField('user', 'name')">
         </div>
         <div class="form_group">
-          <label for="phone">手機號碼</label>
-          <input type="text" id="phone" placeholder="09xx-xxx-xxx" v-model="form.user.phone">
+          <div class="label_container">
+            <label for="phone">手機號碼</label>
+            <span class="error_text" v-if="errors.user.phone">{{ errors.user.phone }}</span>
+          </div>
+            <input type="text" id="phone" placeholder="09xx-xxx-xxx" v-model="form.user.phone" :class="{'error_border' : errors.user.phone}" @blur="validateField('user', 'phone')" @input="validateField('user', 'phone')">
         </div>
         <div class="form_group full_width">
-          <label for="email">電子信箱</label>
-          <input type="text" id="email" placeholder="example@email.com" v-model="form.user.email">
+          <div class="label_container">
+            <label for="email">電子信箱</label>
+            <span class="error_text" v-if="errors.user.email">{{ errors.user.email }}</span>
+          </div>
+            <input type="text" id="email" placeholder="example@email.com" v-model="form.user.email" :class="{'error_border' : errors.user.email}" @blur="validateField('user', 'email')" @input="validateField('user', 'email')">
         </div>
         <div class="form_group full_width">
-          <label for="address">地址</label>
-          <input type="text" id="address" placeholder="請輸入詳細地址" v-model="form.user.address">
+          <div class="label_container">           
+            <label for="address">地址</label>
+            <span class="error_text" v-if="errors.user.address">{{ errors.user.address }}</span>
+          </div>
+            <input type="text" id="address" placeholder="請輸入詳細地址" v-model="form.user.address" :class="{'error_border' : errors.user.address}" @blur="validateField('user', 'address')" @input="validateField('user', 'address')">
         </div>
         <div class="form_group full_width">
-          <label for="note">備註</label>
-          <textarea id="note" placeholder="請輸入備註事項" rows="3" v-model="form.note"></textarea>
+          <div class="label_container">      
+            <label for="note">備註</label>
+          </div>
+            <textarea id="note" placeholder="請輸入備註事項" rows="3" v-model="form.note"></textarea>
         </div>
       </div>
     </section>
@@ -66,16 +183,25 @@ const form = ref({
           </div>
           <div class="payment_details form_grid" v-if="form.paymentType === 'credit'">
             <div class="form_group full_width">
-              <label>卡號</label>
-              <input type="text" placeholder="0000 0000 0000 0000" v-model="form.creditInfo.cardNumber">
+              <div class="label_container">
+                <label>卡號</label>
+                <span class="error_text" v-if="errors.creditInfo.cardNumber">{{ errors.creditInfo.cardNumber }}</span>
+              </div>
+                <input type="text" placeholder="0000 0000 0000 0000" v-model="form.creditInfo.cardNumber" :class="{'error_border' : errors.creditInfo.cardNumber}" @blur="validateField('creditInfo', 'cardNumber')" @input="validateField('creditInfo', 'cardNumber')">
             </div>
             <div class="form_group">
-              <label>有效期限 (MM/YY)</label>
-              <input type="text" placeholder="MM/YY" v-model="form.creditInfo.expiry">
+              <div class="label_container">
+                <label>有效期限 (MM/YY)</label>
+                <span class="error_text" v-if="errors.creditInfo.expiry">{{ errors.creditInfo.expiry }}</span>
+              </div>
+                <input type="text" placeholder="MM/YY" v-model="form.creditInfo.expiry" :class="{'error_border' : errors.creditInfo.expiry}" @blur="validateField('creditInfo', 'expiry')" @input="validateField('creditInfo', 'expiry')">
             </div>
             <div class="form_group">
-              <label>卡片末三碼 (CVC)</label>
-              <input type="text" placeholder="123" v-model="form.creditInfo.cvc">
+              <div class="label_container">
+                <label>卡片末三碼 (CVC)</label>
+                <span class="error_text" v-if="errors.creditInfo.cvc">{{ errors.creditInfo.cvc }}</span>
+              </div>
+                <input type="text" placeholder="123" v-model="form.creditInfo.cvc" :class="{'error_border' : errors.creditInfo.cvc}" @blur="validateField('creditInfo', 'cvc')" @input="validateField('creditInfo', 'cvc')">
             </div>
           </div>
         </div>
@@ -109,12 +235,18 @@ const form = ref({
           </select>
         </div>
         <div class="form_group full_width" v-if="form.invoiceType === 'company'">
-          <label>統一編號</label>
-          <input type="text" placeholder="請輸入8碼統編" v-model="form.invoiceTaxId">
+          <div class="label_container">
+            <label>統一編號</label>
+            <span class="error_text" v-if="errors.invoiceTaxId">{{ errors.invoiceTaxId }}</span>
+          </div>
+            <input type="text" placeholder="請輸入8碼統編" v-model="form.invoiceTaxId" :class="{'error_border' : errors.invoiceTaxId}" @blur="validateField('invoice', 'invoiceTaxId')" @input="validateField('invoice', 'invoiceTaxId')">
         </div>
         <div class="form_group full_width" v-if="form.invoiceType === 'mobile'">
-          <label>手機條碼</label>
-          <input type="text" placeholder="/ABC+123" v-model="form.invoiceMobile">
+          <div class="label_container">
+            <label>手機條碼</label>
+            <span class="error_text" v-if="errors.invoiceMobile">{{ errors.invoiceMobile }}</span>
+          </div>
+            <input type="text" placeholder="/ABC+123" v-model="form.invoiceMobile" :class="{'error_border' : errors.invoiceMobile}" @blur="validateField('invoice', 'invoiceMobile')" @input="validateField('invoice', 'invoiceMobile')">
         </div>
       </div>
     </section>
@@ -167,10 +299,21 @@ const form = ref({
   flex-direction: column;
   gap: 6px;
 
-  label {
-    @include body3(true);
-    display: block;
+  .label_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    label {
+      @include body3(true);
+      display: block;
+    }
+    .error_text {
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: $accent;
+    }
   }
+  
 
   input, select, textarea {
     padding: 8px 12px;
@@ -184,6 +327,12 @@ const form = ref({
       border: 1px solid $primary;
       box-shadow: 0 0 0 3px rgba($primary, 0.1);
       outline: none;
+    }
+    &.error_border {
+      &:focus {
+        border-color: $accent;
+        box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.2);
+      }
     }
   }
   textarea {

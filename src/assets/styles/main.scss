@@ -1,10 +1,12 @@
 /* src/assets/main.scss */
 @import './reset';
 @import './variables';
+@import './swal-toast';
 
 body {
   font-family: 'Noto Sans TC', sans-serif;
   color: $black;
+  -webkit-font-smoothing: antialiased;
 }
 
 // Material Symbols icon 實心設定
