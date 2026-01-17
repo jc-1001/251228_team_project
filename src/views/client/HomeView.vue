@@ -9,13 +9,20 @@ import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionM
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
 
+// 六個燈箱初始化
+const isModalOpen = ref(false)
+const selectedData = ref({
+  time: '2026-01-17',
+  inputLabel: '使用者帳號',
+})
+
 const fastButton = ref([
-  { name: '吃藥', icon: 'medication' },
-  { name: '飲食日記', icon: 'restaurant' },
-  { name: '體重', icon: 'monitor_weight' },
-  { name: '血糖', icon: 'bloodtype' },
-  { name: '血氧', icon: 'water_drop' },
-  { name: '血壓/心律', icon: 'favorite' },
+  { name: '吃藥', icon: 'medication', type: 'medicine' },
+  { name: '飲食日記', icon: 'restaurant', type: 'diet' },
+  { name: '體重', icon: 'monitor_weight', type: 'weight' },
+  { name: '血糖', icon: 'bloodtype', type: 'glucose' },
+  { name: '血氧', icon: 'water_drop', type: 'oximetry' },
+  { name: '血壓/心律', icon: 'favorite', type: 'vitals' },
 ])
 // 今日狀態
 const todayLog = ref([
@@ -72,7 +79,6 @@ const closePopup = () => {
 }
 </script>
 <template>
-  <!-- <HomeCommonModal /> -->
   <div class="home-container">
     <TheHeader
       title="早上好，陳小姐！"
@@ -101,8 +107,15 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
+              <!-- <HomeCommonModal
+                :modelValue="true"
+                :title="`${popupInfo.name}`"
+                :data="popupInfo"
+                @update:modelValue="closePopup"
+                @close="closePopup"
+              /> -->
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
-              <ConfirmActionModal
+              <!-- <ConfirmActionModal
                 ref="productModal"
                 title="確定要下架此商品嗎？"
                 confirmText="商品已成功下架"
@@ -111,8 +124,8 @@ const closePopup = () => {
                 @confirmed="handleProductLogic"
                 :info="popupInfo"
                 @close="closePopup"
-              />
-              <NewMedicineModals :info="popupInfo" @close="closePopup" />
+              /> -->
+              <!-- <NewMedicineModals :info="popupInfo" @close="closePopup" /> -->
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
