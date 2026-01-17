@@ -90,7 +90,7 @@ const menuItems = ref([
 
 /* RWD */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .main-layout {
     margin-left: 0;
   }
@@ -98,7 +98,7 @@ const menuItems = ref([
   .hb-btn {
     display: flex;
     flex-direction: column;
-    margin: 4px 0 0 60px;
+    margin: 4px 0 0 16px;
     gap: 4px;
     position: fixed;
     width: 40px;

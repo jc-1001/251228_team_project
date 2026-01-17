@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-
 const routes = [
   {
     path: '/',
@@ -36,7 +35,7 @@ const routes = [
     name: 'shop',
     component: () => import('@/views/client/shop/ShopView.vue'),
     meta: {
-      // showHeader: true,
+      title: '樂活商城',
       showTopIcon: true,
       showSidebar: true,
     }
@@ -46,17 +45,17 @@ const routes = [
     name: 'productDetail',
     component: () => import('@/views/client/shop/ProductDetail.vue'),
     meta: {
-      // showHeader: true,
+      title: '商品詳情',
       showTopIcon: true,
       showSidebar: true,
-    }
+    },
   },
   {
     path: '/cart',
     name: 'cartView',
     component: () => import('@/views/client/shop/CartView.vue'),
     meta: {
-      // showHeader: true,
+      title: '購物車',
       showTopIcon: true,
       showSidebar: true,
     }
@@ -66,7 +65,7 @@ const routes = [
     name: 'checkoutView',
     component: () => import('@/views/client/shop/CheckoutView.vue'),
     meta: {
-      // showHeader: true,
+      title: '結帳',
       showTopIcon: true,
       showSidebar: true,
     }
@@ -133,6 +132,12 @@ const router = createRouter({
     // 始終滾到最上面
     return { top: 0 }
   },
+})
+
+router.beforeEach(async (to, from) => {
+	if( to.meta && to.meta.title){
+		document.title = `${to.meta.title} - UniCare`
+	}
 })
 
 export default router
