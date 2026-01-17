@@ -2,8 +2,8 @@
 
 import { ref, computed, onMounted } from "vue"
 
-import { publicApi } from "@/utils/publicApi"
-import { parsePublicFile } from "@/utils/parseFile";
+// import { publicApi } from "@/utils/publicApi"
+// import { parsePublicFile } from "@/utils/parseFile";
 
 import axios from 'axios'
 import TheHeader from "@/components/common/TheHeader.vue";
@@ -11,40 +11,40 @@ import status_label from "@/components/common/metrics/status_label.vue";
 
 const records__data = ref([])
 
-// 定義各項指標的配置 // 定義各項指標的配置 // 定義各項指標的配置
+// 定義各項指標的配置 
 const metricsConfig = {
     weight: {
         title: "體重",
         unit: "kg",
-        url: "/data/metrics/weight.json",
+        url: "data/metrics/weight.json",
         valueField: "weight",         // json 裡的數值欄位
         timeField: "recorded_at",
     },
     bloodOxygen: {
         title: "血氧",
         unit: "%",
-        url: "/data/metrics/blood_oxygen.json",
+        url: "data/metrics/blood_oxygen.json",
         valueField: "bloodOxygen",
         timeField: "recorded_at",
     },
     bloodSugar: {
         title: "血糖",
         unit: "mg/dL",
-        url: "/data/metrics/blood_sugar.json",
+        url: "data/metrics/blood_sugar.json",
         valueField: "bloodSugar",
         timeField: "recorded_at",
     },
     heartRate: {
         title: "心律",
         unit: "bpm",
-        url: "/data/metrics/heart_rate.json",
+        url: "data/metrics/heart_rate.json",
         valueField: "heartRate",
         timeField: "recorded_at",
     },
     bloodPressure: {
         title: "血壓",
         unit: "mmHg",
-        url: "/data/metrics/blood_pressure.json",
+        url: "data/metrics/blood_pressure.json",
         // 顯示用：SYS/DIA
         renderValue: (r) => `${r.SYS}/${r.DIA}`,
         timeField: "recorded_at",
@@ -60,7 +60,7 @@ const sugar = ref(110)
 const heartRate = ref(50)
 const pressure = ref({
     systolic: 140,
-    diastolic: 80
+    diastolic: 110
 })
 
 // 計算體重狀態 
@@ -224,7 +224,6 @@ const onSave = () => {
     // 存完清空
     setDefaultForm()
 }
-
 //選擇時間按鈕(右上)
 const activePeriod = ref("today") // 可選："today" | "week" | "month"
 
@@ -232,11 +231,10 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 </script>
 
 
-
 <template>
 
     <div class="metrics_container">
-        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="/src/assets/images/Banner_metrics.svg">
+        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="src/assets/images/Banner_metrics.svg">
         </TheHeader>
         <section class="values">
             <div class="header">
@@ -339,6 +337,8 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
             <!-- 🌟彈窗🌟 -->
             <div class="pop-overlay" v-if="isPopOpen" @click.self="closePop">
                 <div class="values__pop-window">
+                    <!-- 關閉按鈕 -->
+                    <div class="close-pop__btn" @click="closePop">X</div>
                     <!-- 🌟歷史記錄(左) -->
                     <div class="records">
                         <div class="records__table">
@@ -352,7 +352,6 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
                             <div class="records__list">
                                 <!-- 單筆紀錄 -->
                                 <div class="records__data" v-for="(record, index) in records__data" :key="index"
-                                    @click="fillFormFromRecord(record, index)"
                                     :class="{ 'records__data--active': selectedIndex === index }">
                                     <span class="records__value">
                                         {{
@@ -361,12 +360,13 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
                                                 : record[metricsConfig[activeMetricKey].valueField]
                                         }}
                                     </span>
-
                                     <span class="records__record_at">
                                         {{ record[metricsConfig[activeMetricKey].timeField] }}
                                     </span>
+                                    <span class="edit-icon" @click="fillFormFromRecord(record, index)">
+                                        <img src="@/assets/images/pen.svg" alt="">
+                                    </span>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -381,7 +381,6 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
                                 <span>日期:</span>
                                 <span>{{ formDate }}</span>
                             </div>
-                            <div class="close-pop__btn" @click="closePop">X</div>
                         </div>
                         <div class="input__content">
                             <div class="input__card">
@@ -494,7 +493,7 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 
 .value-card2 {
     width: calc(28% - 16px);
-    min-width: 190px;
+    min-width: 215px;
 }
 
 @media (max-width:1200px) {
@@ -503,12 +502,17 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
     }
 }
 
-@media(max-width:860px){
-    .value-card{
+@media(max-width:860px) {
+    .value-card {
         width: calc(33% - 13px);
     }
 }
 
+@media(max-width:530px) {
+    .value-card {
+        width: calc(50% - 10px)
+    }
+}
 
 .value-card__header {
     display: flex;
@@ -574,6 +578,7 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 }
 
 .values__pop-window {
+    position: relative;
     display: flex;
     width: 800px;
     height: 400px;
@@ -595,10 +600,12 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 //彈窗_左邊歷次記錄區
 //彈窗_左邊歷次記錄區
 .records {
-    width: 50%;
+    position: relative;
+    width: 60%;
     box-sizing: border-box;
     border: solid 1px;
     padding: 20px;
+    border: solid red;
 }
 
 .records__table {
@@ -652,8 +659,9 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
     display: flex;
     flex-direction: column;
     border: solid 1px;
-    width: 50%;
+    width: 40%;
     padding: 20px;
+    border: solid red;
 }
 
 .input__header {
@@ -677,7 +685,8 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 .close-pop__btn {
     position: absolute;
     z-index: 2;
-    right: 0;
+    right: 20px;
+    top: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -698,7 +707,7 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 .input__card {
     display: flex;
     flex-direction: column;
-    margin-bottom: 10px;
+    margin: 10px 0; 
     border: solid 1px;
 }
 
@@ -782,5 +791,36 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 .trends__btn--on {
     background-color: $primaryDark;
     color: white;
+}
+
+@media(max-width:860px) {
+    .values__pop-window {
+        flex-direction: column;
+        width: 90%;
+        height: 90%;
+    }
+
+    .records {
+        width: 100%;
+        height: 50%;
+    }
+
+    .records__table {
+        height: 100%;
+    }
+
+    .input {
+        width: 100%;
+        height: 50%;
+    }
+
+    .input__content{
+        flex-direction: row;
+        gap: 20px;
+    }
+    .input__card{
+        width: 50%;
+    }
+
 }
 </style>
