@@ -2,6 +2,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useCartStore } from '@/stores/cart';
+import { useToast } from '@/composable/useCartToast';
+
+// sweetalert2
+const { showToast } = useToast()
 
 // 設定props主要是為了宣告接收權，元件只會接收下面寫的幾種資料
 const props = defineProps({
@@ -58,7 +62,7 @@ const addToCart = () => {
 
   cartStore.addToCart(productObj)
 
-  alert(`${props.title} 已加入購物車！`)
+  showToast()
 }
 
 </script>
@@ -77,7 +81,9 @@ const addToCart = () => {
       <p class="product_price">${{ price }}</p>
       <div class="card_button">
         <!-- 筆記: @click.prevent(阻擋預設行為)/@click.stop(阻擋冒泡) 此為"事件修飾符" -->
-        <button type="button" @click.stop.prevent="addToCart" :disabled="isSoldOut" :class="{'disabled':isSoldOut}">{{ isSoldOut ? '補貨中' : '加入購物車' }}</button>
+        <button type="button" @click.stop.prevent="addToCart" :disabled="isSoldOut"
+          :class="{ 'disabled': isSoldOut }">{{
+            isSoldOut ? '補貨中' : '加入購物車' }}</button>
       </div>
     </div>
   </router-link>
@@ -165,9 +171,11 @@ const addToCart = () => {
         background-color: $primaryDark;
         cursor: pointer;
         transition: all .3s;
+
         &:hover {
           background-color: $primary;
         }
+
         &.disabled {
           background-color: $disabled;
           cursor: not-allowed;
