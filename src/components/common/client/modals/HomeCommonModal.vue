@@ -1,22 +1,48 @@
 <script setup>
 import TheInput from '../../TheInput.vue'
+const props = defineProps({
+  // 控制開關
+  modelValue: {
+    type: Boolean,
+    default: false,
+  },
+  // 標題
+  title: {
+    type: String,
+    default: '我是燈箱的標題',
+  },
+  // 傳入的資料（例如商品內容）
+  data: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const close = () => {
+  emit('update:modelValue', false)
+}
 </script>
 <template>
-  <main>
-    <div class="mask">
+  <main v-if="modelValue">
+    <div class="mask" @click.self="close">
       <div class="modal">
-        <div class="cancelled">
+        <div class="cancelled" @click="close" style="cursor: pointer">
           <span class="material-symbols-rounded"> cancel </span>
         </div>
         <div class="modal-text">
           <div class="modal-title">
-            <h2>我是標題</h2>
+            <h2>{{ title }}</h2>
           </div>
           <div class="time">
-            <h5>我是時間</h5>
+            <h5>{{ data.time || '暫無時間' }}</h5>
           </div>
         </div>
-        <div class="content"><TheInput title="輸入框標題" />我是燈箱內容aaaaaaaaaaaaa</div>
+        <div class="content">
+          <TheInput :title="data.inputLabel || '請輸入'" />
+          <slot></slot>
+        </div>
       </div>
     </div>
   </main>
@@ -49,6 +75,7 @@ import TheInput from '../../TheInput.vue'
   border-radius: 10px;
   border-width: $shadowDark;
   .cancelled {
+    color: $primaryDark;
     position: absolute;
     top: 16px;
     right: 16px;
@@ -60,6 +87,9 @@ import TheInput from '../../TheInput.vue'
     align-items: center;
     gap: 12px;
     margin: 20px 0;
+    .modal-title {
+      color: $primaryDark;
+    }
   }
 }
 </style>
