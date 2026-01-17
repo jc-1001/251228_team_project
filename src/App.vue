@@ -7,6 +7,7 @@ import TheTopIcon from './components/common/TheTopIcon.vue'
 // 背景圖引入區
 import shopBg from '@/assets/images/shop/bg_deco_pill.svg?url'
 import checkoutBg from '@/assets/images/shop/banner_img_checkout.svg?url'
+import DietBg from '@/assets/images/BG_diary.svg?url'
 
 const route = useRoute()
 
@@ -30,6 +31,9 @@ const changeBg = computed(() => {
   }
   if (route.path.includes('checkout')) {
     return { 'background-image': `url("${checkoutBg}")`, 'background-position': 'right 250px' }
+  }
+  if (route.path.includes('Diet')) {
+    return { 'background-image': `url("${DietBg}")`, 'background-position': 'right 250px' }
   }
   return {}
 })
