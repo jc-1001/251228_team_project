@@ -28,5 +28,9 @@ export default defineConfig({
         silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'if-function'],
       }
     }
-  }
+  },
+  base: '/cid101/ingrid/front/',
+  build: {
+    outDir: 'front'
+  },
 })
