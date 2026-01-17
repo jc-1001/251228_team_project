@@ -6,9 +6,6 @@ const routes = [
     name: 'Landing',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
-    meta: { showTopIcon: false },
-    meta: { showSidebar: true },
-
   },
   {
     path: '/HomeView',
@@ -126,6 +123,7 @@ const routes = [
       title: 'LoginView_B',
     }
   },
+
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
