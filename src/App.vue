@@ -6,13 +6,16 @@ import TheSidebar from './components/common/TheSidebar.vue'
 import TheTopIcon from './components/common/TheTopIcon.vue'
 // 背景圖引入區
 import shopBg from '@/assets/images/shop/bg_deco_pill.svg?url'
-
+import medicinebg from '@/assets/images/BG_mdc.svg?url'
 const route = useRoute()
 
 // 背景裝飾圖更換邏輯
 const changeBg = computed(() => {
   if (route.path.includes('shop')) {
     return { 'background-image': `url("${shopBg}")`, 'background-position': 'right 250px' }
+  }
+  if (route.path.includes('medicine')) {
+    return { 'background-image': `url("${medicinebg}")`, 'background-position': 'right 250px' }
   }
   return {}
 })
