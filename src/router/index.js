@@ -17,7 +17,7 @@ const routes = [
     meta: {
       showTopIcon: true,
       showSidebar: true,
-      title: '首頁',
+      title: '首頁戰情室',
     },
   },
   {
@@ -135,9 +135,9 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-	if( to.meta && to.meta.title){
-		document.title = `${to.meta.title} - UniCare`
-	}
+  if (to.meta && to.meta.title) {
+    document.title = `${to.meta.title} - UniCare`
+  }
 })
 
 export default router
