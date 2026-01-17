@@ -16,35 +16,35 @@ const metricsConfig = {
     weight: {
         title: "體重",
         unit: "kg",
-        url: "/data/metrics/weight.json",
+        url: "/cid101/ingrid/front/data/metrics/weight.json",
         valueField: "weight",         // json 裡的數值欄位
         timeField: "recorded_at",
     },
     bloodOxygen: {
         title: "血氧",
         unit: "%",
-        url: "/data/metrics/blood_oxygen.json",
+        url: "/cid101/ingrid/front/data/metrics/blood_oxygen.json",
         valueField: "bloodOxygen",
         timeField: "recorded_at",
     },
     bloodSugar: {
         title: "血糖",
         unit: "mg/dL",
-        url: "/data/metrics/blood_sugar.json",
+        url: "/cid101/ingrid/front/data/metrics/blood_sugar.json",
         valueField: "bloodSugar",
         timeField: "recorded_at",
     },
     heartRate: {
         title: "心律",
         unit: "bpm",
-        url: "/data/metrics/heart_rate.json",
+        url: "/cid101/ingrid/front/data/metrics/heart_rate.json",
         valueField: "heartRate",
         timeField: "recorded_at",
     },
     bloodPressure: {
         title: "血壓",
         unit: "mmHg",
-        url: "/data/metrics/blood_pressure.json",
+        url: "/cid101/ingrid/front/data/metrics/blood_pressure.json",
         // 顯示用：SYS/DIA
         renderValue: (r) => `${r.SYS}/${r.DIA}`,
         timeField: "recorded_at",
@@ -60,7 +60,7 @@ const sugar = ref(110)
 const heartRate = ref(50)
 const pressure = ref({
     systolic: 140,
-    diastolic: 80
+    diastolic: 110
 })
 
 // 計算體重狀態 
@@ -236,7 +236,7 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 <template>
 
     <div class="metrics_container">
-        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="/src/assets/images/Banner_metrics.svg">
+        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="/cid101/ingrid/front/src/assets/images/Banner_metrics.svg">
         </TheHeader>
         <section class="values">
             <div class="header">
@@ -494,7 +494,7 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
 
 .value-card2 {
     width: calc(28% - 16px);
-    min-width: 190px;
+    min-width: 215px;
 }
 
 @media (max-width:1200px) {
@@ -509,6 +509,11 @@ const activePeriod = ref("today") // 可選："today" | "week" | "month"
     }
 }
 
+@media(max-width:530px){
+    .value-card{
+        width: calc(50% - 10px)
+    }
+}
 
 .value-card__header {
     display: flex;
