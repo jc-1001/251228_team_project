@@ -87,8 +87,8 @@ const routes = [
     component: () => import('@/views/client/Metrics.vue'),
     meta: {
       showTopIcon: true,
-      // showHeader: true,
       showSidebar: true,
+      title: '身體數值中心',
     }
 
   },
