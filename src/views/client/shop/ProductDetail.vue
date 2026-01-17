@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import { useRoute } from 'vue-router'
 import { allProducts } from '@/data/shop/productInfo'
 import ProductGallery from '@/components/shop/ProductGallery.vue'

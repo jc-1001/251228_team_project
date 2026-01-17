@@ -52,11 +52,10 @@ const filteredProducts = computed(() => {
 
   .category_btns {
     display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     margin-bottom: 40px;
-    overflow-y: auto;
     padding-bottom: 4px;
-
     .category_btns_el {
       padding: 0 12px;
       width: 170px;
@@ -71,12 +70,14 @@ const filteredProducts = computed(() => {
       cursor: pointer;
       transition: all .3s;
       white-space: nowrap;
-
       &:hover,
       &.active {
         color: $white;
         background-color: $primary;
         border: 1px solid $primary;
+      }
+      @media screen and (max-width: 768px) {
+        flex: 1 1 170px;
       }
     }
   }

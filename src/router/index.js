@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-
 const routes = [
   {
     path: '/',
@@ -18,7 +17,7 @@ const routes = [
     meta: {
       showTopIcon: true,
       showSidebar: true,
-      title: '首頁',
+      title: '首頁戰情室',
     },
   },
   {
@@ -36,7 +35,7 @@ const routes = [
     name: 'shop',
     component: () => import('@/views/client/shop/ShopView.vue'),
     meta: {
-      // showHeader: true,
+      title: '樂活商城',
       showTopIcon: true,
       showSidebar: true,
     }
@@ -46,17 +45,17 @@ const routes = [
     name: 'productDetail',
     component: () => import('@/views/client/shop/ProductDetail.vue'),
     meta: {
-      // showHeader: true,
+      title: '商品詳情',
       showTopIcon: true,
       showSidebar: true,
-    }
+    },
   },
   {
     path: '/cart',
     name: 'cartView',
     component: () => import('@/views/client/shop/CartView.vue'),
     meta: {
-      // showHeader: true,
+      title: '購物車',
       showTopIcon: true,
       showSidebar: true,
     }
@@ -66,7 +65,7 @@ const routes = [
     name: 'checkoutView',
     component: () => import('@/views/client/shop/CheckoutView.vue'),
     meta: {
-      // showHeader: true,
+      title: '結帳',
       showTopIcon: true,
       showSidebar: true,
     }
@@ -87,8 +86,8 @@ const routes = [
     component: () => import('@/views/client/Metrics.vue'),
     meta: {
       showTopIcon: true,
-      // showHeader: true,
       showSidebar: true,
+      title: '身體數值中心',
     }
 
   },
@@ -119,6 +118,14 @@ const routes = [
       showSidebar: true,
     }
   },
+  {
+    path: '/loginTest',
+    name: 'LoginView_B',
+    component: () => import('@/views/public/LoginView_B.vue'),
+    meta: {
+      title: 'LoginView_B',
+    }
+  },
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
@@ -133,6 +140,12 @@ const router = createRouter({
     // 始終滾到最上面
     return { top: 0 }
   },
+})
+
+router.beforeEach(async (to, from) => {
+  if (to.meta && to.meta.title) {
+    document.title = `${to.meta.title} - UniCare`
+  }
 })
 
 export default router

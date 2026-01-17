@@ -3,6 +3,10 @@ import { ref, computed } from 'vue'
 import QuantitySelector from '@/components/shop/QuantitySelector.vue'
 // 引入pinia的store
 import { useCartStore } from '@/stores/cart'
+import { useToast } from '@/composable/useCartToast';
+
+// sweetalert2
+const { showToast } = useToast()
 
 const props = defineProps({
   product: {
@@ -33,7 +37,7 @@ const isSoldOut = computed(()=>{
 const handleAddToCart = ()=>{
   cartStore.addToCart(props.product, buyCount.value)
   
-  alert('成功加入購物車!')
+  showToast()
 }
 
 // 處理暫存購買數量

@@ -7,7 +7,7 @@ const currentViewDate = ref(dayjs());
 const filledDates = ref(['2025-11-30','2025-12-01', '2025-12-02', '2025-12-03', '2025-12-04', '2025-12-05','2025-12-06', '2025-12-08', '2025-12-09', '2025-12-10', '2025-12-11', '2025-12-12', '2025-12-13', '2025-12-14', '2025-12-15', '2025-12-17', '2025-12-18', '2025-12-19']);//未來需調整
 
 const isYearPickerOpen = ref(false);
-// 產生前後10年list
+// 產生後5年list
 const years = computed(() => {
     const startYear = 2025;
     return Array.from({ length: 6 }, (_, i) => startYear + i);
@@ -35,7 +35,7 @@ const calendarDays = computed(() => {
         });
     }
 
-    // 本月的日子
+    // 本月的日期
     for (let i = 1; i <= daysInMonth; i++) {
         days.push({
             date: startOfMonth.date(i),
@@ -52,7 +52,7 @@ const calendarDays = computed(() => {
     return days;
 });
 
-// 切換月份的功能
+// 切換月份功能
 const prevMonth = () => {
     const prevDate = currentViewDate.value.subtract(1, 'month');
     // 年份小於2025不執行
@@ -112,7 +112,7 @@ const getDayClass = (item) => {
                     {{ currentViewDate.format('YYYY') }}
                 </div>
                 <div v-if="isYearPickerOpen" class="year-dropdown">
-                    <div v-for="y in years" :key="y" class="year-option" @click="changeYear(y)">
+                    <div v-for="y in years" :key="y" class="year-option" @click="selectYear(y)">
                         {{ y }}
                     </div>
                 </div>
@@ -359,7 +359,7 @@ const getDayClass = (item) => {
             display: flex;
             width: 24px;
             height: 24px;
-    }
+        }
 
     }
 
