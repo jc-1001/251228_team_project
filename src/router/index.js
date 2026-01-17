@@ -6,9 +6,6 @@ const routes = [
     name: 'Landing',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
-    meta: { showTopIcon: false },
-    meta: { showSidebar: true },
-
   },
   {
     path: '/HomeView',
