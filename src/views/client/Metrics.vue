@@ -1,52 +1,107 @@
 <script setup>
 
 import { ref, computed, onMounted } from "vue"
+
+// import { publicApi } from "@/utils/publicApi"
+// import { parsePublicFile } from "@/utils/parseFile";
+
 import axios from 'axios'
 import TheHeader from "@/components/common/TheHeader.vue";
-
+import status_label from "@/components/common/metrics/status_label.vue";
 
 const records__data = ref([])
 
-// 定義各項指標的配置 // 定義各項指標的配置 // 定義各項指標的配置
+// 定義各項指標的配置 
 const metricsConfig = {
     weight: {
         title: "體重",
         unit: "kg",
-        url: "/data/metrics/weight.json",
+        url: "data/metrics/weight.json",
         valueField: "weight",         // json 裡的數值欄位
         timeField: "recorded_at",
     },
     bloodOxygen: {
         title: "血氧",
         unit: "%",
-        url: "/data/metrics/blood_oxygen.json",
+        url: "data/metrics/blood_oxygen.json",
         valueField: "bloodOxygen",
         timeField: "recorded_at",
     },
     bloodSugar: {
         title: "血糖",
         unit: "mg/dL",
-        url: "/data/metrics/blood_sugar.json",
+        url: "data/metrics/blood_sugar.json",
         valueField: "bloodSugar",
         timeField: "recorded_at",
     },
     heartRate: {
         title: "心律",
         unit: "bpm",
-        url: "/data/metrics/heart_rate.json",
+        url: "data/metrics/heart_rate.json",
         valueField: "heartRate",
         timeField: "recorded_at",
     },
     bloodPressure: {
         title: "血壓",
         unit: "mmHg",
-        url: "/data/metrics/blood_pressure.json",
+        url: "data/metrics/blood_pressure.json",
         // 顯示用：SYS/DIA
         renderValue: (r) => `${r.SYS}/${r.DIA}`,
         timeField: "recorded_at",
     },
 }
 
+//各項數值
+const weight = ref(80)
+const height = ref(175)
+
+const oxygen = ref(96)
+const sugar = ref(110)
+const heartRate = ref(50)
+const pressure = ref({
+    systolic: 140,
+    diastolic: 110
+})
+
+// 計算體重狀態 
+const bmi = computed(() => {
+    return weight.value / ((height.value / 100) ** 2)
+})
+console.log(bmi.value)
+
+const weightStatus = computed(() => {
+    if (bmi.value >= 24) return "high"
+    if (bmi.value < 18.5) return "low"
+    return "normal"
+})
+
+//計算血氧狀態
+const oxygenStatus = computed(() => {
+    if (oxygen.value < 95) return "low"
+    return "normal"
+})
+
+//計算血糖狀態
+const sugarStatus = computed(() => {
+    if (sugar.value >= 100) return "high"
+    if (sugar.value < 70) return "low"
+    return "normal"
+})
+
+//計算心律狀態
+const heartStatus = computed(() => {
+    if (heartRate.value > 100) return "high"
+    if (heartRate.value < 60) return "low"
+    return "normal"
+})
+
+//計算血壓狀態
+const pressureStatus = computed(() => {
+    const { systolic, diastolic } = pressure.value
+    if (systolic >= 140 || diastolic >= 90) return "high"
+    if (systolic < 90 || diastolic < 60) return "low"
+    return "normal"
+})
 
 // 彈窗
 // 彈窗
@@ -169,56 +224,37 @@ const onSave = () => {
     // 存完清空
     setDefaultForm()
 }
-
 //選擇時間按鈕(右上)
-const activePeriod = ref("today") 
-// 可選："today" | "week" | "month"
+const activePeriod = ref("today") // 可選："today" | "week" | "month"
 
-// 存五個指標的原始資料
-const metricsRaw=ref({
-    weight:[],
-    bloodOxygen:[],
-    bloodSugar:[],
-    heartRate:[],
-    bloodPressure:[],
-})
 
 </script>
-
 
 
 <template>
 
     <div class="metrics_container">
-        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="/src/assets/images/Banner_metrics.svg">
+        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="src/assets/images/Banner_metrics.svg">
         </TheHeader>
         <section class="values">
             <div class="header">
                 <div class="title">數值總覽</div>
                 <div class="period-select">
-                    <span 
-                    class="period-select__btn" 
-                    :class="{'period-select__btn--on':activePeriod=='today'}"
-                    @click="activePeriod='today'"
-                    >
+                    <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'today' }"
+                        @click="activePeriod = 'today'">
                         今天
                     </span>
-                    <span 
-                    class="period-select__btn" 
-                    :class="{'period-select__btn--on':activePeriod=='week'}" 
-                    @click="activePeriod='week'"
-                    >
+                    <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'week' }"
+                        @click="activePeriod = 'week'">
                         一周
                     </span>
-                    <span 
-                    class="period-select__btn" 
-                    :class="{'period-select__btn--on':activePeriod=='month'}"
-                    @click="activePeriod='month'"
-                    >
+                    <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'month' }"
+                        @click="activePeriod = 'month'">
                         30天
                     </span>
                 </div>
             </div>
+            <!-- 燈箱區 -->
             <div class="values__card-area">
                 <div class="value-card">
                     <div class="value-card__header">
@@ -226,11 +262,11 @@ const metricsRaw=ref({
                         <div class="value-card__arrow" @click="openPop('weight')">></div>
                     </div>
                     <div class="value-card__content">
-                        <span class="value-card__value" id="weight">80</span>
+                        <span class="value-card__value" id="weight">{{ weight }}</span>
                         <span class="value-card__unit">kg</span>
                     </div>
                     <div class="value-card__footer">
-                        <span class="value-card__tag">體重過重</span>
+                        <status_label type="weight" :status="weightStatus" />
                         <div class="value-card__icon">↗</div>
                     </div>
                 </div>
@@ -240,11 +276,11 @@ const metricsRaw=ref({
                         <div class=" value-card__arrow" @click="openPop('bloodOxygen')">></div>
                     </div>
                     <div class="value-card__content">
-                        <span class="value-card__value" id="blood-oxygen">95</span>
+                        <span class="value-card__value" id="blood-oxygen">{{ oxygen }}</span>
                         <span class="value-card__unit">%</span>
                     </div>
                     <div class="value-card__footer">
-                        <span class="value-card__tag">體重過重</span>
+                        <status_label type="oxygen" :status="oxygenStatus" />
                         <div class="value-card__icon">↗</div>
                     </div>
                 </div>
@@ -254,11 +290,11 @@ const metricsRaw=ref({
                         <div class="value-card__arrow" @click="openPop('bloodSugar')">></div>
                     </div>
                     <div class="value-card__content">
-                        <span class="value-card__value" id="blood-sugar">87</span>
+                        <span class="value-card__value" id="blood-sugar">{{ sugar }}</span>
                         <span class="value-card__unit">mg/dL</span>
                     </div>
                     <div class="value-card__footer">
-                        <span class="value-card__tag">體重過重</span>
+                        <status_label type="sugar" :status="sugarStatus" />
                         <div class="value-card__icon">↗</div>
                     </div>
                 </div>
@@ -268,11 +304,11 @@ const metricsRaw=ref({
                         <div class="value-card__arrow" @click="openPop('heartRate')">></div>
                     </div>
                     <div class="value-card__content">
-                        <span class="value-card__value" id="heart-rhythm">114</span>
+                        <span class="value-card__value" id="heart-rhythm">{{ heartRate }}</span>
                         <span class="value-card__unit">bpm</span>
                     </div>
                     <div class="value-card__footer">
-                        <span class="value-card__tag">體重過重</span>
+                        <status_label type="heartRate" :status="heartStatus" />
                         <div class="value-card__icon">↗</div>
                     </div>
                 </div>
@@ -282,22 +318,28 @@ const metricsRaw=ref({
                         <div class="value-card__arrow " @click="openPop('bloodPressure')">></div>
                     </div>
                     <div class="value-card__content">
-                        <span class="value-card__value" id="heart-pressure__high">120</span>
+                        <span class="value-card__value" id="heart-pressure__high">
+                            {{ pressure.systolic }}
+                        </span>
                         <span>/</span>
-                        <span class="value-card__value" id="heart-pressure__low">80</span>
+                        <span class="value-card__value" id="heart-pressure__low">
+                            {{ pressure.diastolic }}
+                        </span>
                         <span class="value-card__unit">mmHg</span>
                     </div>
                     <div class="value-card__footer">
-                        <span class="value-card__tag">體重過重</span>
+                        <status_label type="pressure" :status="pressureStatus" />
                         <div class="value-card__icon">↗</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 彈窗 -->
+            <!-- 🌟彈窗🌟 -->
             <div class="pop-overlay" v-if="isPopOpen" @click.self="closePop">
                 <div class="values__pop-window">
-                    <!-- 歷史記錄(左) -->
+                    <!-- 關閉按鈕 -->
+                    <div class="close-pop__btn" @click="closePop">X</div>
+                    <!-- 🌟歷史記錄(左) -->
                     <div class="records">
                         <div class="records__table">
                             <div class="records__title">
@@ -310,7 +352,6 @@ const metricsRaw=ref({
                             <div class="records__list">
                                 <!-- 單筆紀錄 -->
                                 <div class="records__data" v-for="(record, index) in records__data" :key="index"
-                                    @click="fillFormFromRecord(record, index)"
                                     :class="{ 'records__data--active': selectedIndex === index }">
                                     <span class="records__value">
                                         {{
@@ -319,17 +360,18 @@ const metricsRaw=ref({
                                                 : record[metricsConfig[activeMetricKey].valueField]
                                         }}
                                     </span>
-
                                     <span class="records__record_at">
                                         {{ record[metricsConfig[activeMetricKey].timeField] }}
                                     </span>
+                                    <span class="edit-icon" @click="fillFormFromRecord(record, index)">
+                                        <img src="@/assets/images/pen.svg" alt="">
+                                    </span>
                                 </div>
-
                             </div>
                         </div>
                     </div>
 
-                    <!-- 輸入區(右) -->
+                    <!-- 🌟輸入區(右) -->
                     <form class="input" @submit.prevent="onSave">
                         <div class="input__header">
                             <div class="input__title">
@@ -339,7 +381,6 @@ const metricsRaw=ref({
                                 <span>日期:</span>
                                 <span>{{ formDate }}</span>
                             </div>
-                            <div class="close-pop__btn" @click="closePop">X</div>
                         </div>
                         <div class="input__content">
                             <div class="input__card">
@@ -407,7 +448,6 @@ const metricsRaw=ref({
     line-height: $lineHeightSub;
     font-weight: $fontWeightRegular;
     letter-spacing: $letterSpacing;
-    border: solid 1px;
 }
 
 .period-select {
@@ -434,39 +474,56 @@ const metricsRaw=ref({
 
 .values__card-area {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
-    border: solid 1px;
 }
 
 .value-card {
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     box-sizing: border-box;
+    justify-content: space-between;
     padding: 10px;
     background-color: white;
-    width: 150px;
+    width: calc(18% - 16px);
     height: 120px;
     border-radius: 10px;
 }
 
 .value-card2 {
-    width: 200px;
+    width: calc(28% - 16px);
+    min-width: 215px;
+}
+
+@media (max-width:1200px) {
+    .value-card {
+        width: calc(25% - 15px);
+    }
+}
+
+@media(max-width:860px) {
+    .value-card {
+        width: calc(33% - 13px);
+    }
+}
+
+@media(max-width:530px) {
+    .value-card {
+        width: calc(50% - 10px)
+    }
 }
 
 .value-card__header {
     display: flex;
     justify-content: space-between;
-    border: solid 1px;
     font-size: 16px;
     line-height: $lineHeightSub;
     font-weight: $fontWeightRegular;
     letter-spacing: $letterSpacing;
-    border: solid 1px gray;
 }
 
 .value-card__arrow {
-    border: solid 1px;
     cursor: pointer;
     transition: ease;
 }
@@ -479,7 +536,7 @@ const metricsRaw=ref({
 .value-card__content {
     display: flex;
     align-items: center;
-    border: solid 1px gray;
+    border: solid 1px;
 }
 
 .value-card__value {
@@ -497,7 +554,6 @@ const metricsRaw=ref({
 .value-card__footer {
     display: flex;
     justify-content: space-between;
-    border: solid 1px gray;
 }
 
 .value-card__tag {
@@ -522,6 +578,7 @@ const metricsRaw=ref({
 }
 
 .values__pop-window {
+    position: relative;
     display: flex;
     width: 800px;
     height: 400px;
@@ -543,10 +600,12 @@ const metricsRaw=ref({
 //彈窗_左邊歷次記錄區
 //彈窗_左邊歷次記錄區
 .records {
-    width: 50%;
+    position: relative;
+    width: 60%;
     box-sizing: border-box;
     border: solid 1px;
     padding: 20px;
+    border: solid red;
 }
 
 .records__table {
@@ -600,8 +659,9 @@ const metricsRaw=ref({
     display: flex;
     flex-direction: column;
     border: solid 1px;
-    width: 50%;
+    width: 40%;
     padding: 20px;
+    border: solid red;
 }
 
 .input__header {
@@ -622,10 +682,11 @@ const metricsRaw=ref({
     font-size: 14px;
 }
 
-.close-pop__btn{
+.close-pop__btn {
     position: absolute;
     z-index: 2;
-    right: 0;
+    right: 20px;
+    top: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -634,7 +695,7 @@ const metricsRaw=ref({
     color: white;
     background-color: $grayDark;
     border-radius: 100px;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .input__content {
@@ -646,7 +707,7 @@ const metricsRaw=ref({
 .input__card {
     display: flex;
     flex-direction: column;
-    margin-bottom: 10px;
+    margin: 10px 0; 
     border: solid 1px;
 }
 
@@ -730,5 +791,36 @@ const metricsRaw=ref({
 .trends__btn--on {
     background-color: $primaryDark;
     color: white;
+}
+
+@media(max-width:860px) {
+    .values__pop-window {
+        flex-direction: column;
+        width: 90%;
+        height: 90%;
+    }
+
+    .records {
+        width: 100%;
+        height: 50%;
+    }
+
+    .records__table {
+        height: 100%;
+    }
+
+    .input {
+        width: 100%;
+        height: 50%;
+    }
+
+    .input__content{
+        flex-direction: row;
+        gap: 20px;
+    }
+    .input__card{
+        width: 50%;
+    }
+
 }
 </style>

@@ -28,7 +28,13 @@ const menuItems = ref([
       <img :src="sidebarLogo" alt="UniCare品牌logo" />
     </div>
 
-    <RouterLink v-for="item in menuItems" :key="item.name" :to="item.path" class="menu_item" @click="isSidebarOpen = false">
+    <RouterLink
+      v-for="item in menuItems"
+      :key="item.name"
+      :to="item.path"
+      class="menu_item"
+      @click="isSidebarOpen = false"
+    >
       <span class="material-symbols-rounded menu_icon">{{ item.icon }}</span>
       <span class="menu_name">{{ item.name }}</span>
     </RouterLink>
@@ -56,7 +62,9 @@ const menuItems = ref([
   top: 0;
   overflow: hidden;
 
-  .hamburger-btn { display: none; }
+  .hamburger-btn {
+    display: none;
+  }
 
   .sidebar_logo {
     padding-left: 24px;
@@ -90,7 +98,7 @@ const menuItems = ref([
 
 /* RWD */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .main-layout {
     margin-left: 0;
   }
@@ -98,7 +106,7 @@ const menuItems = ref([
   .hb-btn {
     display: flex;
     flex-direction: column;
-    margin: 4px 0 0 60px;
+    margin: 4px 0 0 16px;
     gap: 4px;
     position: fixed;
     width: 40px;
@@ -133,7 +141,6 @@ const menuItems = ref([
     &.is-mobile-open {
       transform: translateX(0);
     }
-
   }
   .sidebar-overlay {
     position: fixed;

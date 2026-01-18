@@ -20,6 +20,11 @@ export const useCartStore = defineStore('cart', () => {
     return cartList.value.filter(item => item.checked).reduce((total, item) => total + (item.price * item.qty), 0)
   })
 
+  // 篩選有打勾的商品進入結帳頁
+  const checkoutList = computed(()=>{
+    return cartList.value.filter(item => item.checked)
+  })
+
   // 3. Action (動作)：
 
   // 加入購物車
@@ -81,6 +86,7 @@ export const useCartStore = defineStore('cart', () => {
     cartList,
     cartCount,
     totalAmount,
+    checkoutList,
     addToCart,
     removeProduct,
     updateQty,

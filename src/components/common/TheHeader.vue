@@ -47,6 +47,12 @@ defineProps({
   color: $primaryDark;
   padding: 0px 0 10px 30px;
   letter-spacing: 5%;
+  @media (max-width: 765px) {
+    font-size: 16px;
+  }
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 }
 .subtext {
   line-height: $lineHeightSub;
@@ -55,6 +61,12 @@ defineProps({
   font-size: 16px;
   padding: 0 30px;
   letter-spacing: 5%;
+  @media (max-width: 765px) {
+    font-size: 12px;
+  }
+  @media (max-width: 480px) {
+    font-size: 10px;
+  }
 }
 .illustration {
   padding: 20px 0px 0 0;

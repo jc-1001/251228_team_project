@@ -17,8 +17,7 @@ const changeImg = (url)=>{
 watch(()=> props.gallery,(newVal)=>{
   if(newVal.length > 0) {
     currentImage.value = newVal[0].large
-  }
-},{immediate:true})
+  }},{immediate:true})
 
 </script>
 <template>

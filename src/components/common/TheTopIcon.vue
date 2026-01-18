@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const topIcons = ref([
   {
@@ -7,12 +7,12 @@ const topIcons = ref([
     id: 'notice',
     name: '提醒',
     icon: 'notifications',
-    path: false,
+    path: null,
     badge: true,
     hasDropdown: true,
   },
   { name: '購物車', icon: 'shopping_cart', path: '/cart', badge: 3 },
-  { name: '頭像', icon: 'person', path: '/profile', badge: 0 }, // 原本是account_circle，但因為預設就是空心的，所以先改成person
+  { name: '頭像', icon: 'person', path: '/profile', badge: false }, // 原本是account_circle，但因為預設就是空心的，所以先改成person
 ])
 // 個人通知假資料(正式要刪)
 const notifications = ref([
@@ -34,6 +34,26 @@ const notifications = ref([
   },
 ])
 const isDropdownOpen = ref(false) // 控制選單顯示
+
+// 鈴鐺紅點消失及訊息已讀後消失
+
+// 計算未讀訊息
+const unreadCount = computed(() => {
+  return notifications.value.filter((n) => !n.isRead).length
+})
+// 點擊訊息後、標記為已讀
+const markAsRead = (note) => {
+  note.isRead = true
+  // 已讀後訊息消失邏輯應是「保留 id 不等於當前點擊 id 的訊息」
+  notifications.value = notifications.value.filter((n) => n.id !== note.id)
+}
+// 判斷顯示紅點與否
+const showBadge = (item) => {
+  if (item.id === 'notice') {
+    return unreadCount.value > 0 //未讀顯示紅點
+  }
+  return typeof item.badge === 'number' && item.badge > 0
+}
 </script>
 <template>
   <!-- 頂部icon -->
@@ -42,17 +62,22 @@ const isDropdownOpen = ref(false) // 控制選單顯示
       v-for="item in topIcons"
       :key="item.name"
       class="icon-circle"
-      @click="$router.push(item.path)"
+      @click="item.path ? $router.push(item.path) : null"
       @mouseenter="item.id === 'notice' ? (isDropdownOpen = true) : null"
       @mouseleave="isDropdownOpen = false"
     >
       <span class="material-symbols-rounded">{{ item.icon }}</span>
       <!-- 數字紅點 -->
-      <div v-if="typeof item.badge === 'number' && item.badge > 0" class="badge-number">
-        {{ item.badge > 99 ? '99+' : item.badge }}
-      </div>
-      <!-- 僅紅點 -->
-      <div v-else-if="item.badge === true" class="badge-dot"></div>
+      <template v-if="showBadge(item)">
+        <div v-if="typeof item.badge === 'number'" class="badge-number">
+          {{ item.badge > 99 ? '99+' : item.badge }}
+        </div>
+
+        <!-- 僅紅點 -->
+        <div v-else-if="item.badge === true" class="badge-dot"></div
+      ></template>
+      <!-- 點擊訊息跳出燈箱 -->
+      <div class="notice"></div>
       <!-- 個人通知清單 -->
       <Transition name="fade">
         <div
@@ -66,13 +91,14 @@ const isDropdownOpen = ref(false) // 控制選單顯示
               v-for="note in notifications"
               :key="note.id"
               :class="{ 'is-read': note.isRead }"
-              @click="note.isRead = true"
+              @click="markAsRead(note)"
             >
               <div class="note-title">{{ note.title }}</div>
               <div class="note-content">{{ note.content }}</div>
               <div class="note-time">{{ note.time }}</div>
             </li>
           </ul>
+          <div v-if="notifications.length === 0" class="empty-msg">目前沒有新訊息</div>
         </div>
       </Transition>
     </div>
@@ -142,6 +168,10 @@ const isDropdownOpen = ref(false) // 控制選單顯示
   box-shadow: $shadowDark;
   // padding: 15px;
   z-index: 100;
+  @media (max-width: 765px) {
+    width: 250px;
+    right: auto;
+  }
 
   .dropdown-header {
     color: $white;
@@ -174,7 +204,12 @@ const isDropdownOpen = ref(false) // 控制選單顯示
     }
   }
 }
-
+.empty-msg {
+  padding: 20px;
+  text-align: center;
+  background-color: $gray;
+  color: $grayDark;
+}
 // 選單動畫
 .fade-enter-active,
 .fade-leave-active {
