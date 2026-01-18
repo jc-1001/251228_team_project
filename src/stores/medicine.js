@@ -8,45 +8,62 @@ export const useMedicineStore = defineStore('medicine', () => {
   function fetchItems() {
     // const userStore = useUserStore()
     // const userId = userStore.currentUserId
-    // demo用的假資料 之後會改成後端撈
+    // demo data only
     items.value = [
       {
         id: 1,
-        name: '維他命C',
-        dayEat: 1,
-        oneTime: '1',
+        name: 'Item A',
         image: '/src/assets/images/mdc1_1.jpg',
+        eatTimes: 'after',
+        oneTime: '1',
+        timeCourse: ['morning', 'evening'],
+        checked: false,
       },
       {
         id: 2,
-        name: '止痛藥',
-        dayEat: 2,
-        oneTime: '2',
+        name: 'Item B',
         image: '/src/assets/images/mdc1_2.jpg',
+        eatTimes: 'after',
+        oneTime: '2',
+        timeCourse: ['bedtime'],
+        checked: false,
       },
       {
         id: 3,
-        name: '感冒藥',
-        dayEat: 3,
-        oneTime: '1',
+        name: 'Item C',
         image: '/src/assets/images/mdc1_3.jpg',
+        eatTimes: 'after',
+        oneTime: '1',
+        timeCourse: ['morning', 'noon', 'evening', 'bedtime'],
+        checked: false,
       },
       {
         id: 4,
-        name: '魚油',
-        dayEat: 1,
-        oneTime: '3',
+        name: 'Item D',
         image: '/src/assets/images/mdc1_4.jpg',
+        eatTimes: 'after',
+        oneTime: '3',
+        timeCourse: ['morning', 'bedtime'],
+        checked: false,
       },
-    {
+      {
         id: 5,
-        name: '鈣片',
-        dayEat: 2,
-        oneTime: '2',
+        name: 'Item E',
         image: '/src/assets/images/mdc1_3.jpg',
-    }
-
+        eatTimes: 'after',
+        oneTime: '2',
+        timeCourse: ['morning'],
+        checked: false,
+      },
     ]
   }
-  return { items, fetchItems}
+
+  function addItem(item) {
+    items.value.unshift({
+      id: Date.now(),
+      ...item,
+    })
+  }
+
+  return { items, fetchItems, addItem }
 })
