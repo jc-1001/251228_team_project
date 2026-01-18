@@ -3,7 +3,6 @@ import { ref } from 'vue'
 
 // 定義功能入口資料
 const portals = ref([
-  // 請確保資料夾內有 front.png 和 back.png (或修改為您的正確檔名)
   { id: 1, title: '前台', iconName: 'front.png', path: '/HomeView' },
   { id: 2, title: '後台', iconName: 'back.png', path: '/AdminLogin' }
 ])

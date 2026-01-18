@@ -19,7 +19,8 @@ onMounted(async () => {
 // 2. 點擊導向更新頁面，並帶入使用者 ID
 const goToUpdate = (id) => {
   router.push({
-    path: `/updateUserStatus/${id}` // 確保路由設定有接收參數，如 /updateUserStatus/:id
+    // path: `/updateUserStatus/${id}` // 確保路由設定有接收參數，如 /updateUserStatus/:id
+    path: `/updateUserStatus` 
   })
 }
 </script>
