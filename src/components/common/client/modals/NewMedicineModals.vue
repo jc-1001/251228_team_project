@@ -6,9 +6,9 @@ import { useMedicineStore } from '@/stores/medicine.js'
 
 const activeTab = ref(0)
 const tabs = [
-  { key: 'morning', label: 'Morning' },
-  { key: 'noon', label: 'Noon' },
-  { key: 'evening', label: 'Evening' },
+  { key: '早上', label: '早上' },
+  { key: '中午', label: '中午' },
+  { key: '晚上', label: '晚上' },
 ]
 
 const medicineStore = useMedicineStore()
@@ -46,11 +46,11 @@ const onKeydown = (event) => {
   <div class="new-medicine__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
     <div class="new-medicine__modal" @click.stop>
       <header class="new-medicine__header">
-        <h2 class="new-medicine__title">Medicine Log</h2>
+        <h2 class="new-medicine__title">吃藥紀錄</h2>
         <button class="new-medicine__close" @click="closeModal" type="button" aria-label="Close">
           X
         </button>
-        <p class="new-medicine__date">Today: 2025/12/20</p>
+        <p class="new-medicine__date">Today: 2026/01/18</p>
       </header>
 
       <div class="new-medicine__tabs">
@@ -93,7 +93,7 @@ const onKeydown = (event) => {
         </div>
       </div>
 
-      <button class="new-medicine__submit" type="button">Save</button>
+      <button class="new-medicine__submit" type="button">完成</button>
     </div>
   </div>
 </template>
@@ -107,149 +107,150 @@ const onKeydown = (event) => {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-}
 
-.new-medicine__modal {
-  background-color: $white;
-  padding: 24px;
-  border-radius: 12px;
-  width: 420px;
-  height: 667px;
-  position: relative;
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  gap: 12px;
-  box-shadow: $shadowDark;
-}
-
-.new-medicine__header {
-  display: grid;
-  gap: 6px;
-  text-align: center;
-}
-
-.new-medicine__title {
-  margin: 6px 0 0;
-  color: $primaryDark;
-}
-
-.new-medicine__date {
-  margin: 0;
-  color: $gray;
-  font-size: 14px;
-}
-
-.new-medicine__close {
-  @include closeButton;
-  position: absolute;
-  right: 18px;
-  top: 16px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: $primaryDark;
-  color: $white;
-}
-
-.new-medicine__tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.new-medicine__tab {
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid $primaryDark;
-  background: $white;
-  color: $primaryDark;
-  font-size: 14px;
-}
-
-.new-medicine__tab.is-active {
-  background: $primaryDark;
-  color: $white;
-}
-
-.new-medicine__content {
-  gap: 12px;
-  overflow: auto;
-  padding-right: 4px;
-}
-
-.new-medicine__item {
-  display: grid;
-  grid-template-columns: 72px 1fr auto;
-  max-height: 120px;
-  gap: 12px;
-  padding: 12px;
-  border: 1px solid $gray;
-  border-radius: 12px;
-  align-items: center;
-  background-color: $white;
-}
-
-.new-medicine__thumb {
-  width: 72px;
-  height: 72px;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: $grayLight;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .new-medicine__modal {
+    background-color: $white;
+    padding: 24px;
+    border-radius: 12px;
+    width: 420px;
+    height: 667px;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 12px;
+    box-shadow: $shadowDark;
   }
-}
 
-.new-medicine__info {
-  display: grid;
-  gap: 8px;
-}
+  .new-medicine__header {
+    display: grid;
+    gap: 6px;
+    text-align: center;
+  }
 
-.new-medicine__name {
-  color: $primaryDark;
-  font-weight: 600;
-}
+  .new-medicine__title {
+    margin: 6px 0 0;
+    color: $primaryDark;
+  }
 
-.new-medicine__chips {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+  .new-medicine__date {
+    margin: 0;
+    color: $gray;
+    font-size: 14px;
+  }
 
-.new-medicine__chip {
-  padding: 2px 12px;
-  border-radius: 999px;
-  border: 1px solid $primaryDark;
-  color: $primaryDark;
-  font-size: 12px;
-}
+  .new-medicine__close {
+    @include closeButton;
+    position: absolute;
+    right: 18px;
+    top: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: $primaryDark;
+    color: $white;
+  }
 
-.new-medicine__status {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid $gray;
-  display: grid;
-  place-items: center;
-  color: $white;
-  background: $grayLight;
-}
+  .new-medicine__tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
 
-.new-medicine__status.is-checked {
-  background: $primaryDark;
-  border-color: $primaryDark;
-}
+  .new-medicine__tab {
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid $primaryDark;
+    background: $white;
+    color: $primaryDark;
+    font-size: 14px;
 
-.new-medicine__submit {
-  width: 100%;
-  height: 48px;
-  border-radius: 8px;
-  background-color: $primaryDark;
-  color: $white;
-  border: none;
-  cursor: pointer;
+    &.is-active {
+      background: $primaryDark;
+      color: $white;
+    }
+  }
+
+  .new-medicine__content {
+    gap: 12px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  .new-medicine__item {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    max-height: 120px;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid $gray;
+    border-radius: 12px;
+    align-items: center;
+    background-color: $white;
+  }
+
+  .new-medicine__thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: $grayLight;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .new-medicine__info {
+    display: grid;
+    gap: 8px;
+  }
+
+  .new-medicine__name {
+    color: $primaryDark;
+    font-weight: 600;
+  }
+
+  .new-medicine__chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .new-medicine__chip {
+    padding: 2px 12px;
+    border-radius: 999px;
+    border: 1px solid $primaryDark;
+    color: $primaryDark;
+    font-size: 12px;
+  }
+
+  .new-medicine__status {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid $gray;
+    display: grid;
+    place-items: center;
+    color: $white;
+    background: $grayLight;
+
+    &.is-checked {
+      background: $primaryDark;
+      border-color: $primaryDark;
+    }
+  }
+
+  .new-medicine__submit {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    background-color: $primaryDark;
+    color: $white;
+    border: none;
+    cursor: pointer;
+  }
 }
 </style>

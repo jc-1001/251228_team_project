@@ -1,58 +1,54 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-// import { useUserStore } from '@/stores/user.js'
 
 export const useMedicineStore = defineStore('medicine', () => {
   const items = ref([])
 
   function fetchItems() {
-    // const userStore = useUserStore()
-    // const userId = userStore.currentUserId
-    // demo data only
     items.value = [
       {
         id: 1,
-        name: 'Item A',
+        name: '脈優',
         image: '/src/assets/images/mdc1_1.jpg',
-        eatTimes: 'after',
+        eatTimes: '餐前',
         oneTime: '1',
-        timeCourse: ['morning', 'evening'],
+        timeCourse: ['早上', '晚上'],
         checked: false,
       },
       {
         id: 2,
-        name: 'Item B',
+        name: '降血糖藥',
         image: '/src/assets/images/mdc1_2.jpg',
-        eatTimes: 'after',
+        eatTimes: '餐後',
         oneTime: '2',
-        timeCourse: ['bedtime'],
+        timeCourse: ['早上', '睡前'],
         checked: false,
       },
       {
         id: 3,
-        name: 'Item C',
+        name: '綜合維他命',
         image: '/src/assets/images/mdc1_3.jpg',
-        eatTimes: 'after',
+        eatTimes: '餐後',
         oneTime: '1',
-        timeCourse: ['morning', 'noon', 'evening', 'bedtime'],
+        timeCourse: ['早上', '中午', '晚上', '睡前'],
         checked: false,
       },
       {
         id: 4,
-        name: 'Item D',
+        name: '降血壓藥',
         image: '/src/assets/images/mdc1_4.jpg',
-        eatTimes: 'after',
+        eatTimes: '餐後',
         oneTime: '3',
-        timeCourse: ['morning', 'bedtime'],
+        timeCourse: ['早上', '睡前'],
         checked: false,
       },
       {
         id: 5,
-        name: 'Item E',
+        name: '維生素C',
         image: '/src/assets/images/mdc1_3.jpg',
-        eatTimes: 'after',
+        eatTimes: '餐後',
         oneTime: '2',
-        timeCourse: ['morning'],
+        timeCourse: ['早上'],
         checked: false,
       },
     ]

@@ -2,6 +2,7 @@
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 
 // 引入燈箱元件
 // 快速紀錄
@@ -125,7 +126,7 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <!-- <NewMedicineModals :info="popupInfo" @close="closePopup" /> -->
+              <NewMedicineModals :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -177,6 +178,7 @@ const closePopup = () => {
           <div class="block-title">
             <p>今日服藥提醒</p>
           </div>
+          <HomeTodayMedicine />
         </div>
         <div class="med-stock">
           <div class="block-title">
@@ -214,6 +216,7 @@ main {
   height: 300px;
   width: 100%;
   margin-top: 65px;
+  overflow: auto;
   @media (max-width: 1025px) {
     margin-top: 0px;
   }
