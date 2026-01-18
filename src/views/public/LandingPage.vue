@@ -2,7 +2,7 @@
   <div class="landing-page">
     <header class="main-header">
       <div class="logo">
-        <router-link to="/"><img src="./img/part_Logo2.png" alt="UniCare Logo"></router-link>
+        <router-link to="/"><img src="/src/assets/images/common/logo.svg" alt="UniCare Logo"></router-link>
       </div>
 
       <label class="hb">
@@ -38,17 +38,17 @@
       <h2>您可能有過這些困擾—</h2>
     </div>
     <div class="partOne">
-      <div class="item"><img src="./img/partOne_1.png"><p>常忘記是否吃過藥，保健食品快沒了才發現</p></div>
-      <div class="item"><img src="./img/partOne_2.png"><p>工作忙碌無法及時關心長輩的健康</p></div>
-      <div class="item"><img src="./img/partOne_3.png"><p>無法和醫生清楚溝通身體情況</p></div>
-      <div class="item"><img src="./img/partOne_4.png"><p>紙本記錄容易遺失或不完全</p></div>
+      <div class="item"><img src="/src/assets/images/LP_problem1.svg"><p>常忘記是否吃過藥，保健食品快沒了才發現</p></div>
+      <div class="item"><img src="/src/assets/images/LP_problem2.svg"><p>工作忙碌無法及時關心長輩的健康</p></div>
+      <div class="item"><img src="/src/assets/images/LP_problem3.svg"><p>無法和醫生清楚溝通身體情況</p></div>
+      <div class="item"><img src="/src/assets/images/LP_problem4.svg"><p>紙本記錄容易遺失或不完全</p></div>
     </div>
 
     <div class="bridge">
       <h2>健康管理，從簡單記錄開始：<br>UniCare 助您輕鬆掌握全方位的數位健康脈動。</h2>
     </div>
     <div class="partTwo">
-      <div class="item"><img src="./img/partTwo.png"></div>
+      <div class="item"><img src="/src/assets/images/LP_aboutus.jpg"></div>
       <div class="item">
         <ul>
           <li><h3>我們的起點</h3></li>
@@ -63,15 +63,15 @@
     </div>
     <div class="partThree">
       <div class="item">
-        <img src="./img/partThree_1.png">
+        <img src="/src/assets/images/LP_promise1.svg">
         <ul><li><h3>透明化照護</h3><p>數據即時同步，讓「有沒有吃飯、有沒有吃藥」不再是重複的問句。</p></li></ul>
       </div>
       <div class="item">
-        <img src="./img/partThree_2.png">
+        <img src="/src/assets/images/LP_promise2.svg">
         <ul><li><h3>貼心提醒</h3><p>及時提醒您每日測量身體狀態、上傳飲食資訊、以及服藥和保健食品。</p></li></ul>
       </div>
       <div class="item">
-        <img src="./img/partThree_3.png">
+        <img src="/src/assets/images/LP_promise3.svg">
         <ul><li><h3>詳細記錄</h3><p>所有上傳的紀錄將完好保存在您的帳戶中，不用擔心遺失弄丟。</p></li></ul>
       </div>
     </div>
@@ -94,15 +94,15 @@
         <h2>使用心得</h2>
       </div>
       <div class="arrow-container left" @click="scrollTestimonials(-100)">
-        <img src="./img/angle-up.png" style="rotate: -90deg;">
+        <img src="" style="rotate: -90deg;">
       </div>
       <div class="contence" ref="testimonialContainer">
-        <img src="./img/partFive_1.png">
-        <img src="./img/partFive_2.png">
-        <img src="./img/partFive_3.png">
+        <img src="/src/assets/images/LP_reward1.png">
+        <img src="/src/assets/images/LP_reward2.png">
+        <img src="/src/assets/images/LP_reward3.png">
       </div>
       <div class="arrow-container right" @click="scrollTestimonials(100)">
-        <img src="./img/angle-up.png" style="rotate: 90deg;">
+        <img src="" style="rotate: 90deg;">
       </div>
     </div>
 
@@ -112,7 +112,7 @@
 
     <footer class="main-footer">
       <div class="logo">
-        <router-link to="/"><img src="./img/part_Logo2.png"></router-link>
+        <router-link to="/"><img src="/src/assets/images/common/logo.svg"></router-link>
         <div class="footer_left">
           <ul class="list">
             <li><a href="#">隱私權保護政策</a></li>
@@ -140,10 +140,10 @@ const isMenuOpen = ref(false);
 const testimonialContainer = ref(null);
 
 const features = [
-  { img: './img/partFour_1.png', title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！' },
-  { img: './img/partFour_2.png', title: '數據同步，關懷零時差', desc: '無論子女身在何處，登入同一個帳號，即可看到父母的最新狀態。' },
-  { img: './img/partFour_3.png', title: '貼心提醒，警示不忘記', desc: '當健康數值異常或藥品與保健品庫存過低時，系統會自動標示醒目顏色。' },
-  { img: './img/partFour_4.png', title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品。' }
+  { img: '/src/assets/images/LP_function1.jpg', title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！' },
+  { img: '/src/assets/images/LP_function2.jpg', title: '數據同步，關懷零時差', desc: '無論子女身在何處，登入同一個帳號，即可看到父母的最新狀態。' },
+  { img: '/src/assets/images/LP_function3.jpg', title: '貼心提醒，警示不忘記', desc: '當健康數值異常或藥品與保健品庫存過低時，系統會自動標示醒目顏色。' },
+  { img: '/src/assets/images/LP_function4.jpg', title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品。' }
 ];
 
 const scrollToTop = () => {
@@ -174,7 +174,6 @@ const scrollTestimonials = (amount) => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: white;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -232,7 +231,7 @@ const scrollTestimonials = (amount) => {
 .banner {
   width: 100%;
   height: calc(100vh - 64px);
-  background: url('./img/banner.png') no-repeat center center;
+  background: url('/src/assets/images/LP_hero.jpg') no-repeat center center;
   background-size: cover;
 }
 .banner-txt {
