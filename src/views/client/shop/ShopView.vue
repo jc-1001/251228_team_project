@@ -77,7 +77,7 @@ const filteredProducts = computed(() => {
         border: 1px solid $primary;
       }
       @media screen and (max-width: 768px) {
-        flex: 1 1 170px;
+        flex: 1 1 150px;
       }
     }
   }

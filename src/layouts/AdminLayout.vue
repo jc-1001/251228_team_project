@@ -1,30 +1,21 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import sidebarLogo from '@/assets/images/common/logo.svg'
+import sidebarLogo from '@/assets/images/common/logo-white.svg'
 import sidebarDeco from '@/assets/images/common/sidebar_deco.svg'
 
 const isSidebarOpen = ref(false)
 
 const menuItems = ref([
-  { name: '首頁戰情室', icon: 'dashboard', path: '/home' },
-  { name: '飲食日記', icon: 'restaurant', path: '/DietLog' },
-  { name: '數位藥箱', icon: 'medication', path: '/medicine' },
-  { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
-  { name: '樂活商城', icon: 'storefront', path: '/shop' },
-  { name: '幫助中心', icon: 'help', path: '/support' },
-  //測試 之後要刪
-  { name: '前後台登入', icon: '', path: '/portal' },
-  { name: '登入', icon: 'login', path: '/login' },
+  { name: '數據儀錶板', icon: 'dashboard', path: '/HomeView' },
+  { name: '使用者管理', icon: 'Users', path: '/Users' },
+  { name: '商品管理', icon: 'updateUserStatus', path: '/updateUserStatus' },
+  { name: '訂單管理', icon: '', path: '/' },
+  { name: '系統通知', icon: '', path: '/' }
 ])
 </script>
 
 <template>
-  <button class="hb-btn" @click="isSidebarOpen = true">
-    <span class="bar"></span>
-    <span class="bar"></span>
-    <span class="bar"></span>
-  </button>
 
   <aside class="sidebar" :class="{ 'is-mobile-open': isSidebarOpen }">
     <div class="sidebar_logo">
@@ -56,8 +47,9 @@ const menuItems = ref([
   flex-direction: column;
   gap: 16px;
   width: 250px;
+  // width: 303px;
   height: 100vh;
-  background-color: $white;
+  background-color: $primaryDark;
   box-shadow: $shadow;
   border-radius: 0 20px 20px 0;
   position: sticky;
@@ -98,39 +90,6 @@ const menuItems = ref([
   }
 }
 
-/* RWD */
-
-@media (max-width: 1024px) {
-  .main-layout {
-    margin-left: 0;
-  }
-
-  .hb-btn {
-    display: flex;
-    flex-direction: column;
-    margin: 14px 0 0 16px;
-    gap: 4px;
-    position: fixed;
-    width: 40px;
-    height: 40px;
-    background: white;
-    border-radius: 50%;
-    box-shadow: $shadow;
-    align-items: center;
-    justify-content: center;
-    top: 20px;
-    left: 20px;
-    z-index: 90;
-    border: none;
-    cursor: pointer;
-
-    .bar {
-      width: 20px;
-      height: 2.5px;
-      background-color: $primaryDark;
-      border-radius: 5px;
-    }
-  }
 
   .sidebar {
     position: fixed;
@@ -153,5 +112,4 @@ const menuItems = ref([
     background: rgba(0, 0, 0, 0.3);
     z-index: 999;
   }
-}
 </style>

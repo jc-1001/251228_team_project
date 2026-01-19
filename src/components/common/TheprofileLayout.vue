@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 const profileItem = ref([
   { name: '個人資料', icon: 'person', path: '/profile' },
   { name: '我的積分', icon: 'stars', path: '/mypoint' },
-  { name: '我的訂單', icon: 'Article', path: '/orderlist' },
+  { name: '我的訂單', icon: 'article', path: '/orderlist' },
 ])
 defineProps({
   title: {
@@ -48,6 +48,9 @@ defineProps({
   display: flex;
   gap: 24px; // 左右欄間距
   min-height: 100vh;
+  @media (max-width: 1024px) {
+    display: grid;
+  }
 
   // 左側側邊欄
   .sidebar {
@@ -63,10 +66,14 @@ defineProps({
 
     .user-info {
       text-align: center;
+
       .pf-img img {
         width: 80px;
         height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
       }
+
       .user-name {
         @include subtitle2(true);
         color: $primaryDark;
@@ -91,6 +98,8 @@ defineProps({
         text-decoration: none;
         color: $primaryDark;
         border-radius: 8px;
+        transition: all .3s;
+
         &:hover,
         &.router-link-active {
           color: $white;
@@ -103,10 +112,70 @@ defineProps({
       width: 100%;
       padding: 12px;
       background-color: $primaryDark;
+      @include body2(true);
       color: white;
       border: none;
       border-radius: $radius_md;
       cursor: pointer;
+      &:hover {
+        opacity: .9;
+      }
+    }
+  }
+
+  // rwd
+  @media (max-width: 1024px) {
+    display: block;
+
+    .sidebar {
+      width: 100%;
+      padding: 10px 0;
+      background-color: transparent;
+      box-shadow: none;
+      flex-direction: column;
+
+      .user-info,
+      .logout-btn {
+        display: none;
+      }
+
+      .menu-list {
+        margin: 10px 0;
+        display: flex;
+        justify-content: flex-start;
+        gap: 12px;
+        overflow-x: auto; //可橫向捲動
+
+        .menu-item {
+          flex: 1;
+          justify-content: center;
+          padding: 8px 16px;
+          margin-bottom: 0;
+          border: 1px solid $primaryDark;
+          border-radius: 50px;
+          white-space: nowrap;
+
+          .material-symbols-rounded {
+            display: none;
+          }
+
+          &.router-link-active {
+            background: $primary;
+            color: white;
+            border-color: $primary;
+          }
+
+          &:not(.router-link-active) {
+            background: white;
+            color: $primaryDark;
+          }
+        }
+      }
+    }
+
+    .content-area {
+      padding: 20px;
+      margin-top: 10px;
     }
   }
 
@@ -117,8 +186,76 @@ defineProps({
     border-radius: 12px;
     padding: 30px;
     box-shadow: $shadow;
+
     .content-title {
       color: $primaryDark;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-layout {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 0;
+
+    .sidebar {
+      width: 100%;
+      padding: 16px;
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        width: 100%;
+
+        .pf-img img {
+          width: 50px;
+          height: 50px;
+        }
+
+        .user-name {
+          margin-top: 0;
+          font-size: 18px;
+        }
+      }
+
+      .menu-list {
+        display: flex; 
+        flex-direction: row;
+        margin: 0 0 16px 0;
+        gap: 8px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 4px; 
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        .menu-item {
+          margin-bottom: 0;
+          flex-shrink: 0;
+          padding: 8px 16px;
+          font-size: 14px;
+          background-color: #f5f5f5;
+
+          &.router-link-active {
+            background: $linear2;
+          }
+        }
+      }
+
+      .logout-btn {
+        padding: 8px;
+        @include body3(true);
+      }
+    }
+
+    .content-area {
+      padding: 20px;
+      min-height: auto;
     }
   }
 }

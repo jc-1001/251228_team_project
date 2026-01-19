@@ -123,6 +123,70 @@ onMounted(()=>{
   }
 })
 
+// 訂單送出前，全表格檢查 - 簡單檢查
+const validateAll = ()=> {
+  // 1. 收件人
+  validateField( 'user', 'name' )
+  validateField( 'user', 'phone' )
+  validateField('user', 'email')
+  validateField('user', 'address')
+  // 2. 信用卡驗證
+  if(form.value.paymentType === 'credit') {
+    validateField( 'creditInfo', 'cardNumber' )
+    validateField('creditInfo', 'expiry')
+    validateField('creditInfo', 'cvc')
+  }
+  // 3. 發票驗證
+  if(form.value.invoiceType === 'company') {
+    validateField( 'invoice', 'invoiceTaxId' )
+  }
+  if(form.value.invoiceType === 'mobile') {
+    validateField( 'invoice', 'invoiceMobile' )
+  }
+
+  // 檢查表單是否有任何errorMsg
+  let isVaild = true
+
+  // 1. 收件人
+  // 將錯誤訊息物件的值轉成陣列，比較好檢查內容
+  // Object.values，value記得加s
+  const userErrorList = Object.values(errors.value.user)
+  const hasUserError = userErrorList.some(msg => msg !== '')
+
+  if(hasUserError) {
+    isVaild = false
+  }
+
+  // 2. 信用卡驗證
+  if(form.value.paymentType === 'credit') {
+    const creditErrorList = Object.values(errors.value.creditInfo)
+    const hasCreditError = creditErrorList.some(msg => msg !== '')
+    if(hasCreditError) {
+      isVaild = false
+    }
+  }
+
+  // 3. 發票驗證
+  if(form.value.invoiceType === 'company') {
+    if(errors.value.invoiceTaxId !== '') {
+      isVaild = false
+    }
+  }
+  if(form.value.invoiceType === 'mobile') {
+    if(errors.value.invoiceMobile !== '') {
+      isVaild = false
+    }
+  }
+
+  return isVaild
+}
+
+// 讓父層也讀得到子層的函式&資料
+defineExpose ({
+  validateAll,
+  form
+})
+
 </script>
 <template>
   <div class="checkout_form">
@@ -227,7 +291,9 @@ onMounted(()=>{
       </h3>
       <div class="form_grid">
         <div class="form_group full_width">
-          <label>發票類型</label>
+          <div class="label_container">
+            <label>發票類型</label>
+          </div>
           <select v-model="form.invoiceType">
             <option value="personal">個人電子發票 (二聯式)</option>
             <option value="company">公司行號 (三聯式)</option>
