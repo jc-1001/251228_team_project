@@ -132,8 +132,17 @@ const routes = [
   },
   {
     path: '/orderlist',
-    name: 'orderlist',
+    name: 'orderList',
     component: () => import('@/views/client/profile/OrderList.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: `/order/:id`,
+    name: 'orderDetail',
+    component: () => import('@/views/client/profile/OrderDetail.vue'),
     meta: {
       showTopIcon: true,
       showSidebar: true,

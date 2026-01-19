@@ -56,7 +56,6 @@ const menuItems = ref([
   flex-direction: column;
   gap: 16px;
   width: 250px;
-  // width: 303px;
   height: 100vh;
   background-color: $white;
   box-shadow: $shadow;
@@ -109,7 +108,7 @@ const menuItems = ref([
   .hb-btn {
     display: flex;
     flex-direction: column;
-    margin: 4px 0 0 16px;
+    margin: 14px 0 0 16px;
     gap: 4px;
     position: fixed;
     width: 40px;

@@ -22,12 +22,12 @@ const emit = defineEmits(['add', 'minus'])
 
 <style lang="scss" scoped>
 .quantity_selector {
+  flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 12px;
-  width: 150px;
-  height: 35px;
+  padding: 4px 12px;
+  max-width: 150px;
   background-color: $white;
   border: 1px solid $black;
   border-radius: $radius-sm;

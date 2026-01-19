@@ -5,6 +5,7 @@
 
 body {
   font-family: 'Noto Sans TC', sans-serif;
+  @include body2;
   color: $black;
   -webkit-font-smoothing: antialiased;
 }
