@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, watch, nextTick } from "vue"
 
 // import { publicApi } from "@/utils/publicApi"
 // import { parsePublicFile } from "@/utils/parseFile";
@@ -9,99 +9,266 @@ import axios from 'axios'
 import TheHeader from "@/components/common/TheHeader.vue";
 import status_label from "@/components/common/metrics/status_label.vue";
 
+import { Chart, registerables } from 'chart.js'
+//🔥 註冊 Chart.js 的所有組件（包含 scale）
+Chart.register(...registerables)
+
 const records__data = ref([])
 
 // 定義各項指標的配置 
 const metricsConfig = {
-    weight: {
-        title: "體重",
-        unit: "kg",
-        url: "data/metrics/weight.json",
-        valueField: "weight",         // json 裡的數值欄位
-        timeField: "recorded_at",
-    },
-    bloodOxygen: {
-        title: "血氧",
-        unit: "%",
-        url: "data/metrics/blood_oxygen.json",
-        valueField: "bloodOxygen",
-        timeField: "recorded_at",
-    },
-    bloodSugar: {
-        title: "血糖",
-        unit: "mg/dL",
-        url: "data/metrics/blood_sugar.json",
-        valueField: "bloodSugar",
-        timeField: "recorded_at",
-    },
-    heartRate: {
-        title: "心律",
-        unit: "bpm",
-        url: "data/metrics/heart_rate.json",
-        valueField: "heartRate",
-        timeField: "recorded_at",
-    },
-    bloodPressure: {
-        title: "血壓",
-        unit: "mmHg",
-        url: "data/metrics/blood_pressure.json",
-        // 顯示用：SYS/DIA
-        renderValue: (r) => `${r.SYS}/${r.DIA}`,
-        timeField: "recorded_at",
-    },
+  weight: {
+    title: "體重",
+    unit: "kg",
+    url: "data/metrics/weight.json",
+    valueField: "weight",         // json 裡的數值欄位
+    timeField: "recorded_at",
+  },
+  bloodOxygen: {
+    title: "血氧",
+    unit: "%",
+    url: "data/metrics/blood_oxygen.json",
+    valueField: "bloodOxygen",
+    timeField: "recorded_at",
+  },
+  bloodSugar: {
+    title: "血糖",
+    unit: "mg/dL",
+    url: "data/metrics/blood_sugar.json",
+    valueField: "bloodSugar",
+    timeField: "recorded_at",
+  },
+  heartRate: {
+    title: "心律",
+    unit: "bpm",
+    url: "data/metrics/heart_rate.json",
+    valueField: "heartRate",
+    timeField: "recorded_at",
+  },
+  bloodPressure: {
+    title: "血壓",
+    unit: "mmHg",
+    url: "data/metrics/blood_pressure.json",
+    // 顯示用：SYS/DIA
+    renderValue: (r) => `${r.SYS}/${r.DIA}`,
+    timeField: "recorded_at",
+  },
 }
 
-//各項數值
-const weight = ref(80)
-const height = ref(175)
+// 儲存所有指標的原始資料
+const allMetricsData = ref({
+  weight: [],
+  bloodOxygen: [],
+  bloodSugar: [],
+  heartRate: [],
+  bloodPressure: []
+})
 
-const oxygen = ref(96)
-const sugar = ref(110)
-const heartRate = ref(50)
-const pressure = ref({
-    systolic: 140,
-    diastolic: 110
+//選擇時間按鈕(右上)
+const activePeriod = ref("today") // 可選："today" | "week" | "month"
+
+// 🔥 載入所有指標的數據
+const loadAllMetrics = async () => {
+  for (const key in metricsConfig) {
+    const config = metricsConfig[key]
+    try {
+      const res = await axios.get(config.url)
+      allMetricsData.value[key] = res.data
+    } catch (err) {
+      console.error(`載入 ${key} 資料失敗:`, err)
+      allMetricsData.value[key] = []
+    }
+  }
+}
+
+// 🔥 根據時間段篩選數據
+// 🔥 用於測試：使用數據中的最新日期作為"現在"
+const filterDataByPeriod = (data, timeField) => {
+  if (!data || data.length === 0) return []
+
+  // 🔥 取數據中的最新日期作為"現在"（用於測試）
+  const now = new Date(data[0][timeField])
+
+  // 今天：只要最新一筆
+  if (activePeriod.value === "today") {
+    return [data[0]]
+  }
+
+  // 計算幾天前的日期
+  const days = activePeriod.value === "week" ? 7 : 30
+  const cutoffDate = new Date(now)
+  cutoffDate.setDate(cutoffDate.getDate() - days)
+
+  // 過濾出時間範圍內的資料
+  return data.filter(record => {
+    const recordDate = new Date(record[timeField])
+    return recordDate >= cutoffDate && recordDate <= now
+  })
+}
+
+// 🔥 計算單一指標的平均值（單值欄位）
+const calculateAverage = (data, valueField) => {
+  if (!data || data.length === 0) return 0
+
+  const sum = data.reduce((acc, record) => {
+    return acc + (Number(record[valueField]) || 0)
+  }, 0)
+
+  return Math.round(sum / data.length)
+}
+
+// 🔥 計算血壓的平均值（雙值欄位）
+const calculateBPAverage = (data) => {
+  if (!data || data.length === 0) return { systolic: 0, diastolic: 0 }
+
+  const sysSum = data.reduce((acc, r) => acc + (Number(r.SYS) || 0), 0)
+  const diaSum = data.reduce((acc, r) => acc + (Number(r.DIA) || 0), 0)
+
+  return {
+    systolic: Math.round(sysSum / data.length),
+    diastolic: Math.round(diaSum / data.length)
+  }
+}
+
+//各項動態數值
+const weight = ref('')
+const height = ref('')
+
+const bloodOxygen = ref('')
+const bloodSugar = ref('')
+const heartRate = ref('')
+const bloodPressure = ref({
+  systolic: '',
+  diastolic: ''
+})
+
+// 🔥 更新所有卡片數值
+const updateCardValues = () => {
+  // 體重
+  const weightFiltered = filterDataByPeriod(allMetricsData.value.weight, "recorded_at")
+  weight.value = calculateAverage(weightFiltered, "weight")
+
+  // 血氧
+  const oxygenFiltered = filterDataByPeriod(allMetricsData.value.bloodOxygen, "recorded_at")
+  bloodOxygen.value = calculateAverage(oxygenFiltered, "bloodOxygen")
+
+  // 血糖
+  const sugarFiltered = filterDataByPeriod(allMetricsData.value.bloodSugar, "recorded_at")
+  bloodSugar.value = calculateAverage(sugarFiltered, "bloodSugar")
+
+  // 心律
+  const heartFiltered = filterDataByPeriod(allMetricsData.value.heartRate, "recorded_at")
+  heartRate.value = calculateAverage(heartFiltered, "heartRate")
+
+  // 血壓
+  const bpFiltered = filterDataByPeriod(allMetricsData.value.bloodPressure, "recorded_at")
+  bloodPressure.value = calculateBPAverage(bpFiltered)
+}
+
+// 🔥 切換時間段
+const changePeriod = (period) => {
+  activePeriod.value = period
+  updateCardValues()
+}
+
+// 切換折線圖種類
+const changeStatus = (status) => {
+  activeStatus.value = status
+}
+
+// 🔥 初始化時載入所有數據
+onMounted(async () => {
+  await loadAllMetrics()
+  updateCardValues()
+
+  // 等待 DOM 渲染完成後初始化圖表
+  await nextTick()
+  initChart()
 })
 
 // 計算體重狀態 
 const bmi = computed(() => {
-    return weight.value / ((height.value / 100) ** 2)
+  return weight.value / ((height.value / 100) ** 2)
 })
 console.log(bmi.value)
 
 const weightStatus = computed(() => {
-    if (bmi.value >= 24) return "high"
-    if (bmi.value < 18.5) return "low"
-    return "normal"
+  if (bmi.value >= 24) return "high"
+  if (bmi.value < 18.5) return "low"
+  return "normal"
 })
 
 //計算血氧狀態
 const oxygenStatus = computed(() => {
-    if (oxygen.value < 95) return "low"
-    return "normal"
+  if (bloodOxygen.value < 95) return "low"
+  return "normal"
 })
 
 //計算血糖狀態
 const sugarStatus = computed(() => {
-    if (sugar.value >= 100) return "high"
-    if (sugar.value < 70) return "low"
-    return "normal"
+  if (bloodSugar.value >= 100) return "high"
+  if (bloodSugar.value < 70) return "low"
+  return "normal"
 })
 
 //計算心律狀態
 const heartStatus = computed(() => {
-    if (heartRate.value > 100) return "high"
-    if (heartRate.value < 60) return "low"
-    return "normal"
+  if (heartRate.value > 100) return "high"
+  if (heartRate.value < 60) return "low"
+  return "normal"
 })
 
 //計算血壓狀態
 const pressureStatus = computed(() => {
-    const { systolic, diastolic } = pressure.value
-    if (systolic >= 140 || diastolic >= 90) return "high"
-    if (systolic < 90 || diastolic < 60) return "low"
-    return "normal"
+  const { systolic, diastolic } = bloodPressure.value
+  if (systolic >= 140 || diastolic >= 90) return "high"
+  if (systolic < 90 || diastolic < 60) return "low"
+  return "normal"
 })
+
+//🌟數值總覽卡片V-for
+const valueCard = [
+  {
+    id: 'weight',
+    title: '體重',
+    unit: 'kg',
+    getValue: () => weight.value,
+    getStatus: () => weightStatus.value,
+    isDoubleValue: false
+  },
+  {
+    id: 'bloodOxygen',
+    title: '血氧',
+    unit: '%',
+    getValue: () => bloodOxygen.value,
+    getStatus: () => oxygenStatus.value,
+    isDoubleValue: false
+  },
+  {
+    id: 'bloodSugar',
+    title: '血糖',
+    unit: 'mg/dL',
+    getValue: () => bloodSugar.value,
+    getStatus: () => sugarStatus.value,
+    isDoubleValue: false
+  },
+  {
+    id: 'heartRate',
+    title: '心律',
+    unit: 'bpm',
+    getValue: () => heartRate.value,
+    getStatus: () => heartStatus.value,
+    isDoubleValue: false
+  },
+  {
+    id: 'bloodPressure',
+    title: '血壓',
+    unit: 'mmHg',
+    getValue: () => bloodPressure.value, // 回傳整個物件
+    getStatus: () => pressureStatus.value,
+    isDoubleValue: true // 標記為雙值
+  },
+]
 
 // 彈窗
 // 彈窗
@@ -123,704 +290,851 @@ const selectedIndex = ref(null)
 
 //開啟彈窗
 const openPop = async (key) => {
-    activeMetricKey.value = key
-    isPopOpen.value = true
+  activeMetricKey.value = key
+  isPopOpen.value = true
 
-    setDefaultForm()
+  setDefaultForm()
 
-    await fetchData()  // 依 activeMetricKey 抓資料
+  await fetchData()  // 依 activeMetricKey 抓資料
 }
 
 //關閉彈窗
 const closePop = () => {
-    isPopOpen.value = false
+  isPopOpen.value = false
 }
 
 const fetchData = async () => {
 
-    const config = metricsConfig[activeMetricKey.value]
-    try {
-        const res = await axios.get(config.url)
-        records__data.value = res.data
+  const config = metricsConfig[activeMetricKey.value]
+  try {
+    const res = await axios.get(config.url)
+    records__data.value = res.data
 
-    } catch (err) {
-        console.log(err)
-        records__data.value = []
-    }
+  } catch (err) {
+    console.log(err)
+    records__data.value = []
+  }
 }
 
 //輸入今日日期/清空欄位
 const setDefaultForm = () => {
-    const now = new Date()
+  const now = new Date()
 
-    const yyyy = now.getFullYear()
-    const mm = String(now.getMonth() + 1).padStart(2, "0") //如果字串長度不足 2，在左邊補 0
-    const dd = String(now.getDate()).padStart(2, "0")
+  const yyyy = now.getFullYear()
+  const mm = String(now.getMonth() + 1).padStart(2, "0") //如果字串長度不足 2,在左邊補 0
+  const dd = String(now.getDate()).padStart(2, "0")
 
-    formDate.value = `${yyyy}-${mm}-${dd}`
-    // console.log(formDate)
+  formDate.value = `${yyyy}-${mm}-${dd}`
+  // console.log(formDate)
 
-    // 其他先清空給使用者填
-    formTime.value = ""
-    formValue.value = ""
-    formSYS.value = ""
-    formDIA.value = ""
-    selectedIndex.value = null
+  // 其他先清空給使用者填
+  formTime.value = ""
+  formValue.value = ""
+  formSYS.value = ""
+  formDIA.value = ""
+  selectedIndex.value = null
 }
 //是否是血壓(特殊欄位)
 const isBloodPressure = computed(() => activeMetricKey.value === "bloodPressure")
 
 //點擊左邊紀錄 填入右邊表單
 const fillFormFromRecord = (record, index) => {
-    selectedIndex.value = index
+  selectedIndex.value = index
 
-    // recorded_at: "YYYY-MM-DD hh:mm:ss"
-    const recorded = record[metricsConfig[activeMetricKey.value].timeField] || ""
+  // recorded_at: "YYYY-MM-DD hh:mm:ss"
+  const recorded = record[metricsConfig[activeMetricKey.value].timeField] || ""
 
-    // datePart: "2025-12-31"
-    // timePart: "18:30:00"
-    const [datePart = "", timePart = ""] = recorded.split(" ")
+  // datePart: "2025-12-31"
+  // timePart: "18:30:00"
+  const [datePart = "", timePart = ""] = recorded.split(" ")
 
-    formDate.value = datePart
-    formTime.value = timePart.slice(0, 5)  // "18:30"
+  formDate.value = datePart
+  formTime.value = timePart.slice(0, 5)  // "18:30"
 
-    // 依不同指標填值
-    if (activeMetricKey.value === "bloodPressure") {
-        formSYS.value = record.SYS ?? ""
-        formDIA.value = record.DIA ?? ""
-        formValue.value = "" // 不用單值
-    } else {
-        const valueKey = metricsConfig[activeMetricKey.value].valueField
-        formValue.value = record[valueKey] ?? ""
-        formSYS.value = ""
-        formDIA.value = ""
-    }
+  // 依不同指標填值
+  if (activeMetricKey.value === "bloodPressure") {
+    formSYS.value = record.SYS ?? ""
+    formDIA.value = record.DIA ?? ""
+    formValue.value = "" // 不用單值
+  } else {
+    const valueKey = metricsConfig[activeMetricKey.value].valueField
+    formValue.value = record[valueKey] ?? ""
+    formSYS.value = ""
+    formDIA.value = ""
+  }
 }
 
-//右邊輸入值帶入左邊(暫時，之後串接api)
+//右邊輸入值帶入左邊(暫時,之後串接api)
 const onSave = () => {
-    const config = metricsConfig[activeMetricKey.value]
+  const config = metricsConfig[activeMetricKey.value]
 
-    const recorded_at = `${formDate.value} ${formTime.value}:00`
+  const recorded_at = `${formDate.value} ${formTime.value}:00`
 
-    let newRecord
+  let newRecord
 
-    if (activeMetricKey.value === "bloodPressure") {
-        newRecord = {
-            SYS: Number(formSYS.value),
-            DIA: Number(formDIA.value),
-            recorded_at,
-        }
-    } else {
-        newRecord = {
-            [config.valueField]: Number(formValue.value),
-            recorded_at,
-        }
+  if (activeMetricKey.value === "bloodPressure") {
+    newRecord = {
+      SYS: Number(formSYS.value),
+      DIA: Number(formDIA.value),
+      recorded_at,
     }
+  } else {
+    newRecord = {
+      [config.valueField]: Number(formValue.value),
+      recorded_at,
+    }
+  }
 
-    // 先直接塞到 records__data（目前是 json mock，不會真的寫回檔案）
-    records__data.value.unshift(newRecord)
+  // 先直接塞到 records__data（目前是 json mock,不會真的寫回檔案）
+  records__data.value.unshift(newRecord)
 
-    // 存完清空
-    setDefaultForm()
+  // 🔥 同時更新到 allMetricsData
+  allMetricsData.value[activeMetricKey.value].unshift(newRecord)
+
+  // 🔥 重新計算卡片數值
+  updateCardValues()
+
+  // // 存完清空
+  // setDefaultForm()
 }
-//選擇時間按鈕(右上)
-const activePeriod = ref("today") // 可選："today" | "week" | "month"
 
+//指標趨勢按鈕
+const activeTrendsBtn = ref('體重')
+
+const trendsSelectBtn = ['體重', '血氧', '血糖', '心律', '血壓']
+
+// 圖表相關
+const chartCanvas = ref(null)  // canvas 元素的 ref
+let chartInstance = null       // 儲存圖表實例
+
+// 指標趨勢按鈕對應的 key
+const trendsKeyMap = {
+  '體重': 'weight',
+  '血氧': 'bloodOxygen',
+  '血糖': 'bloodSugar',
+  '心律': 'heartRate',
+  '血壓': 'bloodPressure'
+}
+
+// 🔥 根據選擇的指標和時間段取得圖表資料
+const chartData = computed(() => {
+  const metricKey = trendsKeyMap[activeTrendsBtn.value]
+  const config = metricsConfig[metricKey]
+
+  if (!config) return { labels: [], data: [] }
+
+  // 取得篩選後的資料
+  const filteredData = filterDataByPeriod(
+    allMetricsData.value[metricKey],
+    config.timeField
+  )
+
+  if (!filteredData || filteredData.length === 0) {
+    return { labels: [], data: [] }
+  }
+
+  // 反轉陣列，讓時間由舊到新（圖表通常這樣顯示）
+  const reversed = [...filteredData].reverse()
+
+  // 處理標籤（日期時間）
+  const labels = reversed.map(record => {
+    const datetime = record[config.timeField]
+    // 只顯示日期部分，或根據時間段調整
+    if (activePeriod.value === 'today') {
+      // 今天只顯示時間
+      return datetime.split(' ')[1]?.slice(0, 5) || datetime
+    } else {
+      // 7天/30天顯示日期
+      return datetime.split(' ')[0] || datetime
+    }
+  })
+
+  // 處理數值
+  let data
+  if (metricKey === 'bloodPressure') {
+    // 血壓顯示收縮壓和舒張壓
+    const systolicData = reversed.map(r => r.SYS)
+    const diastolicData = reversed.map(r => r.DIA)
+    return {
+      labels,
+      datasets: [
+        {
+          label: '收縮壓 (SYS)',
+          data: systolicData,
+          borderColor: '#E74C3C',
+          backgroundColor: 'rgba(231, 76, 60, 0.1)',
+          tension: 0.4
+        },
+        {
+          label: '舒張壓 (DIA)',
+          data: diastolicData,
+          borderColor: '#3498DB',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          tension: 0.4
+        }
+      ]
+    }
+  } else {
+    // 單一數值
+    data = reversed.map(record => record[config.valueField])
+    return {
+      labels,
+      datasets: [{
+        label: `${config.title} (${config.unit})`,
+        data,
+        borderColor: '#2E6669',
+        backgroundColor: 'rgba(46, 102, 105, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    }
+  }
+})
+
+// 🔥 初始化或更新圖表
+const initChart = () => {
+  if (!chartCanvas.value) return
+
+  // 如果已有圖表實例，先銷毀
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
+
+  const ctx = chartCanvas.value.getContext('2d')
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: chartData.value,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: function (value) {
+              return value.toFixed(0)
+            }
+          }
+        },
+        x: {
+          ticks: {
+            maxRotation: 45,
+            minRotation: 45
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    }
+  })
+}
+// 🔥 監聽圖表資料變化
+watch(chartData, () => {
+  nextTick(() => {
+    initChart()
+  })
+}, { deep: true })
+
+// 🔥 監聽時間段和指標變化
+watch([activePeriod, activeTrendsBtn], () => {
+  nextTick(() => {
+    initChart()
+  })
+})
 
 </script>
 
 
 <template>
-
-    <div class="metrics_container">
-        <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="src/assets/images/Banner_metrics.svg">
-        </TheHeader>
-        <section class="values">
-            <div class="header">
-                <div class="title">數值總覽</div>
-                <div class="period-select">
-                    <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'today' }"
-                        @click="activePeriod = 'today'">
-                        今天
-                    </span>
-                    <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'week' }"
-                        @click="activePeriod = 'week'">
-                        一周
-                    </span>
-                    <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'month' }"
-                        @click="activePeriod = 'month'">
-                        30天
-                    </span>
-                </div>
+  <div class="metrics_container">
+    <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="src/assets/images/Banner_metrics.svg">
+    </TheHeader>
+    <section class="values">
+      <div class="header">
+        <div class="title">數值總覽</div>
+        <div class="period-select">
+          <!-- 🔥 綁定點擊事件到 changePeriod -->
+          <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'today' }"
+            @click="changePeriod('today')">
+            最新
+          </span>
+          <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'week' }"
+            @click="changePeriod('week')">
+            7天
+          </span>
+          <span class="period-select__btn" :class="{ 'period-select__btn--on': activePeriod == 'month' }"
+            @click="changePeriod('month')">
+            30天
+          </span>
+        </div>
+      </div>
+      <!-- 🌟數值總覽卡片區🌟 -->
+      <div class="values__card-area">
+        <!-- 🌟單個卡片 -->
+        <div class="value-card" :class="{ 'value-card2': card.isDoubleValue }" v-for="card in valueCard" :key="card.id">
+          <div class="value-card__header">
+            <div class="value-card__title">
+              {{ card.title }}
             </div>
-            <!-- 燈箱區 -->
-            <div class="values__card-area">
-                <div class="value-card">
-                    <div class="value-card__header">
-                        <div class="value-card__title">體重</div>
-                        <div class="value-card__arrow" @click="openPop('weight')">></div>
-                    </div>
-                    <div class="value-card__content">
-                        <span class="value-card__value" id="weight">{{ weight }}</span>
-                        <span class="value-card__unit">kg</span>
-                    </div>
-                    <div class="value-card__footer">
-                        <status_label type="weight" :status="weightStatus" />
-                        <div class="value-card__icon">↗</div>
-                    </div>
+            <div class="value-card__arrow" @click="openPop(card.id)"><img
+                src="/public/images/metrics/arrow_forward_ios_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></div>
+          </div>
+
+          <!-- 🌟單值顯示 -->
+          <div class="value-card__content" v-if="!card.isDoubleValue">
+            <span class="value-card__value">
+              {{ card.getValue() }}
+            </span>
+            <span class="value-card__unit">
+              {{ card.unit }}
+            </span>
+          </div>
+          <!-- 🌟雙值顯示 -->
+          <div class="value-card__content" v-else>
+            <span class="value-card__value">
+              {{ card.getValue().systolic }}
+            </span>
+            <span>/</span>
+            <span class="value-card__value">
+              {{ card.getValue().diastolic }}
+            </span>
+            <span class="value-card__unit">
+              {{ card.unit }}
+            </span>
+          </div>
+
+          <div class="value-card__footer">
+            <status_label :type="card.id" :status="card.getStatus()" />
+            <!-- <div class="value-card__icon">↗</div> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 🌟彈窗🌟 -->
+      <div class="pop-overlay" v-if="isPopOpen" @click.self="closePop">
+        <div class="values__pop-window">
+          <!-- 關閉按鈕 -->
+          <div class="close-pop__btn" @click="closePop">X</div>
+          <!-- 🌟歷史記錄(左) -->
+          <div class="records">
+            <div class="records__table">
+              <div class="records__title">
+                <span>
+                  {{ metricsConfig[activeMetricKey].title }} ({{ metricsConfig[activeMetricKey].unit
+                  }})
+                </span>
+                <span class="records__title__time">測量時間</span>
+              </div>
+              <div class="records__list">
+                <!-- 單筆紀錄 -->
+                <div class="records__data" v-for="(record, index) in records__data" :key="index"
+                  :class="{ 'records__data--active': selectedIndex === index }">
+                  <span class="records__value">
+                    {{
+                      metricsConfig[activeMetricKey].renderValue
+                        ? metricsConfig[activeMetricKey].renderValue(record)
+                        : record[metricsConfig[activeMetricKey].valueField]
+                    }}
+                  </span>
+                  <span class="records__record_at">
+                    {{ record[metricsConfig[activeMetricKey].timeField] }}
+                  </span>
+                  <span class="edit-icon" @click="fillFormFromRecord(record, index)">
+                    <img src="/public/images/metrics/edit_square_24dp_2E6669_FILL0_wght400_GRAD0_opsz24.svg" alt="">
+                  </span>
                 </div>
-                <div class="value-card">
-                    <div class="value-card__header">
-                        <div class="value-card__title">血氧</div>
-                        <div class=" value-card__arrow" @click="openPop('bloodOxygen')">></div>
-                    </div>
-                    <div class="value-card__content">
-                        <span class="value-card__value" id="blood-oxygen">{{ oxygen }}</span>
-                        <span class="value-card__unit">%</span>
-                    </div>
-                    <div class="value-card__footer">
-                        <status_label type="oxygen" :status="oxygenStatus" />
-                        <div class="value-card__icon">↗</div>
-                    </div>
-                </div>
-                <div class="value-card">
-                    <div class="value-card__header">
-                        <div class="value-card__title">血糖</div>
-                        <div class="value-card__arrow" @click="openPop('bloodSugar')">></div>
-                    </div>
-                    <div class="value-card__content">
-                        <span class="value-card__value" id="blood-sugar">{{ sugar }}</span>
-                        <span class="value-card__unit">mg/dL</span>
-                    </div>
-                    <div class="value-card__footer">
-                        <status_label type="sugar" :status="sugarStatus" />
-                        <div class="value-card__icon">↗</div>
-                    </div>
-                </div>
-                <div class="value-card">
-                    <div class="value-card__header">
-                        <div class="value-card__title">心律</div>
-                        <div class="value-card__arrow" @click="openPop('heartRate')">></div>
-                    </div>
-                    <div class="value-card__content">
-                        <span class="value-card__value" id="heart-rhythm">{{ heartRate }}</span>
-                        <span class="value-card__unit">bpm</span>
-                    </div>
-                    <div class="value-card__footer">
-                        <status_label type="heartRate" :status="heartStatus" />
-                        <div class="value-card__icon">↗</div>
-                    </div>
-                </div>
-                <div class="value-card value-card2">
-                    <div class="value-card__header">
-                        <div class="value-card__title">血壓</div>
-                        <div class="value-card__arrow " @click="openPop('bloodPressure')">></div>
-                    </div>
-                    <div class="value-card__content">
-                        <span class="value-card__value" id="heart-pressure__high">
-                            {{ pressure.systolic }}
-                        </span>
-                        <span>/</span>
-                        <span class="value-card__value" id="heart-pressure__low">
-                            {{ pressure.diastolic }}
-                        </span>
-                        <span class="value-card__unit">mmHg</span>
-                    </div>
-                    <div class="value-card__footer">
-                        <status_label type="pressure" :status="pressureStatus" />
-                        <div class="value-card__icon">↗</div>
-                    </div>
-                </div>
+              </div>
             </div>
+          </div>
 
-            <!-- 🌟彈窗🌟 -->
-            <div class="pop-overlay" v-if="isPopOpen" @click.self="closePop">
-                <div class="values__pop-window">
-                    <!-- 關閉按鈕 -->
-                    <div class="close-pop__btn" @click="closePop">X</div>
-                    <!-- 🌟歷史記錄(左) -->
-                    <div class="records">
-                        <div class="records__table">
-                            <div class="records__title">
-                                <span>
-                                    {{ metricsConfig[activeMetricKey].title }} ({{ metricsConfig[activeMetricKey].unit
-                                    }})
-                                </span>
-                                <span class="records__title__time">測量時間</span>
-                            </div>
-                            <div class="records__list">
-                                <!-- 單筆紀錄 -->
-                                <div class="records__data" v-for="(record, index) in records__data" :key="index"
-                                    :class="{ 'records__data--active': selectedIndex === index }">
-                                    <span class="records__value">
-                                        {{
-                                            metricsConfig[activeMetricKey].renderValue
-                                                ? metricsConfig[activeMetricKey].renderValue(record)
-                                                : record[metricsConfig[activeMetricKey].valueField]
-                                        }}
-                                    </span>
-                                    <span class="records__record_at">
-                                        {{ record[metricsConfig[activeMetricKey].timeField] }}
-                                    </span>
-                                    <span class="edit-icon" @click="fillFormFromRecord(record, index)">
-                                        <img src="@/assets/images/pen.svg" alt="">
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 🌟輸入區(右) -->
-                    <form class="input" @submit.prevent="onSave">
-                        <div class="input__header">
-                            <div class="input__title">
-                                {{ metricsConfig[activeMetricKey].title }}記錄
-                            </div>
-                            <div class="input__date">
-                                <span>日期:</span>
-                                <span>{{ formDate }}</span>
-                            </div>
-                        </div>
-                        <div class="input__content">
-                            <div class="input__card">
-                                <div class="input__card__title">
-                                    {{ metricsConfig[activeMetricKey].title }} ({{
-                                        metricsConfig[activeMetricKey].unit }})
-                                </div>
-
-                                <!-- 血壓(雙欄位) -->
-                                <div v-if="isBloodPressure" class="bp-fields">
-                                    <input class="input__card__value" v-model="formSYS" :placeholder="`請輸入收縮壓`">
-                                    <input class="input__card__value" v-model="formDIA" :placeholder="`請輸入舒張壓`">
-                                </div>
-
-                                <!-- 單一欄位 -->
-                                <input v-else class="input__card__value" v-model="formValue"
-                                    :placeholder="`請輸入${metricsConfig[activeMetricKey].title}`">
-                            </div>
-                            <div class="input__card">
-                                <div class="input__card__title">測量時間</div>
-                                <input class="input__card__time-select" type="time" v-model="formTime" step="60"
-                                    placeholder="請選擇時間"></input>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-save">儲存</button>
-                    </form>
+          <!-- 🌟輸入區(右) -->
+          <form class="input" @submit.prevent="onSave">
+            <div class="input__header">
+              <div class="input__title">
+                {{ metricsConfig[activeMetricKey].title }}記錄
+              </div>
+              <div class="input__date">
+                <span>日期:</span>
+                <span>{{ formDate }}</span>
+              </div>
+            </div>
+            <div class="input__content">
+              <div class="input__card">
+                <div class="input__card__title">
+                  {{ metricsConfig[activeMetricKey].title }} ({{
+                    metricsConfig[activeMetricKey].unit }})
                 </div>
-            </div>
 
-
-        </section>
-
-        <section class="trends">
-            <div class="header">
-                <div class="title">指標趨勢</div>
-            </div>
-            <div class="trends__content">
-                <div class="trends__line-chart"></div>
-
-                <div class="trends__right-btns">
-                    <div class="trends__btn trends__btn--on">體重</div>
-                    <div class="trends__btn">血氧</div>
-                    <div class="trends__btn">血糖</div>
-                    <div class="trends__btn">心律</div>
-                    <div class="trends__btn">血壓</div>
+                <!-- 血壓(雙欄位) -->
+                <div v-if="isBloodPressure" class="bp-fields">
+                  <input class="input__card__value" v-model="formSYS" :placeholder="`請輸入收縮壓`">
+                  <input class="input__card__value" v-model="formDIA" :placeholder="`請輸入舒張壓`">
                 </div>
-            </div>
-        </section>
 
-    </div>
+                <!-- 單一欄位 -->
+                <input v-else class="input__card__value" v-model="formValue"
+                  :placeholder="`請輸入${metricsConfig[activeMetricKey].title}`">
+              </div>
+              <div class="input__card">
+                <div class="input__card__title">測量時間</div>
+                <input class="input__card__time-select" type="time" v-model="formTime" step="60"
+                  placeholder="請選擇時間"></input>
+              </div>
+            </div>
+            <button type="submit" class="btn-save">儲存</button>
+          </form>
+        </div>
+      </div>
+
+
+    </section>
+
+    <section class="trends">
+      <div class="header">
+        <div class="title">指標趨勢</div>
+      </div>
+      <div class="trends__content">
+        <!-- 🌟折線圖區塊 -->
+        <div class="trends__line-chart">
+          <canvas ref="chartCanvas"></canvas>
+        </div>
+
+        <div class="trends__right-btns">
+          <!-- <div class="trends__btn trends__btn--on">體重</div> -->
+          <div class="trends__btn" v-for="btn in trendsSelectBtn" :key="btn"
+            :class="{ 'trends__btn--on': activeTrendsBtn === btn }" @click="activeTrendsBtn = btn">
+            {{ btn }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
 
 </template>
 
 
 <style lang="scss" scoped>
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
 }
 
 .title {
-    font-size: 18px;
-    line-height: $lineHeightSub;
-    font-weight: $fontWeightRegular;
-    letter-spacing: $letterSpacing;
+  font-size: 18px;
+  line-height: $lineHeightSub;
+  font-weight: 700;
+  letter-spacing: $letterSpacing;
 }
 
 .period-select {
-    display: flex;
-    border-radius: 100px;
-    background-color: $primaryLight;
+  display: flex;
+  border-radius: 100px;
+  background-color: $primaryLight;
 }
 
 .period-select__btn {
-    height: 40px;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    // border: solid 1px;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: ease 0.2s;
+  height: 40px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  // border: solid 1px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: ease 0.2s;
 }
 
 .period-select__btn--on {
-    background-color: $primaryDark;
-    color: white;
+  background-color: $primaryDark;
+  color: white;
 }
 
 .values__card-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .value-card {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: white;
-    width: calc(18% - 16px);
-    height: 120px;
-    border-radius: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: white;
+  width: calc(18% - 16px);
+  height: 120px;
+  border-radius: 10px;
+  box-shadow: $shadow;
 }
 
 .value-card2 {
-    width: calc(28% - 16px);
-    min-width: 215px;
-}
-
-@media (max-width:1200px) {
-    .value-card {
-        width: calc(25% - 15px);
-    }
-}
-
-@media(max-width:860px) {
-    .value-card {
-        width: calc(33% - 13px);
-    }
-}
-
-@media(max-width:530px) {
-    .value-card {
-        width: calc(50% - 10px)
-    }
+  width: calc(28% - 16px);
+  min-width: 215px;
 }
 
 .value-card__header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    line-height: $lineHeightSub;
-    font-weight: $fontWeightRegular;
-    letter-spacing: $letterSpacing;
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  line-height: $lineHeightSub;
+  font-weight: $fontWeightRegular;
+  letter-spacing: $letterSpacing;
 }
 
 .value-card__arrow {
-    cursor: pointer;
-    transition: ease;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: ease 0.2s;
 }
 
-.value-card__setting:hover {
-    font-size: 20px;
+.value-card__arrow:hover {
+  transform: scale(1.1);
 }
-
 
 .value-card__content {
-    display: flex;
-    align-items: center;
-    border: solid 1px;
+  display: flex;
+  align-items: center;
 }
 
 .value-card__value {
-    font-size: 32px;
-    line-height: $lineHeightHeading;
-    font-weight: $fontWeightBold;
-    letter-spacing: $letterSpacing;
+  font-size: 30px;
+  line-height: $lineHeightHeading;
+  font-weight: $fontWeightBold;
+  letter-spacing: $letterSpacing;
 }
 
 .value-card__unit {
-    line-height: $lineHeightHeading;
-    margin-left: 5px;
+  line-height: $lineHeightHeading;
+  margin-left: 5px;
 }
 
 .value-card__footer {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .value-card__tag {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    font-weight: $fontWeightRegular;
-    letter-spacing: $letterSpacing;
-    border: solid 1px;
-    color: white;
-    background-color: $accent;
-    border-radius: 100px;
-    padding: 0 10px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: $fontWeightRegular;
+  letter-spacing: $letterSpacing;
+  border: solid 1px;
+  color: white;
+  background-color: $accent;
+  border-radius: 100px;
+  padding: 0 10px;
 }
 
 .tag--normal {
-    background-color: green;
+  background-color: green;
 }
 
 .tag--warning {
-    background-color: red;
+  background-color: red;
 }
 
+// 🌟彈窗🌟
 .values__pop-window {
-    position: relative;
-    display: flex;
-    width: 800px;
-    height: 400px;
-    background-color: white;
+  position: relative;
+  display: flex;
+  width: 800px;
+  height: 400px;
+  background-color: white;
 }
 
-/* 遮罩：滿版 + 置中 */
+// 遮罩：滿版 + 置中
 .pop-overlay {
-    position: fixed;
-    /* top right bottom left = 0 */
-    inset: 0;
-    background: rgba(0, 0, 0, 70%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
+  position: fixed;
+  inset: 0;
+  /* top right bottom left = 0 */
+  background: rgba(0, 0, 0, 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }
 
-//彈窗_左邊歷次記錄區
-//彈窗_左邊歷次記錄區
+//🌟彈窗_左邊歷次記錄區
 .records {
-    position: relative;
-    width: 60%;
-    box-sizing: border-box;
-    border: solid 1px;
-    padding: 20px;
-    border: solid red;
+  position: relative;
+  width: 60%;
+  box-sizing: border-box;
+  padding: 20px;
+  border-right: solid 1px $primaryLight;
 }
 
 .records__table {
-    height: 360px;
-    overflow: hidden;
+  height: 360px;
+  overflow: hidden;
 }
 
 .records__title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    height: 40px;
-    background-color: $primaryDark;
-    color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  height: 40px;
+  background-color: $primaryDark;
+  color: white;
 }
 
 .records__list {
-    height: 320px;
-    overflow-y: auto;
+  height: 320px;
+  overflow-y: auto;
 }
 
 .records__title__time {
-    padding-right: 86px;
+  padding-right: 86px;
 }
 
 .records__data {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    width: 100%;
-    padding: 0 10px;
-    display: flex;
-    justify-content: space-between;
-    border: solid 2px white;
-    background-color: $primaryLight;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
+  border: solid 2px white;
+  background-color: $primaryLight;
+  cursor: pointer;
 }
 
 .records__data:hover {
-    border: 2px solid $primary;
+  border: 2px solid $primary;
 }
 
 .records__data--active {
-    background-color: $primary;
-}
-
-//彈窗_右邊輸入區
-//彈窗_右邊輸入區
-.input {
-    display: flex;
-    flex-direction: column;
-    border: solid 1px;
-    width: 40%;
-    padding: 20px;
-    border: solid red;
-}
-
-.input__header {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: solid 1px red;
-}
-
-.input__title {
-    color: $primaryDark;
-    $fontWeightBold: 700;
-    font-size: 20px;
-}
-
-.input__date {
-    font-size: 14px;
-}
-
-.close-pop__btn {
-    position: absolute;
-    z-index: 2;
-    right: 20px;
-    top: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    color: white;
-    background-color: $grayDark;
-    border-radius: 100px;
-    cursor: pointer;
-}
-
-.input__content {
-    display: flex;
-    flex-direction: column;
-    border: solid 1px red;
-}
-
-.input__card {
-    display: flex;
-    flex-direction: column;
-    margin: 10px 0; 
-    border: solid 1px;
-}
-
-.input__card__title {
-    $fontWeightBold: 700;
-    padding: 5px 0;
-}
-
-.input__card__value {
-    height: 40px;
-    width: 100%;
-    border-radius: 5px;
-}
-
-.input__card__time-select {
-    height: 40px;
-    width: 100%;
-    border-radius: 5px;
-}
-
-.bp-fields {
-    display: flex;
-    gap: 10px;
-    border: solid 1px red;
-}
-
-.btn-save {
-    width: 100%;
-    height: 40px;
-    margin-top: auto;
-    color: white;
-    background-color: $primaryDark;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: $primary;
 }
 
 .edit-icon {
-    height: 15px;
-    width: 15px;
+  height: 20px;
+  width: 20px;
 }
 
+.edit-icon:hover {
+  transform: scale(1.1);
+}
+
+//🌟彈窗_右邊輸入區
+.input {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  padding: 20px;
+}
+
+.input__header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input__title {
+  color: $primaryDark;
+  $fontWeightBold: 700;
+  font-size: 20px;
+}
+
+.input__date {
+  font-size: 14px;
+}
+
+.input__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.input__card {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
+
+.input__card__title {
+  $fontWeightBold: 700;
+  padding: 5px 0;
+}
+
+.input__card__value {
+  height: 40px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.input__card__time-select {
+  height: 40px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.bp-fields {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-save {
+  width: 100%;
+  height: 40px;
+  margin-top: auto;
+  color: white;
+  background-color: $primaryDark;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-pop__btn {
+  position: absolute;
+  z-index: 2;
+  right: 20px;
+  top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  color: white;
+  background-color: $accent;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+//🌟指標趨勢
 .trends__content {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
 }
 
 .trends__line-chart {
-    width: 660px;
-    height: 300px;
-    border: solid 1px;
-    background-color: $primaryLight;
-    border-radius: 10px;
+  width: calc(80% - 10px);
+  height: 300px;
+  border: solid 1px;
+  background-color: $primaryLight;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .trends__right-btns {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    padding: 5px;
-    gap: 5px;
-    width: 200px;
-    border: solid 1px;
-    background-color: white;
-    border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: calc(20% - 10px);
+  padding: 5px;
+  gap: 5px;
+  border: solid 1px;
+  background-color: white;
+  border-radius: 10px;
 }
 
 .trends__btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    line-height: $lineHeightSub;
-    font-weight: $fontWeightRegular;
-    letter-spacing: $letterSpacing;
-    width: 100%;
-    height: 54px;
-    border-radius: 10px;
-    cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: $fontWeightRegular;
+  letter-spacing: $letterSpacing;
+  width: 100%;
+  height: 54px;
+  border-radius: 10px;
+  transition: ease 0.2s;
+  cursor: pointer;
 }
 
 .trends__btn--on {
-    background-color: $primaryDark;
-    color: white;
+  background-color: $primaryDark;
+  color: white;
+}
+
+
+// 🌟RWD RWD RWD RWD RWD RWD
+@media (max-width:1200px) {
+  .value-card {
+    width: calc(25% - 15px);
+  }
 }
 
 @media(max-width:860px) {
-    .values__pop-window {
-        flex-direction: column;
-        width: 90%;
-        height: 90%;
-    }
+  .value-card {
+    width: calc(33% - 13px);
+  }
 
-    .records {
-        width: 100%;
-        height: 50%;
-    }
+  .values__pop-window {
+    flex-direction: column-reverse;
+    width: 90%;
+    height: 90%;
+  }
 
-    .records__table {
-        height: 100%;
-    }
+  .records {
+    width: 100%;
+    height: 50%;
+    border: 0;
+    border-top: solid 1px $primaryLight;
+  }
 
-    .input {
-        width: 100%;
-        height: 50%;
-    }
+  .records__table {
+    height: 100%;
+  }
 
-    .input__content{
-        flex-direction: row;
-        gap: 20px;
-    }
-    .input__card{
-        width: 50%;
-    }
+  .records__list {
+    height: calc(100% - 40px);
+  }
 
+  .input {
+    width: 100%;
+    height: 50%;
+  }
+
+  .input__content {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .input__card {
+    width: 50%;
+  }
+}
+
+@media(max-width:600px) {
+  .value-card {
+    width: calc(50% - 10px)
+  }
+  .trends__content{
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .trends__line-chart{
+    width: 100%;
+  }
+  .trends__right-btns{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+  .trends__btn{
+    width: 20%;
+    height: 40px;
+  }
 }
 </style>
