@@ -84,7 +84,7 @@ const onKeydown = (event) => {
             <div class="new-medicine__name">{{ item.name }}</div>
             <div class="new-medicine__chips">
               <span v-if="item.eatTimes" class="new-medicine__chip">{{ item.eatTimes }}</span>
-              <span v-if="item.oneTime" class="new-medicine__chip">{{ item.oneTime }}</span>
+              <span v-if="item.oneTime" class="new-medicine__chip">{{ item.oneTime }}份</span>
             </div>
           </div>
           <div class="new-medicine__status" :class="{ 'is-checked': item.checked }">

@@ -17,8 +17,10 @@ const viewItems = computed(() =>
     id: item.id,
     name: item.name,
     image: item.image,
-    timeLabel: item.timeCourse?.[0] || '',
-    tags: [item.eatTimes, item.oneTime].filter(Boolean),
+    timeLabel: item.timeCourse[0],
+    tags: item.oneTime,
+    eatTime: [item.eatTimes],
+    
   }))
 )
 
@@ -34,9 +36,13 @@ const viewItems = computed(() =>
         <div class="today-medicine__content">
           <div class="today-medicine__name">{{ item.name }}</div>
           <div class="today-medicine__tags">
-            <span v-for="tag in item.tags" :key="tag" class="today-medicine__tag">
-              {{ tag }}
+            <span v-for="time in item.eatTime" :key="time" class="today-medicine__tag">
+              {{ time }}
             </span>
+            <span v-for="tag in item.tags" :key="tag" class="today-medicine__tag">
+              {{ tag }}份
+            </span>
+            
           </div>
         </div>
         <div class="today-medicine__time">{{ item.timeLabel }}</div>
@@ -88,8 +94,9 @@ const viewItems = computed(() =>
   }
 
   .today-medicine__name {
-    @include body1;
+    @include body1(true);
     color: $primaryDark;
+    font-size: 14px;
   }
 
   .today-medicine__tags {
@@ -102,8 +109,9 @@ const viewItems = computed(() =>
     border: 1px solid $primaryDark;
     color: $primaryDark;
     border-radius: 999px;
-    padding: 4px 16px;
+    padding: 2px 8px;
     @include body3;
+    font-size: 12px;
   }
 
   .today-medicine__time {
@@ -113,6 +121,7 @@ const viewItems = computed(() =>
     padding: 8px;
     margin: 8px 24px 0 0;
     @include body1(true);
+    font-size: 12px;
   }
 }
 </style>
