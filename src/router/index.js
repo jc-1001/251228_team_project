@@ -2,6 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
+    path: '/Portal',
+    name: 'Portal',
+    component: () => import('@/views/public/PortalView.vue'),
+    meta: {
+      title: '入口',
+    },
     path: '/support',
     name: 'support',
     component: () => import('@/views/client/Support.vue'),
@@ -16,23 +22,13 @@ const routes = [
     component: () => import('@/views/public/LoginView.vue'),
   },
   {
-    path: '/AdminLogin',
-    name: 'AdminLogin',
-    component: () => import('@/views/public/AdminLoginView.vue'),
-  },
-  {
-    path: '/Portal',
-    name: 'Portal',
-    component: () => import('@/views/public/PortalView.vue'),
-  },
-  {
     path: '/',
     name: 'Landing',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
   },
   {
-    path: '/HomeView',
+    path: '/home',
     name: 'Home',
     component: () => import('@/views/client/HomeView.vue'),
     meta: {
@@ -49,6 +45,7 @@ const routes = [
       // showHeader: true,
       showTopIcon: true,
       showSidebar: true,
+      title: '飲食日記',
     }
   },
   {
@@ -132,8 +129,17 @@ const routes = [
   },
   {
     path: '/orderlist',
-    name: 'orderlist',
+    name: 'orderList',
     component: () => import('@/views/client/profile/OrderList.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: `/order/:id`,
+    name: 'orderDetail',
+    component: () => import('@/views/client/profile/OrderDetail.vue'),
     meta: {
       showTopIcon: true,
       showSidebar: true,
@@ -177,7 +183,7 @@ const router = createRouter({
     return { top: 0 }
   },
 })
-
+// 動態變更網頁頁籤
 router.beforeEach(async (to, from) => {
   if (to.meta && to.meta.title) {
     document.title = `${to.meta.title} - UniCare`

@@ -7,7 +7,7 @@ import sidebarDeco from '@/assets/images/common/sidebar_deco.svg'
 const isSidebarOpen = ref(false)
 
 const menuItems = ref([
-  { name: '首頁戰情室', icon: 'dashboard', path: '/HomeView' },
+  { name: '首頁戰情室', icon: 'dashboard', path: '/home' },
   { name: '飲食日記', icon: 'restaurant', path: '/DietLog' },
   { name: '數位藥箱', icon: 'medication', path: '/medicine' },
   { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
@@ -56,7 +56,6 @@ const menuItems = ref([
   flex-direction: column;
   gap: 16px;
   width: 250px;
-  // width: 303px;
   height: 100vh;
   background-color: $white;
   box-shadow: $shadow;
@@ -109,7 +108,7 @@ const menuItems = ref([
   .hb-btn {
     display: flex;
     flex-direction: column;
-    margin: 4px 0 0 16px;
+    margin: 14px 0 0 16px;
     gap: 4px;
     position: fixed;
     width: 40px;

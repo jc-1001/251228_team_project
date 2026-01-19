@@ -32,15 +32,21 @@ watch(()=> props.gallery,(newVal)=>{
 
 <style lang="scss" scoped>
 .product_pic {
+  flex: 1 1 352px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  flex: 1 1 352px;
-
+  @media (max-width: 1200px) {
+    flex: 1 1 500px;
+  }
   .main_image {
     width: 100%;
     object-fit: cover;
     border-radius: $radius-md;
+    @media (max-width: 768px) {
+      height: 25vh;
+      object-position: center;
+    }
   }
 
   .thumbnail_list {

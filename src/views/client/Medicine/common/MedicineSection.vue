@@ -24,4 +24,9 @@ const showModal = ref(false)
     :items="items"
     @createClick="showModal = true"
   />
+    <MedicineCarousel
+    title="我的保健品"
+    :items="items"
+    @createClick="showModal = true"
+  />
 </template>
