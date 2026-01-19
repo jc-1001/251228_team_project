@@ -14,22 +14,24 @@
       
       <nav class="main-menu" :class="{ 'is-active': isMenuOpen }">
         <ul class="menu">
-          <li class="menu-item"><router-link to="/aboutUs">關於我們</router-link></li>
-          <li class="menu-item"><router-link to="/aboutFunction">功能介紹</router-link></li>
-          <li class="menu-item"><router-link to="/aboutReward">使用心得</router-link></li>
-          <li class="menu-item"><router-link to="/info">聯絡我們</router-link></li>
+          <li class="menu-item"><a href="#aboutUs">關於我們</a></li>
+          <li class="menu-item"><a href="#aboutFunction">功能介紹</a></li>
+          <li class="menu-item"><a href="#aboutReward">使用心得</a></li>
+          <li class="menu-item"><router-link to="/support">聯絡我們</router-link></li>
           <li class="menu-item"><router-link to="/Shop">樂活商城</router-link></li>
           <li class="menu-item"><router-link to="/Login">登入</router-link></li>
         </ul>
       </nav>
     </header>
 
-    <div class="container">
+    <div class="container" id="gotop">
       <div class="banner">
         <div class="banner-txt">
+          <ul><li>
           <h1>UniCare</h1>
-          <p><strong>距離再遠，關懷始終在身邊。<br>UniCare, You Care. 守護您最在乎的人。</strong></p>
-          <router-link to="/register"><button>登入/註冊</button></router-link>
+          <p><strong>距離再遠，關懷始終在身邊。<br>UniCare, You Care. 守護您最在乎的人。</strong></p></li></ul>
+          <ul><li></li></ul>
+          <ul><li><router-link to="/login"><button>登入/註冊</button></router-link></li></ul>
         </div>
       </div>
     </div>
@@ -44,7 +46,7 @@
       <div class="item"><img src="/src/assets/images/LP_problem4.svg"><p>紙本記錄容易遺失或不完全</p></div>
     </div>
 
-    <div class="bridge">
+    <div class="bridge" id="aboutUs">
       <h2>健康管理，從簡單記錄開始：<br>UniCare 助您輕鬆掌握全方位的數位健康脈動。</h2>
     </div>
     <div class="partTwo">
@@ -76,7 +78,7 @@
       </div>
     </div>
 
-    <div class="bridge">
+    <div class="bridge" id="aboutFunction">
       <h2>功能介紹</h2>
     </div>
     <div class="partFour">
@@ -90,7 +92,7 @@
     </div>
 
     <div class="partFive">
-      <div class="bridge" style="position: relative ; width: 100%;">
+      <div class="bridge" style="position: relative ; width: 100%;" id="aboutReward">
         <h2>使用心得</h2>
       </div>
       <div class="arrow-container left" @click="scrollTestimonials(-100)">
@@ -106,7 +108,7 @@
       </div>
     </div>
 
-    <a href="#" @click.prevent="scrollToTop" class="pagetop">
+    <a href="#gotop" class="pagetop">
       <br>TOP<br>
     </a>
 
@@ -121,11 +123,11 @@
           </ul>
         </div>        
       </div>
-      <nav class="main-menu-footer">
+      <nav class="main-menu">
         <ul class="menu" style="list-style-type: none; display: flex;">
-          <li class="menu-item"><router-link to="/info">聯絡我們</router-link></li>
-          <li class="menu-item"><router-link to="/aboutQA">常見問題</router-link></li>
-          <li class="menu-item"><router-link to="/aboutUs">關於我們</router-link></li>
+          <li class="menu-item"><router-link to="/support">聯絡我們</router-link></li>
+          <li class="menu-item"><router-link to="/support">常見問題</router-link></li>
+          <li class="menu-item"><a href="#aboutUs">關於我們</a></li>
           <li class="menu-item"><router-link to="/login">立即體驗</router-link></li>
         </ul>
       </nav>
@@ -146,10 +148,6 @@ const features = [
   { img: '/src/assets/images/LP_function4.jpg', title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品。' }
 ];
 
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
 const scrollTestimonials = (amount) => {
   if (testimonialContainer.value) {
     testimonialContainer.value.scrollBy({ left: amount, behavior: 'smooth' });
@@ -158,159 +156,563 @@ const scrollTestimonials = (amount) => {
 </script>
 
 <style scoped>
-/* 這裡貼上您原本 landingPage.css 的內容，並做細微調整 */
+
 .landing-page {
   font-family: 'Noto Sans TC', sans-serif;
   color: #333;
 }
 
-/* --- 原 CSS 內容開始 --- */
-.main-header {
-  position: sticky;
-  display: flex;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
 
-.logo img {
-  height: 40px;
-  width: auto;
-}
+  *{
+      box-sizing: border-box;
+      /* border: 1px solid black; */
+      /* grid-auto-flow: row; */
+      /* background-color: #F6F7F9; */
+  }
 
-/* 針對行動版選單的邏輯優化 */
-@media screen and (max-width: 768px) {
-  .main-menu {
-    position: absolute;
-    top: 100%;
-    left: -100%;
-    background-color: #fff;
-    width: 60%;
-    height: 100vh;
-    transition: left .6s;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  body{
+    margin: 0px;
   }
-  .main-menu.is-active {
-    left: 0;
+  /* template */ /*  */
+  /* é è¨­ */
+  h2,h3,h4,h5,h6{
+    font-family: 'Noto Sans TC', Regular;
+    color: #2E6669;
   }
-  .hb {
-    display: block;
-    width: 45px;
-    height: 45px;
-    border: rgba(0, 0, 0, 0.540) solid 3px;
-    border-radius: 6px;
-    cursor: pointer;
+  p{
+    font-weight: bold;
   }
-  .bar {
-    display: block;
-    width: 75%;
-    height: 3px;
-    margin: 5px auto;
-    background-color: #2E6669;
-  }
-}
+  
+/* header */
 
-@media screen and (min-width: 769px) {
-  .hb { display: none; }
-  .main-menu .menu {
+.main-header{
+    position:sticky;
     display: flex;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    -webkit-text-stroke: #2E6669 0.3px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.logo img{
+    display: block;
+    height: 40px;     
+    width: auto;
+}
+
+
+
+
+/* checkbox */
+.menu-switch{
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .hb{
+        position: relative;
+        display: block;
+        width: 45px;
+        height: 45px;
+        border: rgba(0, 0, 0, 0.540) solid 3px;
+        border-radius: 6px;
+        background-color: transparent;
+    }
+    .hb .bar{
+        display: block;
+        width: 75%;
+        height: 3px;
+        position: relative;
+        margin: 0% auto;
+        
+        background-color: #2E6669;
+    }
+    .bar1 {
+        top: 12px;
+    }
+    .bar2 {
+        top: 18px;
+    }
+    .bar3{
+        top: 25px;
+    }
+    .main-menu{
+        position: absolute;
+        /* display: none; */
+        top: 100%;
+        left: -100%;
+        background-color: #fff;
+        width: 60%;
+        height: calc(100svh - 60px);
+        transition: left .6s;
+    }
+    .main-menu ul li ~ li{
+        /* border-top: 1px solid #2E6669; */
+    }
+    .main-menu ul li a{
+        display: block;
+        text-decoration: none;
+        padding: 10px;
+        font-size: 18px;
+        color: #2E6669;
+        background-color: white;
+    }
+    .main-header:has(.menu-switch:checked) .main-menu{
+            left: 0px;
+            z-index: 1;
+    }
+}
+@media screen and (width >= 768px) {
+    .hb { 
+        display: none; 
+    }
+
+    .main-menu > ul {
+        display: flex ;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .main-menu li {
+        display: block;
+    }
+    .main-menu a{
+        color: #2E6669;
+        text-decoration: none;
+        display: block;
+        padding: 10px 1em;
+        background-color: white;
+    }
+}
+
+body,html{
+  height: 100%;
+  font-family: "Noto Sans TC"
+}
+
+    .container {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        width: 100%;
+        height: auto;
+        display: flex;
+        background-color: black;
+        margin: auto;
+        justify-content: flex-start;
+    }
+    .banner{
+        width: 100%;
+        height: calc(100vh - 64px);
+        background: url(src/assets/images/LP_hero.jpg);
+        background-size: cover;
+        background-position: 70% 50%;
+    }
+
+    .banner-txt{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            margin-left: 10%;
+    }
+    .banner a{
+        text-decoration: none;
+    }
+    button {
+      margin-top: 24px;
+      padding: 12px 24px;
+      background-color: #2E6669;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    
+    button:hover{
+        background-color: white;
+        color: #2E6669;
+      }
+
+.bridge{
+  width: cover;
+  height: 10%;
+  text-align: center;
+  margin: 4.5%;
+}
+
+/* partOne */
+
+.partOne{
+  display: grid;
+  margin: 0px 15%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: row;
+  gap: 20px 15%;
+  
+}
+
+.partOne .item{
+    /* border: 1px solid red; */
+    text-align: center;
+}
+
+.partOne img{
+  width: 80%;
+  height: auto;
+  justify-self: center;
+}
+
+.partOne p{
+  margin: 6%;
+  font-weight: bold;
+}
+
+/* partTwo */
+
+.partTwo{
+  display: grid;
+  margin: 0% 5%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows:max-content;
+  gap: 0px 5%;
+}
+
+.partTwo .item{
+    /* border: 1px solid red; */
+    text-align: left;
+}
+
+.partTwo img{
+  width: 100%;
+  height: auto;
+}
+.partTwo ul{
+    padding: 5%;
+    margin: auto 0%;
+    /*  */
     list-style: none;
-  }
-  .main-menu .menu-item a {
-    padding: 10px 15px;
+    padding-left: 0;
+}
+.partTwo ul li{
+  margin: 6%;
+  font-size: large;
+}
+
+/* partThree */
+
+.partThree{
+    display: grid;
+  width: 100%;
+  background-color: #E0F2F1;
+  /* grid-template-columns: repeat(3, 1fr); */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: column;
+    column-gap: 6.25%;
+    padding-left: 6.25%;
+    padding-right: 6.25%;
+    place-self: center center;
+}
+
+.partThree .item{
+    /* border: 1px solid red; */
+    place-self: center center;
+    margin: 6.25% auto;  
+    text-align: center;
+}
+
+.partThree img{
+    /* size: fit-content; */
+    object-fit: contain;
+    width: 100%;
+    height: 18vw;
+    justify-self: center;
+}
+
+.partThree ul{
+    list-style: none;
+    padding-left: 0;
+    margin-top: 30px;
+}
+
+.partThree li{
+    border:#2E6669 dashed 3px ;
+    border-radius: 10px;
+}
+
+  /*pagetop*/
+  .pagetop {
+    width: 60px;
+    height: 60px;
+    position: fixed;
+    right: 9%;
+    bottom: 15%;
+    border-radius: 50%;
+    border: #2E6669 solid 1px;
     color: #2E6669;
     text-decoration: none;
+    text-align: center;
+    justify-content: center;
+    font-size: small;
   }
+  .pagetop:hover {
+    background-color: #2E6669;
+    color: #fff;
+    }
+
+
+.partFour{
+    width: 100%;             
+    display: flex;           
+    flex-direction: column;  
+    align-items: center;     
+    margin: 0;
+    padding: 40px 0; /*  */
 }
 
-/* Banner Section */
-.banner {
-  width: 100%;
-  height: calc(100vh - 64px);
-  background: url('/src/assets/images/LP_hero.jpg') no-repeat center center;
-  background-size: cover;
+.partFour .card:nth-child(odd){
+    flex-direction: row-reverse;
 }
-.banner-txt {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-left: 10%;
-}
-.banner button {
-  padding: 12px 24px;
-  background-color: #2E6669;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.banner button:hover {
-  background-color: #3d868a;
-}
-
-/* 其他區塊樣式載入... */
-.bridge { text-align: center; margin: 4.5% 0; }
-.bridge h2 { color: #2E6669; }
-
-.partOne {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin: 0 15%;
-}
-.partOne .item { text-align: center; }
-.partOne img { width: 80%; }
-
 .partFour .card {
-  display: flex;
-  align-items: center;
-  margin-bottom: 40px;
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;      
+    /* border: 1px solid red; */
+     margin: 30px 0;/*  */
 }
-.partFour .card:nth-child(even) { flex-direction: row-reverse; }
-.partFour .pic { width: 50%; text-align: center; }
-.partFour .pic img { width: 70%; }
-.partFour .txt { width: 50%; padding: 0 20px; }
 
+
+.partFour .card .pic{
+    width: 65%;
+    display: flex;
+    justify-content: center;
+}
+
+
+.partFour .card .pic img{
+    width: 75%;
+    height: auto;
+}
+
+
+.partFour .card .txt{
+    width: 35%;
+    padding: 0 40px; 
+}
+
+
+/* partFive */
+  
 .partFive {
-  background-color: #E0F2F1;
-  padding: 40px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+    height: fit-content;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    background-color: #E0F2F1;
+    justify-content: center;
+    align-items: center;
 }
-.contence {
-  display: flex;
-  overflow-x: auto;
+.partFive .contence{
   width: 80%;
+  height: 90%;
+  position: relative; 
+  padding: 10px auto;
+  display: flex; 
+  overflow: auto;
+  /* border: 1px solid red; */
+  margin: 0px;
 }
-.contence img { height: 250px; margin: 0 10px; }
-.arrow-container { cursor: pointer; display: flex; align-items: center; }
-
-.pagetop {
-  position: fixed;
-  right: 5%;
-  bottom: 10%;
-  width: 60px;
-  height: 60px;
-  border: 1px solid #2E6669;
-  border-radius: 50%;
-  text-align: center;
-  color: #2E6669;
-  text-decoration: none;
-  background: white;
+.partFive .contence img{
+  scale: 80%;
 }
 
-.main-footer {
-  padding: 40px;
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid #eee;
+.partFive .contence::-webkit-scrollbar {
+    display: none;
 }
-/* --- 原 CSS 內容結束 --- */
+
+
+/* footer */
+
+.main-footer{
+    position:static;
+    display: flex;
+    bottom: 0;
+    z-index: 1;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    background-color: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    -webkit-text-stroke: #2E6669 0.3px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.main-footer .logo img{
+    display: block;
+    height: 40px;     
+    width: auto;
+    margin: 5% 0px;
+}
+
+div.footer_left{
+            /* border: 1px solid black; */
+            list-style: none;
+        }
+        div.footer_left ul.list{
+            /* border: 1px solid red; */
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        div.footer_left ul.list > li {
+            display: inline-block;
+            /* border: 1px solid orange; */
+            vertical-align: top;
+        }
+        
+        div.footer_left ul.list > li > a{
+            display: inline-block;
+            /* border: 1px solid orange; */
+            padding: 5px 10px;
+            text-decoration: none;
+        }
+
+
+@media screen and (max-width: 768px) {
+    
+    .main-menu{
+        position: absolute;
+        /* display: none; */
+        top: 100%;
+        left: -100%;
+        background-color: #fff;
+        width: 60%;
+        height: calc(100svh - 60px);
+        transition: left .6s;
+    }
+    .main-menu ul li ~ li{
+        list-style: none;
+        /* border-top: 1px solid #2E6669; */
+    }
+    .main-menu ul li a{
+        display: block;
+        text-decoration: none;
+        padding: 10px;
+        font-size: 18px;
+        color: #2E6669;
+        background-color: white;
+    }
+    .main-footer:has(.menu-switch:checked) .main-menu{
+            left: 0px;
+            z-index: 1;
+    }
+    .banner{
+        width: cover;
+        height: 60vh;
+        background: url(src/assets/images/20260118/banner2.png);
+        /* background-size: cover; */
+        background-position: 70% 50%;
+        background-repeat: no-repeat;
+    }
+    .banner-txt{
+      height: 100%;
+      width: fit-content;
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }/* partOne */
+
+  .partOne{
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: 100%;
+    
+  }
+    .partTwo{
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-columns:100%;
+      gap: 0px;
+    }
+
+    .partTwo .item{
+        text-align: left;
+    }
+    .partThree{
+    background-color: #E0F2F1;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: 100%;
+  }
+
+  .partThree img{
+      width: 100%;
+      height: calc(30vh - 64px);
+  }
+
+    .partFour{
+      width: 100%;             
+      display: grid;
+      grid-template-rows: repeat(4, 1fr);
+      grid-template-columns:100%; 
+      align-items: center;     
+      margin: 0;
+  }
+
+  .partFour .card:nth-child(odd){
+  }
+  .partFour .card {
+      width: 100%;
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-columns:100%; 
+      justify-items: center;
+      /* border: 1px solid red; */
+  }
+  .partFour .card .pic{
+    width: fit-content;
+  }
+
+
+  .partFour .card .pic img{
+      width: 100%;
+  }
+
+
+  .partFour .card .txt{
+      width: 100%;
+      text-align: center;
+  }
+    
+}
+@media screen and (width >= 768px) {
+
+    .main-menu > ul {
+        display: flex ;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .main-menu li {
+        display: block;
+    }
+    .main-menu a{
+        color: #2E6669;
+        text-decoration: none;
+        display: block;
+        padding: 10px 1em;
+        background-color: white;
+    }
+}
 </style>

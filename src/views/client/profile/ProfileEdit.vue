@@ -10,7 +10,11 @@ const profile = ref({
   gender: 'female',
   birthday: '1987-01-01',
   height: '160',
-  weight: '45'
+  weight: '45',
+  bloodType:'O',
+  phone_number:'0912345678',
+  contact_name:'Mom',
+  relationship:'母女',
 })
 
 const handleSave = () => {
@@ -53,6 +57,26 @@ const handleSave = () => {
         <div class="form-group">
           <label>體重 kg</label>
           <input type="number" v-model="profile.weight">
+        </div>
+
+        <div class="form-group">
+          <label>血型</label>
+          <input type="text" v-model="profile.bloodType">
+        </div>
+
+        <div class="form-group">
+          <label>緊急聯絡人</label>
+          <input type="text" v-model="profile.contact_name" placeholder="請輸入姓名">
+        </div>
+
+        <div class="form-group">
+          <label>緊急聯絡人關係</label>
+          <input type="text" v-model="profile.relationship">
+        </div>
+
+        <div class="form-group">
+          <label>緊急聯絡人手機號碼</label>
+          <input type="tel" v-model="profile.phone_number">
         </div>
 
         <div class="form-actions">

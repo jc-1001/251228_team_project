@@ -17,21 +17,18 @@ const handleLogin = () => {
     <div class="login-wrapper">
       <div class="login-visual">
         <div class="brand-info">
-          
-          <h1>UniCare</h1>
-          <p>距離再遠，關懷始終在身邊。</p>
+          <img src="/src/assets/images/20260118/logo.png" class="logo">
         </div>
-        <img src="/src/assets/images/Login.svg" alt="Login Illustration" class="illustration">
+        <img src="/src/assets/images/Login.svg" alt="Login" class="illustration">
       </div>
 
       <div class="login-form-container">
         <div class="form-box">
-          <h2>歡迎回來</h2>
-          <p class="subtitle">請登入您的帳號以開始使用</p>
+          <h2>會員登入</h2>
 
           <form @submit.prevent="handleLogin">
             <div class="input-group">
-              <label>電子郵件</label>
+              <label>帳號</label>
               <input type="email" v-model="email" placeholder="example@mail.com" required>
             </div>
 
@@ -50,8 +47,15 @@ const handleLogin = () => {
             <button type="submit" class="btn-login">登入</button>
           </form>
 
+          <div class="register-way">
+            或是用其他方式
+          </div>
+          <div class="register-icon">
+            <img src="\src\assets\images\google.svg" alt="Google">
+            <img src="\src\assets\images\fb.svg" alt="fb">
+          </div>
           <div class="register-hint">
-            還沒有帳號嗎？ <router-link to="/register" class="link">立即註冊</router-link>
+            還不是會員? <router-link to="/register" class="link">註冊</router-link>
           </div>
         </div>
       </div>
@@ -82,17 +86,14 @@ const handleLogin = () => {
 /* 左側視覺區 */
 .login-visual {
   flex: 1.2;
-  background-color: #2E6669; // 使用您的品牌綠色
+  background-color: #e0f2f1;
   padding: 60px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: white;
 
   .brand-info {
-    .logo { height: 45px; margin-bottom: 20px; filter: brightness(0) invert(1); }
-    h1 { font-size: 32px; color: white; margin-bottom: 10px; }
-    p { opacity: 0.9; font-size: 16px; }
+    .logo { height: 45px; margin-bottom: 20px; }
   }
 
   .illustration {
@@ -115,7 +116,6 @@ const handleLogin = () => {
     max-width: 360px;
 
     h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
-    .subtitle { color: #888; margin-bottom: 40px; }
   }
 }
 
@@ -158,7 +158,17 @@ const handleLogin = () => {
 
 .link { color: #2E6669; text-decoration: none; font-weight: 500; &:hover { text-decoration: underline; } }
 
-.register-hint { text-align: center; margin-top: 30px; font-size: 14px; color: #777; }
+.register-hint , .register-way { text-align: center; margin-top: 30px; font-size: 14px; color: #777; }
+
+.register-icon { 
+  display: grid; 
+  justify-self: center;
+  gap: 30px;
+  margin-top: 15px;
+  // border: 1px solid #666;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 100%;
+}
 
 /* 響應式：手機版改為上下堆疊 */
 @media (max-width: 900px) {

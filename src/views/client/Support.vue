@@ -85,6 +85,19 @@ const toggleAccordion = (index) => {
       <p v-if="filteredFaqs.length === 0" class="no-data">目前該分類下沒有相關問題。</p>
     </main>
   </section>
+  <section class="contact-section">
+        <div class="contact-header">
+          <h2>聯絡我們</h2>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <h3></h3>
+            <p>support@unicare.com</p>
+            <p>0800-123-456</p>
+            <p class="time">週一至週五 09:00 - 18:00</p>
+          </div>
+        </div>
+    </section>
 </template>
 
 <style lang="scss" scoped>
@@ -176,4 +189,41 @@ const toggleAccordion = (index) => {
 }
 
 .no-data { text-align: center; color: #999; margin-top: 50px; }
+
+/* 聯絡我們區塊樣式 */
+
+.contact-section {
+  text-align: center;
+  .contact-header {
+    margin-bottom: 40px;
+    h2 { color: #2E6669; font-size: 1.8rem; margin-bottom: 10px; }
+    p { color: #666; }
+  }
+  margin: 0 18%;
+}
+
+.contact-card {
+  background: white;
+  padding: 30px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  transition: transform 0.3s;
+  
+  &:hover { transform: translateY(-5px); }
+  
+  span { font-size: 40px; color: #2E6669; margin-bottom: 15px; }
+  h3 { font-size: 1.2rem; color: #333; margin-bottom: 10px; }
+  p { font-weight: 600; color: #2E6669; margin-bottom: 5px; }
+  .time { font-weight: 400; font-size: 0.9rem; color: #999; }
+}
+
+/* RWD 斷點修正 */
+@media (max-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .faq-header h1 { font-size: 2rem; }
+  .accordion-header .question { font-size: 1rem; }
+}
 </style>

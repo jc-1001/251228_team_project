@@ -31,14 +31,14 @@ const handleAdminLogin = () => {
           <div class="form-item">
             <label>帳號</label>
             <div class="input-wrapper">
-              <input type="text" v-model="adminForm.account" placeholder="請輸入管理員帳號" required>
+              <input type="text" v-model="adminForm.account" placeholder="輸入管理員帳號" required>
             </div>
           </div>
 
           <div class="form-item">
             <label>密碼</label>
             <div class="input-wrapper">
-              <input type="password" v-model="adminForm.password" placeholder="請輸入管理員密碼" required>
+              <input type="password" v-model="adminForm.password" placeholder="輸入管理員密碼" required>
             </div>
           </div>
 
@@ -53,9 +53,8 @@ const handleAdminLogin = () => {
 <style lang="scss" scoped>
 .admin-login-page {
   height: 100vh;
-  width: 100vw;
-  // 使用較深、較專業的漸層色背景
-  background: linear-gradient(135deg, #1a3c3e 0%, #2E6669 100%);
+  width: 100%;
+  background-color: #e0f2f1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -81,6 +80,8 @@ const handleAdminLogin = () => {
   .admin-logo {
     height: 50px;
     margin-bottom: 15px;
+    display: block;
+    margin: 12px auto;
   }
 
   h2 {

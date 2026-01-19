@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 // 定義功能入口資料
 const portals = ref([
-  { id: 1, title: '前台', iconName: 'front.png', path: '/HomeView' },
+  { id: 1, title: '前台', iconName: 'front.png', path: '/Login' },
   { id: 2, title: '後台', iconName: 'back.png', path: '/AdminLogin' }
 ])
 </script>
@@ -36,11 +36,10 @@ const portals = ref([
 <style lang="scss" scoped>
 .portal-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f6f7f9 0%, #e9eeee 100%);
+  background-color: #e0f2f1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px;
 }
 
 .portal-container {
