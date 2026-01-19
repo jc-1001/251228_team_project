@@ -2,6 +2,7 @@
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 
 // 引入燈箱元件
 // 快速紀錄
@@ -81,7 +82,7 @@ const closePopup = () => {
 <template>
   <div class="home-container">
     <TheHeader
-      title="早上好，陳小姐！"
+      title="早安，陳小姐！"
       subtitle="今天感覺如何？別忘了量血壓喔～"
       imageSrc="/src/assets/images/HomeView-header.svg"
     />
@@ -93,7 +94,7 @@ const closePopup = () => {
         <!-- 快速紀錄 -->
         <div class="today-button">
           <div class="block-title">
-            <p>快速紀錄</p>
+            <p>快速記錄</p>
           </div>
           <div class="buttonlist">
             <button
@@ -107,13 +108,13 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <!-- <HomeCommonModal
+              <HomeCommonModal
                 :modelValue="true"
                 :title="`${popupInfo.name}`"
                 :data="popupInfo"
                 @update:modelValue="closePopup"
                 @close="closePopup"
-              /> -->
+              />
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
               <!-- <ConfirmActionModal
                 ref="productModal"
@@ -125,7 +126,7 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <!-- <NewMedicineModals :info="popupInfo" @close="closePopup" /> -->
+              <NewMedicineModals :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -177,6 +178,7 @@ const closePopup = () => {
           <div class="block-title">
             <p>今日服藥提醒</p>
           </div>
+          <HomeTodayMedicine />
         </div>
         <div class="med-stock">
           <div class="block-title">
@@ -214,6 +216,7 @@ main {
   height: 300px;
   width: 100%;
   margin-top: 65px;
+  overflow: auto;
   @media (max-width: 1025px) {
     margin-top: 0px;
   }

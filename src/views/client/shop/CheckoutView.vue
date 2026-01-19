@@ -1,11 +1,69 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cart'
+import { useOrderStore } from '@/stores/order'
+
 import CheckoutItems from '@/components/checkout/CheckoutItems.vue'
 import CheckoutForm from '@/components/checkout/CheckoutForm.vue'
 import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
 
+import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
+
+const router = useRouter()
+const cartStore = useCartStore()
+const orderStore = useOrderStore()
+
+const showSuccess = ref(false)
+
+// Template Refs - 樣板參考
+const checkoutFormRef = ref(null)
+
+// 處理結帳送出
+const handleCheckoutSubmit = (summaryData)=>{
+  if(!checkoutFormRef.value) {
+    return
+  }
+
+  const isValid = checkoutFormRef.value.validateAll()
+
+  if(isValid) {
+    // 準備組裝"訂單頁"需要的資料
+
+    // 表單填寫 - 訂單資料
+    // 使用"深拷貝"將訂單資料成為一個不能被修改的紀錄，成為快照
+    // JSON.stringify將物件轉成字串後，就會切斷與原本物件的連結(因為字串沒有連結功能)
+    const formData = JSON.parse(JSON.stringify(checkoutFormRef.value.form))
+    // orderPayLoad
+    const orderPayLoad = {
+      ...formData,
+      // 購物車商品快照
+      items: cartStore.checkoutList,
+      // 金額資訊
+      total: summaryData.total,
+      shippingFee: summaryData.shippingFee,
+      discount: summaryData.discount
+    }
+
+    // 呼叫orderStore建立訂單
+    orderStore.createOrder( orderPayLoad )
+
+    // 訂單成立燈箱
+    showSuccess.value = true
+  } else {
+    alert('部分欄位有誤，請檢查紅字部分！')
+  }
+}
+const handleSuccessConfirm = ()=>{
+  showSuccess.value = false
+  cartStore.clearCart()
+  // 導到訂單管理頁
+  router.push('/orderlist')
+}
+
 </script>
 <template>
-  <!-- <h3>結帳頁</h3> -->
+  <SuccessMessageModal v-if="showSuccess" :title="'已送出訂單!'" @confirmed="handleSuccessConfirm"/>
   <div class="checkout_page">
     <div class="breadcrumb">
       <router-link :to="'/cart'" class="breadcrumb_location">&lt 返回購物車</router-link>
@@ -14,10 +72,10 @@ import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
     <div class="checkout_container">
       <section class="checkout_info">
         <CheckoutItems />
-        <CheckoutForm />
+        <CheckoutForm ref="checkoutFormRef" />
       </section>
       <section class="checkout_summary">
-        <CheckoutSummary />
+        <CheckoutSummary @submit="handleCheckoutSubmit"/>
       </section>
     </div>
   </div>

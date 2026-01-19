@@ -2,13 +2,33 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
+    path: '/Portal',
+    name: 'Portal',
+    component: () => import('@/views/public/PortalView.vue'),
+    meta: {
+      title: '入口',
+    },
+    path: '/support',
+    name: 'support',
+    component: () => import('@/views/client/Support.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: '/Login',
+    name: 'Login',
+    component: () => import('@/views/public/LoginView.vue'),
+  },
+  {
     path: '/',
     name: 'Landing',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
   },
   {
-    path: '/HomeView',
+    path: '/home',
     name: 'Home',
     component: () => import('@/views/client/HomeView.vue'),
     meta: {
@@ -25,6 +45,7 @@ const routes = [
       // showHeader: true,
       showTopIcon: true,
       showSidebar: true,
+      title: '飲食日記',
     }
   },
   {
@@ -108,8 +129,17 @@ const routes = [
   },
   {
     path: '/orderlist',
-    name: 'orderlist',
+    name: 'orderList',
     component: () => import('@/views/client/profile/OrderList.vue'),
+    meta: {
+      showTopIcon: true,
+      showSidebar: true,
+    }
+  },
+  {
+    path: `/order/:id`,
+    name: 'orderDetail',
+    component: () => import('@/views/client/profile/OrderDetail.vue'),
     meta: {
       showTopIcon: true,
       showSidebar: true,
@@ -123,7 +153,21 @@ const routes = [
       title: 'LoginView_B',
     }
   },
-
+{
+    path: '/Users',
+    name: 'Users',
+    component: () => import('@/views/admin/Users.vue'),
+    // meta: {
+    //   showTopIcon: true,
+    //   showSidebar: true,
+    // },
+  },
+  {
+    path: '/updateUserStatus',
+    name: 'updateUserStatus',
+    component: () => import('@/views/admin/updateUserStatus.vue'),
+  },
+  
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
@@ -139,7 +183,7 @@ const router = createRouter({
     return { top: 0 }
   },
 })
-
+// 動態變更網頁頁籤
 router.beforeEach(async (to, from) => {
   if (to.meta && to.meta.title) {
     document.title = `${to.meta.title} - UniCare`

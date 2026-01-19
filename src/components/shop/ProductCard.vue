@@ -162,8 +162,8 @@ const addToCart = () => {
 
     .card_button {
       button {
+        padding: 8px 40px;
         width: 100%;
-        height: 40px;
         border: none;
         border-radius: 5px;
         @include body2(true);

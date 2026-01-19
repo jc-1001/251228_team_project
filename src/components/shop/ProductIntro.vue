@@ -80,10 +80,13 @@ const handleMinus = ()=> {
 
 <style lang="scss" scoped>
 .product_body {
+  flex: 1 1 200px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1 1 200px;
+  @media (max-width: 1200px) {
+    flex: 1 1 500px;
+  }
   .product_content {
     display: flex;
     flex-direction: column;
@@ -104,6 +107,9 @@ const handleMinus = ()=> {
         margin-bottom: 12px;
         @include title2;
         color: $primaryDark;
+        @media (max-width: 575px) {
+          @include subtitle1(true);
+        }
       }
       .product_desc {
         @include body2;
@@ -146,7 +152,8 @@ const handleMinus = ()=> {
       gap: 8px;
       flex-wrap: wrap;
       .btn_add_to_cart {
-        flex: 1;
+        flex: 2;
+        padding: 8px 40px;
         border: none;
         border-radius: $radius-sm;
         color: $white;

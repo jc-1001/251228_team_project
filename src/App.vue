@@ -10,6 +10,7 @@ import checkoutBg from '@/assets/images/shop/banner_img_checkout.svg?url'
 import metricBg from '@/assets/images/BG_metrics.svg?url'
 import DietBg from '@/assets/images/BG_diary.svg?url'
 
+import medicinebg from '@/assets/images/BG_mdc.svg?url'
 const route = useRoute()
 
 const mainContainer = ref(null)
@@ -31,8 +32,11 @@ const changeBg = computed(() => {
     return { 'background-image': `url("${shopBg}")`, 'background-position': 'right 250px' }
   }
   if (route.path.includes('checkout')) {
-    return { 'background-image': `url("${checkoutBg}")`, 'background-position': 'right 250px' }
+    return { 'background-image': `url("${checkoutBg}")`, 'background-position': 'right bottom' }
   }
+  if (route.path.includes('medicine')) {
+    return { 'background-image': `url("${medicinebg}")`, 'background-position': 'right 250px' }
+    }
   if (route.path.includes('Metrics')) {
     return { 'background-image': `url("${metricBg}")`, 'background-position': 'right 250px' }
   }
@@ -63,13 +67,16 @@ const changeBg = computed(() => {
 
 .main_content {
   flex: 1;
-  padding: 24px 54px;
+  padding: 28px 54px 40px;
   height: 100vh;
   overflow-y: auto;
   background-repeat: no-repeat;
 
   @media screen and (max-width: 1024px) {
-    padding: 24px 32px;
+    padding: 32px 24px;
+  }
+  @media screen and (max-width: 576px) {
+    height: auto;    
   }
 }
 </style>
