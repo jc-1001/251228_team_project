@@ -22,6 +22,8 @@ Swal.fire({
     icon: 'my-custom-icon',
     confirmButton: 'my-confirm-btn', // 確定按鈕
   },
+}).then((result) => {
+  emit('confirmed') 
 })
 </script>
 <template></template>
