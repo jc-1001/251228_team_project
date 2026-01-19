@@ -9,7 +9,7 @@ export const useCartStore = defineStore('cart', () => {
   const cartList = ref(JSON.parse(localStorage.getItem('myCart')) || [])
 
   // 2. Getters (計算)：
-  // 計算購物車商品總數量 (給 Header 的小紅點用)
+  // 計算購物車商品總數量
   const cartCount = computed(() => {
     return cartList.value.reduce((total, item) => total + item.qty, 0)
   })
@@ -74,6 +74,11 @@ export const useCartStore = defineStore('cart', () => {
     })
   }
 
+  // 送出訂單後，被購買的商品從購物車中移除
+  const clearCart = () => {
+    cartList.value = cartList.value.filter(item => item.checked === false)
+  }
+
   // Persistence (持久化)
   // watch( 偵測目標 , 執行動作 , 設定選項 )
   watch(cartList, (newVal) => {
@@ -90,7 +95,8 @@ export const useCartStore = defineStore('cart', () => {
     addToCart,
     removeProduct,
     updateQty,
-    setAllChecked
+    setAllChecked,
+    clearCart
   }
 
 })

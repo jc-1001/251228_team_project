@@ -81,7 +81,7 @@ const closePopup = () => {
 <template>
   <div class="home-container">
     <TheHeader
-      title="早上好，陳小姐！"
+      title="早安，陳小姐！"
       subtitle="今天感覺如何？別忘了量血壓喔～"
       imageSrc="/src/assets/images/HomeView-header.svg"
     />
@@ -93,7 +93,7 @@ const closePopup = () => {
         <!-- 快速紀錄 -->
         <div class="today-button">
           <div class="block-title">
-            <p>快速紀錄</p>
+            <p>快速記錄</p>
           </div>
           <div class="buttonlist">
             <button
@@ -107,13 +107,13 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <!-- <HomeCommonModal
+              <HomeCommonModal
                 :modelValue="true"
                 :title="`${popupInfo.name}`"
                 :data="popupInfo"
                 @update:modelValue="closePopup"
                 @close="closePopup"
-              /> -->
+              />
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
               <!-- <ConfirmActionModal
                 ref="productModal"
