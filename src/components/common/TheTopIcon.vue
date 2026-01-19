@@ -30,7 +30,7 @@ const notifications = ref([
     title: '服藥提醒',
     content: '該吃降血壓藥囉！請記得搭配溫開水服用。',
     time: '1 小時前',
-    isRead: true, // 預設為已讀
+    isRead: false, // 預設為未讀
   },
 ])
 const isDropdownOpen = ref(false) // 控制選單顯示

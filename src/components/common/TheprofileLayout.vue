@@ -48,6 +48,9 @@ defineProps({
   display: flex;
   gap: 24px; // 左右欄間距
   min-height: 100vh;
+  @media (max-width: 1024px) {
+    display: grid;
+  }
 
   // 左側側邊欄
   .sidebar {
@@ -107,6 +110,62 @@ defineProps({
       border: none;
       border-radius: $radius_md;
       cursor: pointer;
+    }
+  }
+
+  // rwd
+  @media (max-width: 1024px) {
+    display: block;
+
+    .sidebar {
+      width: 100%;
+      padding: 10px 0;
+      background-color: transparent;
+      box-shadow: none;
+      flex-direction: column;
+
+      .user-info,
+      .logout-btn {
+        display: none;
+      }
+
+      .menu-list {
+        margin: 10px 0;
+        display: flex;
+        justify-content: flex-start;
+        gap: 12px;
+        overflow-x: auto; //可橫向捲動
+
+        .menu-item {
+          flex: 1;
+          justify-content: center;
+          padding: 8px 16px;
+          margin-bottom: 0;
+          border: 1px solid $primaryDark;
+          border-radius: 50px;
+          white-space: nowrap;
+
+          .material-symbols-rounded {
+            display: none;
+          }
+
+          &.router-link-active {
+            background: $primary;
+            color: white;
+            border-color: $primary;
+          }
+
+          &:not(.router-link-active) {
+            background: white;
+            color: $primaryDark;
+          }
+        }
+      }
+    }
+
+    .content-area {
+      padding: 20px;
+      margin-top: 10px;
     }
   }
 

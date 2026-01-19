@@ -7,7 +7,7 @@ import sidebarDeco from '@/assets/images/common/sidebar_deco.svg'
 const isSidebarOpen = ref(false)
 
 const menuItems = ref([
-  { name: '首頁戰情室', icon: 'dashboard', path: '/HomeView' },
+  { name: '首頁戰情室', icon: 'dashboard', path: '/home' },
   { name: '飲食日記', icon: 'restaurant', path: '/DietLog' },
   { name: '數位藥箱', icon: 'medication', path: '/medicine' },
   { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
