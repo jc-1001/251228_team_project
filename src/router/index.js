@@ -32,7 +32,7 @@ const routes = [
     component: () => import('@/views/public/LandingPage.vue'),
   },
   {
-    path: '/HomeView',
+    path: '/home',
     name: 'Home',
     component: () => import('@/views/client/HomeView.vue'),
     meta: {
@@ -177,7 +177,7 @@ const router = createRouter({
     return { top: 0 }
   },
 })
-
+// 動態變更網頁頁籤
 router.beforeEach(async (to, from) => {
   if (to.meta && to.meta.title) {
     document.title = `${to.meta.title} - UniCare`
