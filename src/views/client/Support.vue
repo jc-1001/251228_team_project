@@ -7,6 +7,7 @@ const allFaqs = ref([
   { category: 'account', question: "如何修改我的個人健康目標？", answer: "您可以前往「個人資料」頁面，點擊「編輯資料」，在下方的健康設定中調整您的目標數值。" },
   { category: 'account', question: "忘記密碼怎麼辦？", answer: "在登入頁面點擊「忘記密碼」，輸入您的註冊信箱，系統將發送重設密碼的連結給您。" },
   { category: 'data', question: "如何獲得積分", answer: "註冊禮$300，每日登入$10/天" },
+  { category: 'data', question: "積分可以全額折抵商品嗎?", answer: "UniCare商城的商品採「部分積分 + 現金」的方式購買，每一項商品都會標示最高的可用積分折抵上限，無法完全以積分免費兌換，這是為了確保商品品質與營運永續。" },
   { category: 'shop', question: "如何查詢我的訂單進度？", answer: "登入後進入「我的訂單」，即可看到所有購買紀錄與目前的物流狀態。" },
   { category: 'app', question: "如何開啟推播通知？", answer: "請至手機系統設定中找到 UniCare，並確認「允許通知」已開啟。" }
 ])
@@ -15,9 +16,9 @@ const allFaqs = ref([
 const categories = ref([
   { id: 'all', title: '全部問題' },
   { id: 'account', title: '帳號管理' },
-  { id: 'data', title: '積分與點數' },
+  { id: 'data', title: '積分與獎勵' },
   { id: 'shop', title: '商城與訂單' },
-  { id: 'app', title: 'APP操作' }
+  { id: 'app', title: '系統操作' }
 ])
 
 const currentCategory = ref('all')
@@ -44,8 +45,8 @@ const toggleAccordion = (index) => {
     
     <TheHeader 
       title="幫助中心"
-      subtitle="遇到問題了嗎？請選擇分類查看常見問題"
-      imageSrc="/src/assets/images/20260118/sup_img0.png"
+      subtitle="遇到問題了嗎?查看常見問題或與我們聯繫"
+      imageSrc="/src/assets/images/client/sup_img0.png"
     />
 
     <main class="support-container">
@@ -92,9 +93,9 @@ const toggleAccordion = (index) => {
         <div class="contact-grid">
           <div class="contact-card">
             <h3></h3>
-            <p>support@unicare.com</p>
-            <p>0800-123-456</p>
-            <p class="time">週一至週五 09:00 - 18:00</p>
+            <p icon="@">service@unicare.com</p>
+            <p>02-8685-6789 ( 09:00-19:00 ) </p>
+            <!-- <p class="time"></p> -->
           </div>
         </div>
     </section>

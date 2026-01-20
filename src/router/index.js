@@ -1,13 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  {
-    path: '/Portal',
-    name: 'Portal',
-    component: () => import('@/views/public/PortalView.vue'),
-    meta: {
-      title: '入口',
+    {
+      path: '/Portal',
+      name: 'Portal',
+      component: () => import('@/views/public/PortalView.vue'),
+      meta: {
+        title: '入口',
+      }
     },
+  {
     path: '/support',
     name: 'support',
     component: () => import('@/views/client/Support.vue'),
@@ -22,7 +24,7 @@ const routes = [
     component: () => import('@/views/public/LoginView.vue'),
   },
   {
-    path: '/',
+    path: '/Landing',
     name: 'Landing',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),

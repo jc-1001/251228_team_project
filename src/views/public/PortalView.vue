@@ -1,7 +1,19 @@
 <script setup>
-const navigateTo = (type) => {
-    console.log(`到 ${type}`);
-};
+
+    import { useRouter } from 'vue-router'
+    const router = useRouter()
+
+    const navigateTo = (type) => {
+        // 2. 確保判斷邏輯與按鈕傳入的字串一致
+        if (type === 'login') {
+            // 前台登入頁路徑
+            router.push('/login') 
+        } else if (type === 'Adminlogin') {
+            // 後台登入頁路徑
+            router.push('/Adminlogin') 
+        }
+    };
+    
 </script>
 
 <template>
@@ -10,13 +22,13 @@ const navigateTo = (type) => {
             <img src="@/assets/images/PortalView_logo.svg" alt="logo" class="logo"/>
         </header>
         <div class="selection-grid">
-            <button class="entry-card" @click="navigateTo('client')">
+            <button class="entry-card" @click="navigateTo('login')">
                 <div class="icon-wrapper">
                     <img src="@/assets/images/PortalView_client.svg" alt="前台"/>
                 </div>
                 <span class="label">前台</span>
             </button>
-            <button class="entry-card" @click="navigateTo('admin')">
+            <button class="entry-card" @click="navigateTo('Adminlogin')">
                 <div class="icon-wrapper">
                     <img src="@/assets/images/PortalView_admin.svg" alt="後台"/>
                 </div>

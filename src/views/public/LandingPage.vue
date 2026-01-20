@@ -40,22 +40,23 @@
       <h2>您可能有過這些困擾—</h2>
     </div>
     <div class="partOne">
-      <div class="item"><img src="/src/assets/images/LP_problem1.svg"><p>常忘記是否吃過藥，保健食品快沒了才發現</p></div>
-      <div class="item"><img src="/src/assets/images/LP_problem2.svg"><p>工作忙碌無法及時關心長輩的健康</p></div>
-      <div class="item"><img src="/src/assets/images/LP_problem3.svg"><p>無法和醫生清楚溝通身體情況</p></div>
-      <div class="item"><img src="/src/assets/images/LP_problem4.svg"><p>紙本記錄容易遺失或不完全</p></div>
+      <div class="item"><img src="/src/assets/images/public/LP_problem1.svg"><p>常忘記是否吃過藥，保健食品快沒了才發現</p></div>
+      <div class="item"><img src="/src/assets/images/public/LP_problem2.svg"><p>工作忙碌無法及時關心長輩的健康</p></div>
+      <div class="item"><img src="/src/assets/images/public/LP_problem3.svg"><p>無法和醫生清楚溝通身體情況</p></div>
+      <div class="item"><img src="/src/assets/images/public/LP_problem4.svg"><p>紙本記錄容易遺失或不完全</p></div>
     </div>
 
     <div class="bridge" id="aboutUs">
       <h2>健康管理，從簡單記錄開始：<br>UniCare 助您輕鬆掌握全方位的數位健康脈動。</h2>
     </div>
     <div class="partTwo">
-      <div class="item"><img src="/src/assets/images/LP_aboutus.jpg"></div>
+      <div class="item"><img src="/src/assets/images/public/LP_aboutus.jpg"></div>
       <div class="item">
         <ul>
           <li><h3>我們的起點</h3></li>
           <li><p>我們深知健康不只是吞下一顆膠囊，而是來自於「持之以恆的紀錄」與「家人的陪伴」。<br>
-          UniCare 的誕生，是為了打破傳統照護的冰冷，透過數位轉型，讓長輩能輕鬆上手，讓子女能隨時守護。</p></li>
+          UniCare 的誕生，是為了打破傳統照護的冰冷，透過數位轉型，讓長輩能輕鬆上手，讓子女能隨時守護。<br>
+          對長輩而言， 它是最直覺的操作手冊，紀錄健康就像拍照一樣簡單。對子女而言，它是遠端的一雙眼，看見父母每天的飲食與服藥情形。</p></li>
         </ul> 
       </div>
     </div>
@@ -65,15 +66,15 @@
     </div>
     <div class="partThree">
       <div class="item">
-        <img src="/src/assets/images/LP_promise1.svg">
-        <ul><li><h3>透明化照護</h3><p>數據即時同步，讓「有沒有吃飯、有沒有吃藥」不再是重複的問句。</p></li></ul>
+        <img src="/src/assets/images/public/LP_promise1.svg">
+        <ul><li><h3>透明化照護</h3><p>數據即時同步，讓「有沒有吃飯、有沒有吃藥」不再是重複的問句，而是溫暖的默契。</p></li></ul>
       </div>
       <div class="item">
-        <img src="/src/assets/images/LP_promise2.svg">
+        <img src="/src/assets/images/public/LP_promise2.svg">
         <ul><li><h3>貼心提醒</h3><p>及時提醒您每日測量身體狀態、上傳飲食資訊、以及服藥和保健食品。</p></li></ul>
       </div>
       <div class="item">
-        <img src="/src/assets/images/LP_promise3.svg">
+        <img src="/src/assets/images/public/LP_promise3.svg">
         <ul><li><h3>詳細記錄</h3><p>所有上傳的紀錄將完好保存在您的帳戶中，不用擔心遺失弄丟。</p></li></ul>
       </div>
     </div>
@@ -99,9 +100,9 @@
         <img src="" style="rotate: -90deg;">
       </div>
       <div class="contence" ref="testimonialContainer">
-        <img src="/src/assets/images/LP_reward1.png">
-        <img src="/src/assets/images/LP_reward2.png">
-        <img src="/src/assets/images/LP_reward3.png">
+        <img src="/src/assets/images/public/LP_reward1.png">
+        <img src="/src/assets/images/public/LP_reward2.png">
+        <img src="/src/assets/images/public/LP_reward3.png">
       </div>
       <div class="arrow-container right" @click="scrollTestimonials(100)">
         <img src="" style="rotate: 90deg;">
@@ -142,10 +143,10 @@ const isMenuOpen = ref(false);
 const testimonialContainer = ref(null);
 
 const features = [
-  { img: '/src/assets/images/LP_function1.jpg', title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！' },
-  { img: '/src/assets/images/LP_function2.jpg', title: '數據同步，關懷零時差', desc: '無論子女身在何處，登入同一個帳號，即可看到父母的最新狀態。' },
-  { img: '/src/assets/images/LP_function3.jpg', title: '貼心提醒，警示不忘記', desc: '當健康數值異常或藥品與保健品庫存過低時，系統會自動標示醒目顏色。' },
-  { img: '/src/assets/images/LP_function4.jpg', title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品。' }
+  { img: '/src/assets/images/public/LP_function1.jpg', title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！<br>醒目的「今日待辦事項」清單，幫助長輩養成健康好習慣。' },
+  { img: '/src/assets/images/public/LP_function2.jpg', title: '數據同步，關懷零時差', desc: '無論子女身在何處，登入同一個帳號，即可看到父母的最新狀態。快速確認服藥情形，讓您不用再每天打電話詢問。' },
+  { img: '/src/assets/images/public/LP_function3.jpg', title: '貼心提醒，警示不忘記', desc: '當健康數值異常或藥品與保健品庫存過低時，系統會自動標示醒目顏色，提醒子女注意。' },
+  { img: '/src/assets/images/public/LP_function4.jpg', title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品，獲得的積分可用更優惠的價格購買營養品。' }
 ];
 
 const scrollTestimonials = (amount) => {
@@ -180,7 +181,7 @@ const scrollTestimonials = (amount) => {
     color: #2E6669;
   }
   p{
-    font-weight: bold;
+    /* font-weight: bold; */
   }
   
 /* header */
@@ -309,7 +310,7 @@ body,html{
     .banner{
         width: 100%;
         height: calc(100vh - 64px);
-        background: url(src/assets/images/LP_hero.jpg);
+        background: url(src/assets/images/public/LP_hero.jpg);
         background-size: cover;
         background-position: 70% 50%;
     }
@@ -619,7 +620,7 @@ div.footer_left{
     .banner{
         width: cover;
         height: 60vh;
-        background: url(src/assets/images/20260118/banner2.png);
+        background: url(src/assets/images/client/banner2.png);
         /* background-size: cover; */
         background-position: 70% 50%;
         background-repeat: no-repeat;

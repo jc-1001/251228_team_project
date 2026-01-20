@@ -17,7 +17,7 @@ const handleLogin = () => {
     <div class="login-wrapper">
       <div class="login-visual">
         <div class="brand-info">
-          <img src="/src/assets/images/20260118/logo.png" class="logo">
+          <img src="@/assets/images/common/logo.svg" class="logo">
         </div>
         <img src="/src/assets/images/Login.svg" alt="Login" class="illustration">
       </div>
@@ -29,12 +29,12 @@ const handleLogin = () => {
           <form @submit.prevent="handleLogin">
             <div class="input-group">
               <label>帳號</label>
-              <input type="email" v-model="email" placeholder="example@mail.com" required>
+              <input type="email" v-model="email" required>
             </div>
 
             <div class="input-group">
               <label>密碼</label>
-              <input type="password" v-model="password" placeholder="請輸入密碼" required>
+              <input type="password" v-model="password" required>
             </div>
 
             <div class="form-footer">
@@ -110,7 +110,8 @@ const handleLogin = () => {
   align-items: center;
   justify-content: center;
   padding: 60px;
-
+  font-weight: bold;
+  
   .form-box {
     width: 100%;
     max-width: 360px;
@@ -121,7 +122,7 @@ const handleLogin = () => {
 
 .input-group {
   margin-bottom: 24px;
-  label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
+  label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; font-weight: bold;}
   input {
     width: 100%;
     padding: 14px;
