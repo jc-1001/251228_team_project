@@ -4,13 +4,12 @@
     const router = useRouter()
 
     const navigateTo = (type) => {
-        // 2. 確保判斷邏輯與按鈕傳入的字串一致
         if (type === 'login') {
-            // 前台登入頁路徑
             router.push('/login') 
         } else if (type === 'Adminlogin') {
-            // 後台登入頁路徑
-            router.push('/Adminlogin') 
+        // Tibame的localhost port好像是5500 這個部分要再確認看看 
+        const adminUrl = 'http://localhost:5174/adminlogin' 
+        window.location.href = adminUrl
         }
     };
     
