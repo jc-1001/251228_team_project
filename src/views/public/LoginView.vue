@@ -1,15 +1,43 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+
+// import { useUserId } from '';
+// const userId = useUserId();
+
+const router = useRouter(); 
 
 // 定義登入表單資料
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)
 
+// const handleLogin = () => {
+//   console.log('登入資訊：', { email: email.value, password: password.value })
+//   // 放 API 
+// }
+
+// 預設的帳密
+const VALID_ACCOUNT = 'Group1@unicare.com';
+const VALID_PASSWORD = '123456';
+
 const handleLogin = () => {
-  console.log('登入資訊：', { email: email.value, password: password.value })
-  // 這裡之後可以加入 API 串接邏輯
+    // 1. 驗證
+    if (email.value === VALID_ACCOUNT && password.value === VALID_PASSWORD) {
+        
+        // 2. 呼叫 userId 
+        // login(email.value, password.value);
+        
+        alert('登入成功！即將前往首頁');
+
+        router.push({ path: '/home' }); 
+        
+    } else {
+        // 驗證失敗提示
+        alert('帳號或密碼錯誤，請再試一次。\n(提示：Group1@unicare.com / 123456)');
+    }
 }
+
 </script>
 
 <template>
@@ -29,12 +57,13 @@ const handleLogin = () => {
           <form @submit.prevent="handleLogin">
             <div class="input-group">
               <label>帳號</label>
-              <input type="email" v-model="email" required>
+              <!-- <input type="email" v-model="email" required> -->
+              <input type="text" v-model="email" placeholder="Group1@unicare.com" required />
             </div>
 
             <div class="input-group">
               <label>密碼</label>
-              <input type="password" v-model="password" required>
+              <input type="password" v-model="password" placeholder="123456" required />
             </div>
 
             <div class="form-footer">
