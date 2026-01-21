@@ -9,6 +9,7 @@ import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionModal.vue'
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
+import MetricsInputForm from '@/components/common/client/modals/MetricsInputForm.vue'
 
 // 六個燈箱初始化
 const isModalOpen = ref(false)
@@ -72,8 +73,38 @@ const todayLog = ref([
 // 燈箱開關控制
 const popupInfo = ref(null)
 const openPopup = (item) => {
+  // 如果是 4 個量測按鈕，改開 MetricsInputForm
+  const key = metricKeyMap[item.type]
+  if (key) {
+    metricsKey.value = key
+    isMetricsModalOpen.value = true
+    return
+  }
+  
   popupInfo.value = item
 }
+// 📄身體數值
+// 量測表單彈窗狀態（只處理 4 個按鈕）
+const isMetricsModalOpen = ref(false)
+const metricsKey = ref('weight')
+
+// fastButton 的 type → MetricsInputForm 的 activeMetricKey 對照
+const metricKeyMap = {
+  weight: 'weight',
+  oximetry: 'bloodOxygen',
+  glucose: 'bloodSugar',
+  vitals: 'bloodPressure',
+}
+
+const closeMetricsPopup = () => {
+  isMetricsModalOpen.value = false
+}
+
+const handleMetricSave = (payload) => {
+  console.log('from MetricsInputForm:', payload)
+  // 之後可以呼叫 API / 寫入 json / 更新 todayLog 
+}
+// 📄身體數值
 
 const closePopup = () => {
   popupInfo.value = null
@@ -81,11 +112,7 @@ const closePopup = () => {
 </script>
 <template>
   <div class="home-container">
-    <TheHeader
-      title="早安，陳小姐！"
-      subtitle="今天感覺如何？別忘了量血壓喔～"
-      imageSrc="/src/assets/images/HomeView-header.svg"
-    />
+    <TheHeader title="早安，陳小姐！" subtitle="今天感覺如何？別忘了量血壓喔～" imageSrc="/src/assets/images/HomeView-header.svg" />
 
     <router-view />
     <!-- 左欄 -->
@@ -97,24 +124,15 @@ const closePopup = () => {
             <p>快速記錄</p>
           </div>
           <div class="buttonlist">
-            <button
-              v-for="item in fastButton"
-              :key="item.name"
-              :class="['record-card', `is-${item.type}`]"
-              @click="openPopup(item)"
-            >
+            <button v-for="item in fastButton" :key="item.name" :class="['record-card', `is-${item.type}`]"
+              @click="openPopup(item)">
               <span class="material-symbols-rounded">{{ item.icon }}</span>
               <span class="button-text">{{ item.name }}</span>
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <HomeCommonModal
-                :modelValue="true"
-                :title="`${popupInfo.name}`"
-                :data="popupInfo"
-                @update:modelValue="closePopup"
-                @close="closePopup"
-              />
+              <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
+                @update:modelValue="closePopup" @close="closePopup" />
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
               <!-- <ConfirmActionModal
                 ref="productModal"
@@ -133,6 +151,9 @@ const closePopup = () => {
               </div> -->
               <!-- <Popup1 :info="popupInfo" @close="closePopup" /> -->
             </Teleport>
+            <Teleport v-if="isMetricsModalOpen" to="body">
+              <MetricsInputForm :activeMetricKey="metricsKey" @close="closeMetricsPopup" @save="handleMetricSave" />
+            </Teleport>
           </div>
         </div>
         <!-- 今日狀態  -->
@@ -141,11 +162,7 @@ const closePopup = () => {
             <p>今日狀態</p>
           </div>
           <div class="todayLog-cardlist">
-            <div
-              :class="['todayLog-card', `status-${item2.statusType}`]"
-              v-for="item2 in todayLog"
-              :key="item2.name"
-            >
+            <div :class="['todayLog-card', `status-${item2.statusType}`]" v-for="item2 in todayLog" :key="item2.name">
               <div class="card-icon">
                 <span class="material-symbols-rounded">{{ item2.icon }}</span>
               </div>
@@ -161,10 +178,8 @@ const closePopup = () => {
 
               <div class="state-footer">
                 <div class="state-badge">{{ item2.statusText }}</div>
-                <span
-                  v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
-                  class="material-symbols-rounded warning-icon"
-                >
+                <span v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
+                  class="material-symbols-rounded warning-icon">
                   {{ item2.statusType === 'danger' ? 'trending_up' : 'trending_down' }}
                 </span>
               </div>
@@ -197,12 +212,14 @@ main {
   // 設定兩欄，左側較寬，右側較窄。當寬度不足時自動換行
   grid-template-columns: 1.5fr minmax(300px, 400px);
   gap: 30px;
+
   // padding: 20px;
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 20px;
   }
 }
+
 .left-block,
 .right-block {
   width: 100%;
@@ -217,9 +234,11 @@ main {
   width: 100%;
   margin-top: 65px;
   overflow: auto;
+
   @media (max-width: 1025px) {
     margin-top: 0px;
   }
+
   .block-title {
     padding: 20px;
     color: $primaryDark;
@@ -227,12 +246,14 @@ main {
     font-size: 18px; // 有改字體大小
   }
 }
+
 .med-stock {
   background-color: $white;
   border-radius: $radius_md;
   height: 150px;
   width: 100%;
   margin-top: 20px;
+
   .block-title {
     padding: 0 20px;
     color: $primaryDark;
@@ -240,11 +261,13 @@ main {
     font-size: 18px; // 有改字體大小
   }
 }
+
 // 左欄
 .today-button,
 .today-state {
   margin: 20px 0;
 }
+
 // 各個標題
 .block-title {
   margin: 20px 0;
@@ -252,6 +275,7 @@ main {
   @include subtitle1(true);
   font-size: 18px; // 有改字體大小
 }
+
 .buttonlist,
 .todayLog-cardlist {
   display: grid;
@@ -262,6 +286,7 @@ main {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 button {
   border: none;
   background-color: $white;
@@ -278,6 +303,7 @@ button {
   border-radius: $radius_md;
   color: $primaryDark;
   cursor: pointer;
+
   .material-symbols-rounded {
     @include subtitle2(true);
     font-size: 16px; //button 要一起更動、大小字體一致
@@ -299,33 +325,41 @@ button {
   box-shadow: $shadow;
   border-radius: $radius_md;
   cursor: default;
+
   .card-icon {
     display: flex;
     justify-content: end;
+
     .material-symbols-rounded {
       @include subtitle2(true);
       font-size: 16px; //card 要一起更動、大小字體一致
     }
   }
+
   .card-body {
     @include subtitle2(true);
     display: flex;
     align-items: center;
     flex-direction: row;
     gap: 5px; // 數字與單位間距
+
     .log-num {
       font-size: 16px;
       margin: 5px 0; // 卡片內容上下距離
     }
+
     .unit {
       font-size: 16px;
     }
   }
+
   // 狀態：正常 (good)
   &.status-good {
     .material-symbols-rounded {
       color: $primaryDark;
-    } // 讓右上角 icon 變色
+    }
+
+    // 讓右上角 icon 變色
     .state-badge {
       padding: 5px;
       background-color: $primaryLight;
@@ -339,9 +373,11 @@ button {
   &.status-danger {
     border: 1px solid #ff5252;
     background-color: $white;
+
     .material-symbols-rounded {
       color: $accent;
     }
+
     .state-badge {
       padding: 5px;
       background-color: $accent;
@@ -349,6 +385,7 @@ button {
       border: none;
       border-radius: 100px;
     }
+
     .warning-icon {
       color: $accent;
     }
@@ -358,9 +395,11 @@ button {
   &.status-low {
     border: 1px solid #518fe7;
     background-color: white;
+
     .material-symbols-rounded {
       color: #518fe7;
     }
+
     .state-badge {
       padding: 5px;
       background-color: #518fe7;
@@ -368,6 +407,7 @@ button {
       border: none;
       border-radius: 100px;
     }
+
     .warning-icon {
       color: #518fe7;
     }
@@ -375,6 +415,7 @@ button {
 
   // 狀態：尚未測量 (none)
   &.status-none {
+
     // .log-num,
     // .unit {
     //   color: #9e9e9e;
@@ -382,6 +423,7 @@ button {
     .material-symbols-rounded {
       color: $accent;
     }
+
     .state-badge {
       padding: 5px;
       background-color: $accentLight;
@@ -391,6 +433,7 @@ button {
     }
   }
 }
+
 .state-footer {
   display: flex;
   justify-content: space-between;
