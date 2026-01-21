@@ -24,8 +24,8 @@ const routes = [
     component: () => import('@/views/public/LoginView.vue'),
   },
   {
-    path: '/Landing',
-    name: 'Landing',
+    path: '/',
+    name: '',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
   },
@@ -154,20 +154,6 @@ const routes = [
     meta: {
       title: 'LoginView_B',
     }
-  },
-{
-    path: '/Users',
-    name: 'Users',
-    component: () => import('@/views/admin/Users.vue'),
-    // meta: {
-    //   showTopIcon: true,
-    //   showSidebar: true,
-    // },
-  },
-  {
-    path: '/updateUserStatus',
-    name: 'updateUserStatus',
-    component: () => import('@/views/admin/updateUserStatus.vue'),
   },
   
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白

@@ -133,6 +133,12 @@
         </ul>
       </nav>
     </footer>
+      <p><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
+            本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
+            均由學員負法律上責任,緯育公司概不負責。若有侵權疑慮,您可以私訊
+            <a href="https://www.facebook.com/TibaMe" style="color: #00BDD3;">緯育TibaMe</a>,
+            後續會由專人協助處理。
+      </small></p>
   </div>
 </template>
 
@@ -589,7 +595,7 @@ div.footer_left{
         }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 480px) and (max-width: 768px) {
     
     .main-menu{
         position: absolute;
@@ -617,23 +623,8 @@ div.footer_left{
             left: 0px;
             z-index: 1;
     }
-    .banner{
-        width: cover;
-        height: 60vh;
-        background: url(src/assets/images/client/banner2.png);
-        /* background-size: cover; */
-        background-position: 70% 50%;
-        background-repeat: no-repeat;
-    }
-    .banner-txt{
-      height: 100%;
-      width: fit-content;
-      display: grid;
-      grid-template-rows: repeat(3, 1fr);
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }/* partOne */
+
+    /* partOne */
 
   .partOne{
     grid-template-rows: repeat(4, 1fr);
@@ -696,24 +687,155 @@ div.footer_left{
   }
     
 }
-@media screen and (width >= 768px) {
 
-    .main-menu > ul {
-        display: flex ;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-    .main-menu li {
-        display: block;
-    }
-    .main-menu a{
-        color: #2E6669;
-        text-decoration: none;
-        display: block;
-        padding: 10px 1em;
-        background-color: white;
-    }
+/* ========================== */
+
+@media screen and (max-width: 1080px) {
+  .banner {
+    padding: 80px 40px; /* 縮小左右間距 */
+    flex-direction: row; /* 保持橫向但準備縮小內容 */
+    align-items: center;
+    background-position: 75% 50%;
+    align-items: center;
+  }
+
+  .banner-txt {
+    flex: 1.2; /* 稍微增加文字佔比 */
+    padding-right: 20px;
+    color: #333;
+    font-weight: normal;
+  }
+
+  .banner-txt h1 {
+    font-size: 3rem; /* 降低標題字體大小 */
+    line-height: 1.2;
+  }
 }
+
+/* ========================== */
+@media screen and (max-width: 1024px) {
+  .banner {
+    background-position: 80% 50%; 
+  }
+
+  .banner-txt {
+    flex: 1.5; /* 讓文字區塊佔據更多空間 */
+    max-width: 500px; /* 限制最大寬度防止文字拉得太散 */
+    color: #d0d0d0;
+    font-weight: normal;
+    
+    h1 {
+      font-size: 3rem; /* 縮小標題 */
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 1.1rem; /* 稍微縮小段落文字 */
+      line-height: 1.6;
+    }
+  }
+
+  .banner-txt h1 {
+    font-size: 3rem; /* 降低標題字體大小 */
+    line-height: 1.2;
+  }
+}
+
+/* ========================== */
+
+@media screen and (width = 768px) {
+  .banner {
+    width: cover;
+    height: 60vh;
+    background: url(src/assets/images/client/banner2.png);
+    background-size: cover;
+    background-position: 75% 70%;
+    background-repeat: no-repeat;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+
+  }
+
+  .banner-txt {
+    height: 50vh;
+    width: fit-content;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    color: #333;
+    /* border: #2E6669 solid 1px; */
+    text-align: center;
+
+  }
+}
+
+/* ========================== */
+
+@media screen and (max-width: 767px) {
+  .banner {
+    width: cover;
+    height: 60vh;
+    background: url(src/assets/images/client/banner2.png);
+    background-size: cover;
+    background-position: 75% 70%;
+    background-repeat: no-repeat;
+    
+
+  }
+
+  .banner-txt {
+    height: 90%;
+      width: fit-content;
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      color: #333;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+
+  }
+
+  .banner-txt h1 {
+    font-size: 2.5rem;
+  }
+
+  .banner-btn {
+    justify-content: center; /* 按鈕置中 */
+    gap: 15px;
+  }
+  
+  /* 修正 Banner 內的裝飾圓圈或背景遮罩 */
+  .mask {
+    width: 120%; /* 擴大遮罩比例以覆蓋背景 */
+    left: -10%;
+  }
+}
+
+/* ===================== */
+
+
+@media screen and (max-width: 480px) {
+  
+  .banner-txt {
+      color: black;
+  }
+  .banner-txt h1 {
+    font-size: 2rem;
+  }
+  
+  .banner-btn {
+    flex-direction: column; /* 按鈕改為垂直排列 */
+    align-items: stretch;
+  }
+  
+  .banner-btn .btn {
+    margin: 5px 0;
+    width: 100%; /* 按鈕寬度撐滿 */
+  }
+}
+
+
 </style>
+
