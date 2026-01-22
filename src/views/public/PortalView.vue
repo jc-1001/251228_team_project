@@ -4,11 +4,11 @@
     const router = useRouter()
 
     const navigateTo = (type) => {
-        if (type === 'login') {
-            router.push('/login') 
+        if (type === 'Landing') {
+            router.push('/Landing') 
         } else if (type === 'Adminlogin') {
         // 我的localhost port是5173，Tibame的好像是5500 這個部分要再確認~ 
-        const adminUrl = 'http://localhost:5173/adminlogin' 
+        const adminUrl = 'https://tibamef2e.com/cjd102/g1/admin/' 
         window.location.href = adminUrl
         }
     };
@@ -21,7 +21,7 @@
             <img src="@/assets/images/PortalView_logo.svg" alt="logo" class="logo"/>
         </header>
         <div class="selection-grid">
-            <button class="entry-card" @click="navigateTo('login')">
+            <button class="entry-card" @click="navigateTo('Landing')">
                 <div class="icon-wrapper">
                     <img src="@/assets/images/PortalView_client.svg" alt="前台"/>
                 </div>
@@ -35,6 +35,12 @@
             </button>
         </div>
     </main>
+    <p><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
+            本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
+            均由學員負法律上責任,緯育公司概不負責。若有侵權疑慮,您可以私訊
+            <a href="https://www.facebook.com/TibaMe" style="color: #00BDD3;">緯育TibaMe</a>,
+            後續會由專人協助處理。
+      </small></p>
 </template>
 
 <style lang="scss" scoped>
