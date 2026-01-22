@@ -1,5 +1,9 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import mdc_1 from '@/assets/images/mdc1_1.jpg'
+import mdc_2 from '@/assets/images/mdc1_2.jpg'
+import mdc_3 from '@/assets/images/mdc1_3.jpg'
+import mdc_4 from '@/assets/images/mdc1_4.jpg'
 
 export const useMedicineStore = defineStore('medicine', () => {
   const items = ref([])
@@ -9,7 +13,7 @@ export const useMedicineStore = defineStore('medicine', () => {
       {
         id: 1,
         name: '脈優',
-        image: '/src/assets/images/mdc1_1.jpg',
+        image: mdc_1,
         eatTimes: '餐前',
         oneTime: '1',
         daily: '2',
@@ -19,7 +23,7 @@ export const useMedicineStore = defineStore('medicine', () => {
       {
         id: 2,
         name: '降血糖藥',
-        image: '/src/assets/images/mdc1_2.jpg',
+        image: mdc_2,
         eatTimes: '餐後',
         oneTime: '2',
         daily: '2',
@@ -29,7 +33,7 @@ export const useMedicineStore = defineStore('medicine', () => {
       {
         id: 3,
         name: '綜合維他命',
-        image: '/src/assets/images/mdc1_3.jpg',
+        image: mdc_3,
         eatTimes: '餐後',
         oneTime: '1',
         daily: '4',
@@ -39,7 +43,7 @@ export const useMedicineStore = defineStore('medicine', () => {
       {
         id: 4,
         name: '降血壓藥',
-        image: '/src/assets/images/mdc1_4.jpg',
+        image: mdc_4,
         eatTimes: '餐後',
         oneTime: '3',
         daily: '2',
@@ -49,7 +53,7 @@ export const useMedicineStore = defineStore('medicine', () => {
       {
         id: 5,
         name: '維生素C',
-        image: '/src/assets/images/mdc1_3.jpg',
+        image: mdc_3,
         eatTimes: '餐後',
         oneTime: '2',
         daily: '1',
