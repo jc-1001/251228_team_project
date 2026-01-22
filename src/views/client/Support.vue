@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import TheHeader from '@/components/common/TheHeader.vue'
+import imageSrc from '/src/assets/images/HomeView-header.svg'
 
 // 1. 所有的問題資料
 const allFaqs = ref([
@@ -46,7 +47,7 @@ const toggleAccordion = (index) => {
     <TheHeader 
       title="幫助中心"
       subtitle="遇到問題了嗎?查看常見問題或與我們聯繫"
-      imageSrc="/src/assets/images/client/sup_img0.png"
+      :imageSrc="imageSrc"
     />
 
     <main class="support-container">

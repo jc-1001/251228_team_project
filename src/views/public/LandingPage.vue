@@ -1,8 +1,9 @@
+
 <template>
   <div class="landing-page">
     <header class="main-header">
       <div class="logo">
-        <router-link to="/"><img src="/src/assets/images/common/logo.svg" alt="UniCare Logo"></router-link>
+        <router-link to="/"><img :src="logo" alt="UniCare Logo"></router-link>
       </div>
 
       <label class="hb">
@@ -40,17 +41,17 @@
       <h2>您可能有過這些困擾—</h2>
     </div>
     <div class="partOne">
-      <div class="item"><img src="/src/assets/images/public/LP_problem1.svg"><p>常忘記是否吃過藥，保健食品快沒了才發現</p></div>
-      <div class="item"><img src="/src/assets/images/public/LP_problem2.svg"><p>工作忙碌無法及時關心長輩的健康</p></div>
-      <div class="item"><img src="/src/assets/images/public/LP_problem3.svg"><p>無法和醫生清楚溝通身體情況</p></div>
-      <div class="item"><img src="/src/assets/images/public/LP_problem4.svg"><p>紙本記錄容易遺失或不完全</p></div>
+      <div class="item"><img :src="problem1"><p>常忘記是否吃過藥，保健食品快沒了才發現</p></div>
+      <div class="item"><img :src="problem2"><p>工作忙碌無法及時關心長輩的健康</p></div>
+      <div class="item"><img :src="problem3"><p>無法和醫生清楚溝通身體情況</p></div>
+      <div class="item"><img :src="problem4"><p>紙本記錄容易遺失或不完全</p></div>
     </div>
 
     <div class="bridge" id="aboutUs">
       <h2>健康管理，從簡單記錄開始：<br>UniCare 助您輕鬆掌握全方位的數位健康脈動。</h2>
     </div>
     <div class="partTwo">
-      <div class="item"><img src="/src/assets/images/public/LP_aboutus.jpg"></div>
+      <div class="item"><img :src="LP_aboutus"></div>
       <div class="item">
         <ul>
           <li><h3>我們的起點</h3></li>
@@ -66,15 +67,15 @@
     </div>
     <div class="partThree">
       <div class="item">
-        <img src="/src/assets/images/public/LP_promise1.svg">
+        <img :src="LP_promise1">
         <ul><li><h3>透明化照護</h3><p>數據即時同步，讓「有沒有吃飯、有沒有吃藥」不再是重複的問句，而是溫暖的默契。</p></li></ul>
       </div>
       <div class="item">
-        <img src="/src/assets/images/public/LP_promise2.svg">
+        <img :src="LP_promise2">
         <ul><li><h3>貼心提醒</h3><p>及時提醒您每日測量身體狀態、上傳飲食資訊、以及服藥和保健食品。</p></li></ul>
       </div>
       <div class="item">
-        <img src="/src/assets/images/public/LP_promise3.svg">
+        <img :src="LP_promise3">
         <ul><li><h3>詳細記錄</h3><p>所有上傳的紀錄將完好保存在您的帳戶中，不用擔心遺失弄丟。</p></li></ul>
       </div>
     </div>
@@ -100,9 +101,9 @@
         <img src="" style="rotate: -90deg;">
       </div>
       <div class="contence" ref="testimonialContainer">
-        <img src="/src/assets/images/public/LP_reward1.png">
-        <img src="/src/assets/images/public/LP_reward2.png">
-        <img src="/src/assets/images/public/LP_reward3.png">
+        <img :src="LP_reward1">
+        <img :src="LP_reward2">
+        <img :src="LP_reward3">
       </div>
       <div class="arrow-container right" @click="scrollTestimonials(100)">
         <img src="" style="rotate: 90deg;">
@@ -115,7 +116,7 @@
 
     <footer class="main-footer">
       <div class="logo">
-        <router-link to="/"><img src="/src/assets/images/common/logo.svg"></router-link>
+        <router-link to="/"><img :src="logo"></router-link>
         <div class="footer_left">
           <ul class="list">
             <li><a href="#">隱私權保護政策</a></li>
@@ -144,6 +145,18 @@
 
 <script setup>
 import { ref } from 'vue';
+import logo from '/src/assets/images/common/logo.svg';
+import problem1 from '/src/assets/images/public/LP_problem1.svg';
+import problem2 from '/src/assets/images/public/LP_problem2.svg';
+import problem3 from '/src/assets/images/public/LP_problem3.svg';
+import problem4 from '/src/assets/images/public/LP_problem4.svg';
+import LP_aboutus from '/src/assets/images/public/LP_aboutus.jpg';
+import LP_promise1 from '/src/assets/images/public/LP_promise1.svg';
+import LP_promise2 from '/src/assets/images/public/LP_promise2.svg';
+import LP_promise3 from '/src/assets/images/public/LP_promise3.svg';
+import LP_reward1 from '/src/assets/images/public/LP_reward1.png';
+import LP_reward2 from '/src/assets/images/public/LP_reward2.png';
+import LP_reward3 from '/src/assets/images/public/LP_reward3.png';  
 
 const isMenuOpen = ref(false);
 const testimonialContainer = ref(null);
