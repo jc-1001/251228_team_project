@@ -1,6 +1,8 @@
 <script setup>
 import TheHeader from '@/components/common/TheHeader.vue'
 import DateRecord from '@/components/common/client/modals/DateRecord.vue'
+import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
+import EditDietaryRecord from '@/components/common/client/modals/EditDietaryRecord.vue'
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs';
 
@@ -9,7 +11,6 @@ const currentViewDate = ref(dayjs());
 const filledDates = computed(() => {
     return Object.keys(allDietRecords.value); 
 });
-
 const isYearPickerOpen = ref(false);
 // 產生後5年list
 const years = computed(() => {
@@ -24,7 +25,6 @@ const selectYear = (year) => {
         isYearPickerOpen.value = false;
     }
 };
-
 // 計算月曆要的所有日期
 const calendarDays = computed(() => {
     const startOfMonth = currentViewDate.value.startOf('month');
@@ -65,6 +65,11 @@ const prevMonth = () => {
 };
 const nextMonth = () => { currentViewDate.value = currentViewDate.value.add(1, 'month'); };
 const isModalOpen = ref(false); // 控制燈箱是否顯示
+const isAddModalOpen = ref(false);  // 新增資料燈箱
+// 開啟新增燈箱
+const openAddModal = () => {
+    isAddModalOpen.value = true;
+};
 const selectedDate = ref('');   // 儲存目前點擊的是哪一天
 const handleDateClick = (date) => {
     // 如果是未來日期，不執行動作
@@ -88,27 +93,65 @@ const allDietRecords = ref({
     { id: 3, type: '14:30', note: '蛋糕、蘋果汁', image: getImageUrl('meal3.jpg'), time: '14:30' },
     ]
 });
+const getTimeWeight = (type) => {
+        const typeMap = { '早餐': '08:00', '午餐': '12:00', '晚餐': '17:00' };
+        const timeStr = typeMap[type] || type;
+        return timeStr.replace(':', ''); 
+    };
+const handleNewRecord = (formData) => {
+    const dateKey = selectedDate.value;
+    // 沒有任何記錄，先建立空陣列
+    if (!allDietRecords.value[dateKey]) {
+        allDietRecords.value[dateKey] = [];
+    }
+    const newEntry = {
+        id: Date.now(),
+        type: formData.type,
+        note: formData.note,
+        image: formData.preview,
+        time: formData.type.includes(':') ? formData.type : null
+    };
+    // 將新資料加入
+    allDietRecords.value[dateKey].push(newEntry);
+    allDietRecords.value[dateKey].sort((a, b) => {
+        return getTimeWeight(a.type).localeCompare(getTimeWeight(b.type));
+    });
+    isAddModalOpen.value = false;
+};
 const currentDayMeals = computed(() => {
-    const defaultMeals = [
-    // 預設三餐模板
-    { id: Date.now(), type: '早餐', note: null, image: null, time: null },
-    { id: Date.now()+1, type: '午餐', note: null, image: null, time: null },
-    { id: Date.now()+2, type: '晚餐', note: null, image: null, time: null }
+    const defaultTemplates = [
+        { type: '早餐', isDefault: true, timeWeight: 800 },
+        { type: '午餐', isDefault: true, timeWeight: 1200 },
+        { type: '晚餐', isDefault: true, timeWeight: 1700 }
     ];
+    // 獲取該日期紀錄
     const savedRecords = allDietRecords.value[selectedDate.value] || [];
-    // 找出其他項目
+    // 建立空間存放要顯示的項目
+    const displayList = [];
+    // 預設三餐
+    defaultTemplates.forEach(template => {
+        const found = savedRecords.find(r => r.type === template.type);
+        if (found) {
+            displayList.push({ ...found, timeWeight: template.timeWeight });
+        } else {
+            displayList.push({ 
+                id: `empty-${template.type}`, 
+                type: template.type, 
+                note: null, 
+                image: null, 
+                timeWeight: template.timeWeight 
+            });
+        }
+    });
+    // 自訂時間項目
     const extraMeals = savedRecords.filter(r => !['早餐', '午餐', '晚餐'].includes(r.type));
-    // 針對預設的時段，有填寫就用填寫的，沒填寫就用default
-    const mergedDefault = defaultMeals.map(def => {
-        const found = savedRecords.find(r => r.type === def.type);
-        return found ? found : { ...def, id: Math.random() }; 
-    });
-    const result = [...mergedDefault];
     extraMeals.forEach(extra => {
-        const dinnerIndex = result.findIndex(r => r.type === '晚餐');
-        result.splice(dinnerIndex, 0, extra);
+        // 將時間轉為數字權重
+        const weight = parseInt(extra.type.replace(':', ''), 10);
+        displayList.push({ ...extra, timeWeight: weight });
     });
-    return result;
+    // 根據時間排序
+    return displayList.sort((a, b) => a.timeWeight - b.timeWeight);
 });
 const getDayClass = (item) => {
     const dateStr = item.date.format('YYYY-MM-DD');
@@ -123,6 +166,45 @@ const getDayClass = (item) => {
         'other-month-n': !item.isCurrentMonth && !isFilled,
         'future': isFuture,
     };
+};
+const isEditModalOpen = ref(false);
+const editingMeal = ref(null);
+const handleEditClick = (meal) => {
+    console.log("接收到編輯請求:", meal);
+    if (!meal || String(meal.id).includes('empty-')) return;
+    editingMeal.value = meal;
+    isEditModalOpen.value = true;
+};
+// 編輯後的儲存
+const handleUpdateRecord = (updatedData) => {
+    const dateKey = selectedDate.value;
+    const records = allDietRecords.value[dateKey];
+    // 找出舊資料替換
+    const index = records.findIndex(r => r.id === updatedData.id);
+    if (index !== -1) {
+        allDietRecords.value[dateKey][index] = {
+            ...updatedData,
+            image: updatedData.preview // 確保圖片更新
+        };
+        // 重新排序
+        allDietRecords.value[dateKey].sort((a, b) => {
+            return getTimeWeight(a.type).localeCompare(getTimeWeight(b.type));
+        });
+    }
+    isEditModalOpen.value = false;
+};
+const handleDeleteRecord = (id) => {
+    const dateKey = selectedDate.value;
+    if (!allDietRecords.value[dateKey]) return;
+    // 過濾該資料
+    allDietRecords.value[dateKey] = allDietRecords.value[dateKey].filter(
+        record => record.id !== id
+    );
+    // 如果該天沒紀錄，可選擇刪除或保留空陣列
+    if (allDietRecords.value[dateKey].length === 0) {
+        delete allDietRecords.value[dateKey];
+    }
+    isEditModalOpen.value = false;
 };
 </script>
 <template>
@@ -181,6 +263,23 @@ const getDayClass = (item) => {
     :date="selectedDate" 
     :meals="currentDayMeals" 
     @close="closeModal" 
+    @open-add="openAddModal"
+    @open-edit="handleEditClick"
+    />
+    <EditDietaryRecord 
+    v-if="isEditModalOpen" 
+    :is-open="isEditModalOpen"
+    :date="selectedDate"
+    :initial-data="editingMeal"
+    @close="isEditModalOpen = false"
+    @submit="handleUpdateRecord"
+    @delete="handleDeleteRecord"
+    />
+    <NewDietaryRecord 
+    :is-open="isAddModalOpen" 
+    :date="selectedDate"
+    @close="isAddModalOpen = false"
+    @submit="handleNewRecord"
     />
     <!-- 標記說明 -->
     <div class="calendar-footer">
@@ -277,7 +376,7 @@ const getDayClass = (item) => {
     cursor: pointer;
     @include subtitle1(true);
     color: $black;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     // 狀態樣式
     &.today {
         border: 1px solid $black;

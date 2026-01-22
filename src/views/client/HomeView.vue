@@ -2,6 +2,7 @@
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
 
@@ -10,6 +11,7 @@ import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
 import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionModal.vue'
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
+import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
 
 // 六個燈箱初始化
 const isModalOpen = ref(false)
@@ -17,6 +19,15 @@ const selectedData = ref({
   time: '2026-01-17',
   inputLabel: '使用者帳號',
 })
+
+//飲食紀錄相關
+const todayDate = ref(dayjs().format('YYYY-MM-DD'))
+// 處理儲存後的動作
+const handleDietSubmit = (data) => {
+  console.log('收到飲食紀錄資料：', data)
+  // 串接API儲存資料
+  closePopup() // 儲存後關閉
+}
 
 const fastButton = ref([
   { name: '吃藥', icon: 'medication', type: 'medicine' },
@@ -116,6 +127,13 @@ const closePopup = () => {
                 @update:modelValue="closePopup"
                 @close="closePopup"
               />
+              <NewDietaryRecord 
+                v-if="popupInfo.type === 'diet'"
+                :isOpen="true" 
+                :date="todayDate"
+                @close="closePopup"
+                @submit="handleDietSubmit"
+              />
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
               <!-- <ConfirmActionModal
                 ref="productModal"
@@ -127,7 +145,7 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <NewMedicineModals :info="popupInfo" @close="closePopup" />
+              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
