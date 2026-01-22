@@ -5,11 +5,11 @@ import { useCartStore } from '@/stores/cart'
 const cartStore = useCartStore()
 
 // 購物車內商品筆數
-const cartQty = computed(()=>{
+const cartQty = computed(() => {
   return cartStore.cartList.length
 })
 
-const topIcons = ref([
+const topIcons = computed(() =>[
   {
     // 鈴鐺標記有選單
     id: 'notice',
@@ -19,16 +19,8 @@ const topIcons = ref([
     badge: true,
     hasDropdown: true,
   },
-  { name: '購物車',
-    icon: 'shopping_cart',
-    path: '/cart',
-    badge: cartQty
-  },
-  { name: '頭像',
-    icon: 'person',
-    path: '/profile',
-    badge: false 
-  },
+  { name: '購物車', icon: 'shopping_cart', path: '/cart', badge: cartQty.value },
+  { name: '頭像', icon: 'person', path: '/profile', badge: false },
 ])
 // 個人通知假資料(正式要刪)
 const notifications = ref([
@@ -68,7 +60,9 @@ const showBadge = (item) => {
   if (item.id === 'notice') {
     return unreadCount.value > 0 //未讀顯示紅點
   }
-  return typeof item.badge === 'number' && item.badge > 0
+  // 確保拿到的是純數字
+  const badgeValue = typeof item.badge === 'object' ? item.badge.value : item.badge
+  return typeof badgeValue === 'number' && badgeValue > 0
 }
 </script>
 <template>

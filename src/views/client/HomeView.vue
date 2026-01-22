@@ -193,9 +193,12 @@ main {
   display: grid;
   // justify-content: center;
   // 設定兩欄，左側較寬，右側較窄。當寬度不足時自動換行
-  grid-template-columns: 1.5fr minmax(300px, 400px);
+  grid-template-columns: 1.2fr 1fr;
   gap: 30px;
   // padding: 20px;
+  @media (max-width: 1200px) {
+    grid-template-columns: 1.1fr 1fr;
+  }
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -275,6 +278,13 @@ button {
   border-radius: $radius_md;
   color: $primaryDark;
   cursor: pointer;
+  transition: all 0.3s ease;
+  @media (hover: hover) {
+    &:hover {
+      background-color: $primaryDark;
+      color: $white;
+    }
+  }
   .material-symbols-rounded {
     @include subtitle2(true);
     font-size: 16px; //button 要一起更動、大小字體一致
@@ -286,7 +296,7 @@ button {
   box-sizing: border-box;
   background-color: $white;
   @include subtitle2(false);
-  font-size: 12px; //material-symbols-rounded 要一起更動、大小字體一致
+  font-size: 16px; //material-symbols-rounded 要一起更動、大小字體一致
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -324,7 +334,7 @@ button {
       color: $primaryDark;
     } // 讓右上角 icon 變色
     .state-badge {
-      padding: 5px;
+      padding: 5px 12px;
       background-color: $primaryLight;
       color: $primaryDark;
       border: none;
@@ -340,7 +350,7 @@ button {
       color: $accent;
     }
     .state-badge {
-      padding: 5px;
+      padding: 5px 12px;
       background-color: $accent;
       color: white;
       border: none;
@@ -359,7 +369,7 @@ button {
       color: #518fe7;
     }
     .state-badge {
-      padding: 5px;
+      padding: 5px 12px;
       background-color: #518fe7;
       color: white;
       border: none;
@@ -380,7 +390,7 @@ button {
       color: $accent;
     }
     .state-badge {
-      padding: 5px;
+      padding: 5px 12px;
       background-color: $accentLight;
       color: $accent;
       border: 1px solid #e0e0e0;
