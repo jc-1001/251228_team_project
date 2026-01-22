@@ -11,11 +11,8 @@ import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
 import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionModal.vue'
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
-<<<<<<< HEAD
 import MetricsInputForm from '@/components/common/client/modals/MetricsInputForm.vue'
-=======
 import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
->>>>>>> 821baae957539a19e7ad0727c8b3e8196c5d0a50
 
 // 六個燈箱初始化
 const isModalOpen = ref(false)
