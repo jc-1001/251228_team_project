@@ -7,8 +7,8 @@
         if (type === 'login') {
             router.push('/login') 
         } else if (type === 'Adminlogin') {
-        // Tibame的localhost port好像是5500 這個部分要再確認看看 
-        const adminUrl = 'http://localhost:5174/adminlogin' 
+        // 我的localhost port是5173，Tibame的好像是5500 這個部分要再確認~ 
+        const adminUrl = 'http://localhost:5173/adminlogin' 
         window.location.href = adminUrl
         }
     };
