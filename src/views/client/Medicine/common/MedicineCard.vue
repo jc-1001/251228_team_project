@@ -1,21 +1,22 @@
 <script setup>
+const emit = defineEmits(['showCardDetail'])
+
 const { item } = defineProps({
   item: {
     type: Object,
     required: true,
   },
-});
-
+})
 </script>
 <template>
-  <div class="card">
+  <div class="card" @click="emit('showCardDetail', item)">
     <div class="medicine-img">
       <img :src="item.image" alt="" />
     </div>
     {{ item.name }}
     <div class="label">
-      <span class="dayeat">每日{{ item.dayEat }}次</span>
-      <span class="onetime">一次{{ item.oneTime }}份</span>
+      <span class="dayeat">每日{{ item.daily }}次</span>
+      <span class="onetime">每次{{ item.oneTime }}份</span>
     </div>
   </div>
 </template>
@@ -29,7 +30,7 @@ const { item } = defineProps({
   border-radius: $radius_md;
   gap: 16px;
   box-shadow: $shadow;
-    &:hover {
+  &:hover {
     transform: translateY(-5px);
     box-shadow: $shadowHover;
   }

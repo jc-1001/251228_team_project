@@ -40,14 +40,17 @@ const currentProduct = computed(() => {
     @include body3;
     color: $grayDark;
 
+    .breadcrumb_location {
+      &:hover {
+        color: $primary
+      }
+    }
+
     .breadcrumb_product {
       @include body3(true);
       color: $primaryDark;
     }
-  :hover {
-    color: $primary;
-  }
-  .breadcrumb_location::after,
+  .breadcrumb_category::before,
   .breadcrumb_category::after {
     content: ' / ';
   }

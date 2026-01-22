@@ -103,6 +103,9 @@ const addToCart = () => {
   &:hover {
     transform: translateY(-5px);
     box-shadow: $shadowHover;
+    img {
+      scale: 1.08;
+    }
   }
 
   .card_img {
@@ -116,6 +119,7 @@ const addToCart = () => {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: all .3s;
     }
 
     .product_tag {

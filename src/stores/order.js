@@ -14,13 +14,20 @@ export const useOrderStore = defineStore('order',()=>{
     // 訂單編號
     const orderId = `ORD-${Date.now()}-${Math.floor(Math.random()*1000)}`
     // 下單時間
-    const now = Date.now()
-    const dateString = now.toLocaleString()
+    const now = new Date()
+
+    const yyyy = now.getFullYear()
+    const mm = String(now.getMonth() + 1).padStart(2, '0')
+    const dd = String(now.getDate()).padStart(2, '0')
+    const hh = String(now.getHours()).padStart(2, '0')
+    const min = String(now.getMinutes()).padStart(2, '0')
+
+    const dateString = `${yyyy}-${mm}-${dd} ${hh}:${min}`
     // 組合整個訂單
     const newOrder = {
       id: orderId,
       date: dateString,
-      status: '處理中',
+      status: '備貨中',
       // 把結帳頁傳來的資料 (商品、收件人、金額) 全部"展開"放進來
       // ...展開運算子
       ...orderPayLoad

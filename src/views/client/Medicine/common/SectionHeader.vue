@@ -22,24 +22,27 @@ const emit = defineEmits(['createClick'])
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 32px 0;
+  margin: 16px 0;
   h2 {
-    @include title3;
+    @include body1(true);
     color: $primaryDark;
   }
   button {
+    display: flex;
+    margin-left: auto;
+    margin-right: 40px;
+    background: $primaryDark;
+    color: $white;
     @include body2;
-    background-color: $primaryDark;
-    color: #fff;
     border: none;
+    padding: 4px 12px;
     border-radius: $radius_md;
-    padding: 8px 16px;
-    margin: 0 40px;
     cursor: pointer;
+    transition: all 0.3s ease;
     &:hover {
-    
-    background-color:#fff;
+    background-color: $white;
     color: $primaryDark;
+    outline: 1px solid $primaryDark;
     }
   }
 }

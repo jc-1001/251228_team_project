@@ -28,12 +28,10 @@ defineProps({
 
 <style lang="scss" scoped>
 .header-banner {
-  // margin-top: 20px;
   width: 100%;
   height: 120px;
-  //   height: 19vh;
-  border: 1px solid white;
-  background: $linear1; /* 不用import */
+  border: 1px solid $white;
+  background: $linear1;
   border-radius: $radius_md;
   box-shadow: $shadowDark;
   display: flex;
@@ -42,16 +40,11 @@ defineProps({
 }
 .greeting {
   line-height: $lineHeightHeading;
-  // @include title3(true); /* title1字體太大!! */
-  // font-size: 24px;
   color: $primaryDark;
-  padding: 0px 0 10px 30px;
+  padding: 0 0 10px 30px;
   letter-spacing: 5%;
   @media (max-width: 765px) {
-    font-size: 16px;
-  }
-  @media (max-width: 480px) {
-    font-size: 12px;
+    font-size: 18px;
   }
 }
 .subtext {
@@ -64,14 +57,25 @@ defineProps({
   @media (max-width: 765px) {
     font-size: 12px;
   }
-  @media (max-width: 480px) {
-    font-size: 10px;
-  }
 }
 .illustration {
-  padding: 20px 0px 0 0;
+  padding: 20px 10px 0 0;
 }
 .illustration img {
   width: 70%;
+}
+
+@media (max-width: 768px) {
+  .content {
+    flex: 1 1 300px;
+  }
+  .illustration {
+    display: flex;
+    justify-content: center;
+    padding: 28px 15px 0 0;
+    img {
+      width: 80%;
+    }
+  }
 }
 </style>
