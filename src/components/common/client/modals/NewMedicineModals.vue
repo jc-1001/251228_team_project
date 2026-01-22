@@ -117,7 +117,7 @@ const onKeydown = (event) => {
     padding: 24px;
     border-radius: 12px;
     width: 400px;
-    max-height: 70vh;
+    height: min(667px, 70vh);
     position: relative;
     display: grid;
     grid-template-rows: auto auto 1fr auto;
