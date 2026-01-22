@@ -3,12 +3,12 @@ import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMedicineStore } from '@/stores/medicine.js'
 
-
 const activeTab = ref(0)
 const tabs = [
   { key: '早上', label: '早上' },
   { key: '中午', label: '中午' },
   { key: '晚上', label: '晚上' },
+  { key: '睡前', label: '睡前' },
 ]
 
 const medicineStore = useMedicineStore()
@@ -20,8 +20,10 @@ onMounted(() => {
 })
 
 const currentTabKey = computed(() => tabs[activeTab.value]?.key)
-const visibleItems = computed(()=>{
-  return items.value.filter((item)=>Array.isArray(item.timeCourse) && item.timeCourse.includes(currentTabKey.value))
+const visibleItems = computed(() => {
+  return items.value.filter(
+    (item) => Array.isArray(item.timeCourse) && item.timeCourse.includes(currentTabKey.value),
+  )
 })
 
 const toggleChecked = (item) => {
@@ -48,9 +50,9 @@ const onKeydown = (event) => {
       <header class="new-medicine__header">
         <h2 class="new-medicine__title">吃藥紀錄</h2>
         <button class="new-medicine__close" @click="closeModal" type="button" aria-label="Close">
-          X
+          <span class="material-symbols-outlined">close</span>
         </button>
-        <p class="new-medicine__date">Today: 2026/01/18</p>
+        <p class="new-medicine__date">今日日期:2026/01/22</p>
       </header>
 
       <div class="new-medicine__tabs">
@@ -88,7 +90,7 @@ const onKeydown = (event) => {
             </div>
           </div>
           <div class="new-medicine__status" :class="{ 'is-checked': item.checked }">
-            <span v-if="item.checked">✓</span>
+            <span v-if="item.checked" class="material-symbols-outlined">check</span>
           </div>
         </div>
       </div>
@@ -99,21 +101,23 @@ const onKeydown = (event) => {
 </template>
 
 <style scoped lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 .new-medicine__overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow-y: auto;
 
   .new-medicine__modal {
     background-color: $white;
     padding: 24px;
     border-radius: 12px;
-    width: 420px;
-    height: 667px;
+    width: 400px;
+    height: min(667px, 70vh);
     position: relative;
     display: grid;
     grid-template-rows: auto auto 1fr auto;
@@ -128,48 +132,45 @@ const onKeydown = (event) => {
   }
 
   .new-medicine__title {
-    margin: 6px 0 0;
+    @include subtitle1(true);
+    margin: 8px 0 0;
     color: $primaryDark;
   }
 
   .new-medicine__date {
-    margin: 0;
-    color: $gray;
-    font-size: 14px;
+    color: $black;
+    @include body2;
+    margin-bottom: 16px;
   }
 
   .new-medicine__close {
     @include closeButton;
-    position: absolute;
-    right: 18px;
-    top: 16px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: $primaryDark;
-    color: $white;
+    padding-top: 5px;
   }
+  
 
   .new-medicine__tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
   }
 
   .new-medicine__tab {
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid $primaryDark;
-    background: $white;
-    color: $primaryDark;
-    font-size: 14px;
-
-    &.is-active {
-      background: $primaryDark;
-      color: $white;
-    }
+        flex: 1;
+        padding: 4px 0;
+        border-radius: 30px;
+        @include body1(true);
+        border: 1px solid $primaryDark;
+        background: $white;
+        color: $primaryDark;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        &.is-active {
+            background: $primaryDark;
+            color: $white;
+        }
   }
-
   .new-medicine__content {
     gap: 12px;
     overflow: auto;
@@ -236,7 +237,11 @@ const onKeydown = (event) => {
     place-items: center;
     color: $white;
     background: $grayLight;
-
+    &:hover {
+      color: $white;
+      background-color: $primary;
+      border: 1px solid $primary;
+    }
     &.is-checked {
       background: $primaryDark;
       border-color: $primaryDark;
@@ -244,13 +249,32 @@ const onKeydown = (event) => {
   }
 
   .new-medicine__submit {
-    width: 100%;
-    height: 48px;
-    border-radius: 8px;
-    background-color: $primaryDark;
+    flex: 1;
+    background: $primaryDark;
     color: $white;
+    padding: 8px;
     border: none;
+    border-radius: $radius_sm;
+    @include subtitle2(true);
     cursor: pointer;
+    transition: background 0.3s;
+    &:hover {
+        background-color: $white;
+        color: $primaryDark;
+        outline: 1px solid $primaryDark;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .new-medicine__overlay {
+    padding: 16px;
+  }
+
+  .new-medicine__overlay .new-medicine__modal {
+    width: 100%;
+    max-width: 100%;
+    height: min(667px, 90vh);
   }
 }
 </style>

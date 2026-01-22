@@ -10,6 +10,7 @@ import TheHeader from "@/components/common/TheHeader.vue";
 import status_label from "@/components/common/metrics/status_label.vue";
 
 import { Chart, registerables } from 'chart.js'
+
 //🔥 註冊 Chart.js 的所有組件（包含 scale）
 Chart.register(...registerables)
 
@@ -81,15 +82,13 @@ const loadAllMetrics = async () => {
   }
 }
 
-// 🔥 根據時間段篩選數據
-// 🔥 用於測試：使用數據中的最新日期作為"現在"
-const filterDataByPeriod = (data, timeField) => {
+// 🃏 根據時間段篩選數據（給卡片用）
+const filterDataByPeriodForCard = (data, timeField) => {
   if (!data || data.length === 0) return []
 
-  // 🔥 取數據中的最新日期作為"現在"（用於測試）
   const now = new Date(data[0][timeField])
 
-  // 今天：只要最新一筆
+  // 今天：只要最新一筆（給卡片用）
   if (activePeriod.value === "today") {
     return [data[0]]
   }
@@ -106,6 +105,36 @@ const filterDataByPeriod = (data, timeField) => {
   })
 }
 
+// 📈 根據時間段篩選數據（給圖表用）
+const filterDataByPeriod = (data, timeField) => {
+  if (!data || data.length === 0) return []
+
+  //  取數據中的最新日期作為"現在"（用於測試）
+  const now = new Date(data[0][timeField])
+
+  //  今天：取最新一天的所有資料（給圖表用）
+  if (activePeriod.value === "today") {
+    // 取得最新記錄的日期部分（不含時間）
+    const latestDateStr = data[0][timeField].split(' ')[0] // "2025-01-20"
+
+    // 篩選出同一天的所有記錄
+    return data.filter(record => {
+      const recordDateStr = record[timeField].split(' ')[0]
+      return recordDateStr === latestDateStr
+    })
+  }
+
+  // 計算幾天前的日期
+  const days = activePeriod.value === "week" ? 7 : 30
+  const cutoffDate = new Date(now)
+  cutoffDate.setDate(cutoffDate.getDate() - days)
+
+  // 過濾出時間範圍內的資料
+  return data.filter(record => {
+    const recordDate = new Date(record[timeField])
+    return recordDate >= cutoffDate && recordDate <= now
+  })
+}
 // 🔥 計算單一指標的平均值（單值欄位）
 const calculateAverage = (data, valueField) => {
   if (!data || data.length === 0) return 0
@@ -144,24 +173,24 @@ const bloodPressure = ref({
 
 // 🔥 更新所有卡片數值
 const updateCardValues = () => {
-  // 體重
-  const weightFiltered = filterDataByPeriod(allMetricsData.value.weight, "recorded_at")
+  // 體重 - 使用 filterDataByPeriodForCard
+  const weightFiltered = filterDataByPeriodForCard(allMetricsData.value.weight, "recorded_at")
   weight.value = calculateAverage(weightFiltered, "weight")
 
   // 血氧
-  const oxygenFiltered = filterDataByPeriod(allMetricsData.value.bloodOxygen, "recorded_at")
+  const oxygenFiltered = filterDataByPeriodForCard(allMetricsData.value.bloodOxygen, "recorded_at")
   bloodOxygen.value = calculateAverage(oxygenFiltered, "bloodOxygen")
 
   // 血糖
-  const sugarFiltered = filterDataByPeriod(allMetricsData.value.bloodSugar, "recorded_at")
+  const sugarFiltered = filterDataByPeriodForCard(allMetricsData.value.bloodSugar, "recorded_at")
   bloodSugar.value = calculateAverage(sugarFiltered, "bloodSugar")
 
   // 心律
-  const heartFiltered = filterDataByPeriod(allMetricsData.value.heartRate, "recorded_at")
+  const heartFiltered = filterDataByPeriodForCard(allMetricsData.value.heartRate, "recorded_at")
   heartRate.value = calculateAverage(heartFiltered, "heartRate")
 
   // 血壓
-  const bpFiltered = filterDataByPeriod(allMetricsData.value.bloodPressure, "recorded_at")
+  const bpFiltered = filterDataByPeriodForCard(allMetricsData.value.bloodPressure, "recorded_at")
   bloodPressure.value = calculateBPAverage(bpFiltered)
 }
 
@@ -368,7 +397,7 @@ const fillFormFromRecord = (record, index) => {
 const onSave = () => {
   const config = metricsConfig[activeMetricKey.value]
 
-  const recorded_at = `${formDate.value} ${formTime.value}:00`
+  const recorded_at = `${formDate.value} ${formTime.value}`
 
   let newRecord
 
@@ -395,7 +424,7 @@ const onSave = () => {
   updateCardValues()
 
   // // 存完清空
-  // setDefaultForm()
+  setDefaultForm()
 }
 
 //指標趨勢按鈕
@@ -563,6 +592,12 @@ watch([activePeriod, activeTrendsBtn], () => {
   <div class="metrics_container">
     <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="src/assets/images/Banner_metrics.svg">
     </TheHeader>
+
+    <div class="test">
+      <MetricsInputForm :metric-config="metricsConfig.bloodPressure" active-metric-key="bloodPressure"
+        />
+    </div>
+
     <section class="values">
       <div class="header">
         <div class="title">數值總覽</div>
@@ -591,7 +626,8 @@ watch([activePeriod, activeTrendsBtn], () => {
               {{ card.title }}
             </div>
             <div class="value-card__arrow" @click="openPop(card.id)"><img
-                src="/public/images/metrics/arrow_forward_ios_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></div>
+                src="/public/images/metrics/arrow_forward_ios_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="">
+            </div>
           </div>
 
           <!-- 🌟單值顯示 -->
@@ -628,7 +664,9 @@ watch([activePeriod, activeTrendsBtn], () => {
       <div class="pop-overlay" v-if="isPopOpen" @click.self="closePop">
         <div class="values__pop-window">
           <!-- 關閉按鈕 -->
-          <div class="close-pop__btn" @click="closePop">X</div>
+          <div class="close-pop__btn" @click="closePop">
+            <img src="/public/images/metrics/close_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="">
+          </div>
           <!-- 🌟歷史記錄(左) -->
           <div class="records">
             <div class="records__table">
@@ -638,25 +676,25 @@ watch([activePeriod, activeTrendsBtn], () => {
                   }})
                 </span>
                 <span class="records__title__time">測量時間</span>
+                <span class="records__add-btn" @click="setDefaultForm"><img
+                    src="/public/images/metrics/add_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
               </div>
-              <div class="records__list">
-                <!-- 單筆紀錄 -->
-                <div class="records__data" v-for="(record, index) in records__data" :key="index"
-                  :class="{ 'records__data--active': selectedIndex === index }">
-                  <span class="records__value">
-                    {{
-                      metricsConfig[activeMetricKey].renderValue
-                        ? metricsConfig[activeMetricKey].renderValue(record)
-                        : record[metricsConfig[activeMetricKey].valueField]
-                    }}
-                  </span>
-                  <span class="records__record_at">
-                    {{ record[metricsConfig[activeMetricKey].timeField] }}
-                  </span>
-                  <span class="edit-icon" @click="fillFormFromRecord(record, index)">
-                    <img src="/public/images/metrics/edit_square_24dp_2E6669_FILL0_wght400_GRAD0_opsz24.svg" alt="">
-                  </span>
-                </div>
+              <!-- 單筆紀錄 -->
+              <div class="records__data" v-for="(record, index) in records__data" :key="index"
+                :class="{ 'records__data--active': selectedIndex === index }">
+                <span class="records__value">
+                  {{
+                    metricsConfig[activeMetricKey].renderValue
+                      ? metricsConfig[activeMetricKey].renderValue(record)
+                      : record[metricsConfig[activeMetricKey].valueField]
+                  }}
+                </span>
+                <span class="records__record_at">
+                  {{ record[metricsConfig[activeMetricKey].timeField] }}
+                </span>
+                <span class="edit-icon" @click="fillFormFromRecord(record, index)">
+                  <img src="/public/images/metrics/edit_square_24dp_2E6669_FILL0_wght400_GRAD0_opsz24.svg" alt="">
+                </span>
               </div>
             </div>
           </div>
@@ -695,7 +733,9 @@ watch([activePeriod, activeTrendsBtn], () => {
                   placeholder="請選擇時間"></input>
               </div>
             </div>
-            <button type="submit" class="btn-save">儲存</button>
+            <div class="input__btn-area">
+              <button type="submit" class="input__btn">儲存</button>
+            </div>
           </form>
         </div>
       </div>
@@ -738,6 +778,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 .title {
   font-size: 18px;
+  color: $primaryDark;
   line-height: $lineHeightSub;
   font-weight: 700;
   letter-spacing: $letterSpacing;
@@ -751,7 +792,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 .period-select__btn {
   height: 40px;
-  padding: 0 20px;
+  padding: 0 30px;
   display: flex;
   align-items: center;
   // border: solid 1px;
@@ -793,6 +834,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 .value-card__header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 16px;
   line-height: $lineHeightSub;
   font-weight: $fontWeightRegular;
@@ -800,14 +842,23 @@ watch([activePeriod, activeTrendsBtn], () => {
 }
 
 .value-card__arrow {
-  width: 20px;
-  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
   cursor: pointer;
   transition: ease 0.2s;
 }
 
 .value-card__arrow:hover {
-  transform: scale(1.1);
+  background-color: $primaryLight;
+}
+
+.value-card__arrow img {
+  width: 15px;
+  height: 15px;
 }
 
 .value-card__content {
@@ -856,7 +907,9 @@ watch([activePeriod, activeTrendsBtn], () => {
 // 🌟彈窗🌟
 .values__pop-window {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  grid-template-areas: "records input";
   width: 800px;
   height: 400px;
   background-color: white;
@@ -872,12 +925,14 @@ watch([activePeriod, activeTrendsBtn], () => {
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  overflow-y: auto;
+  padding: 20px;
 }
 
 //🌟彈窗_左邊歷次記錄區
 .records {
+  grid-area: records;
   position: relative;
-  width: 60%;
   box-sizing: border-box;
   padding: 20px;
   border-right: solid 1px $primaryLight;
@@ -885,63 +940,83 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 .records__table {
   height: 360px;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .records__title {
-  display: flex;
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: auto 170px 40px;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
   height: 40px;
+  padding-left: 10px;
   background-color: $primaryDark;
   color: white;
 }
 
-.records__list {
-  height: 320px;
-  overflow-y: auto;
-}
-
-.records__title__time {
-  padding-right: 86px;
-}
-
-.records__data {
+.records__add-btn {
   display: flex;
+  width: 30px;
+  height: 30px;
   align-items: center;
-  height: 40px;
-  width: 100%;
-  padding: 0 10px;
-  display: flex;
-  justify-content: space-between;
-  border: solid 2px white;
-  background-color: $primaryLight;
+  justify-content: center;
   cursor: pointer;
+  border-radius: 100px;
 }
 
-.records__data:hover {
-  border: 2px solid $primary;
+.records__add-btn img {
+  width: 25px;
+  height: 25px;
 }
 
-.records__data--active {
+.records__add-btn:hover {
   background-color: $primary;
 }
 
+.records__data {
+  display: grid;
+  grid-template-columns: auto 170px 40px;
+  align-items: center;
+  padding-left: 10px;
+  height: 40px;
+  border-bottom: solid 1.5px white;
+  background-color: $primaryLight;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0 transparent;
+}
+
+.records__data:hover {
+  box-shadow: inset 0 0 0 1.5px $primary;
+}
+
+.records__data--active {
+  background-color: rgba(42, 157, 143, 0.5);
+}
+
 .edit-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+  border-radius: 5px;
+}
+
+.edit-icon img {
   height: 20px;
   width: 20px;
 }
 
 .edit-icon:hover {
-  transform: scale(1.1);
+  background-color: rgba(42, 157, 143, 0.5);
 }
 
 //🌟彈窗_右邊輸入區
 .input {
+  grid-area: input;
   display: flex;
   flex-direction: column;
-  width: 40%;
   padding: 20px;
 }
 
@@ -950,11 +1025,12 @@ watch([activePeriod, activeTrendsBtn], () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 10px;
 }
 
 .input__title {
   color: $primaryDark;
-  $fontWeightBold: 700;
+  font-weight: 700;
   font-size: 20px;
 }
 
@@ -970,7 +1046,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 .input__card {
   display: flex;
   flex-direction: column;
-  margin: 10px 0;
+  margin-top: 10px;
 }
 
 .input__card__title {
@@ -981,12 +1057,14 @@ watch([activePeriod, activeTrendsBtn], () => {
 .input__card__value {
   height: 40px;
   width: 100%;
+  padding-left: 5px;
   border-radius: 5px;
 }
 
 .input__card__time-select {
   height: 40px;
   width: 100%;
+  padding-left: 5px;
   border-radius: 5px;
 }
 
@@ -995,14 +1073,22 @@ watch([activePeriod, activeTrendsBtn], () => {
   gap: 10px;
 }
 
-.btn-save {
+.input__btn-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.input__btn {
   width: 100%;
   height: 40px;
-  margin-top: auto;
+  margin-top: 20px;
   color: white;
-  background-color: $primaryDark;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
+  background-color: $primaryDark;
 }
 
 .close-pop__btn {
@@ -1016,7 +1102,7 @@ watch([activePeriod, activeTrendsBtn], () => {
   width: 30px;
   height: 30px;
   color: white;
-  background-color: $accent;
+  background-color: $primaryDark;
   border-radius: 100px;
   cursor: pointer;
 }
@@ -1030,10 +1116,11 @@ watch([activePeriod, activeTrendsBtn], () => {
 .trends__line-chart {
   width: calc(80% - 10px);
   height: 300px;
-  border: solid 1px;
-  background-color: $primaryLight;
+  // border: solid 1px;
+  background-color: white;
   border-radius: 10px;
   padding: 5px;
+  box-shadow: $shadow;
 }
 
 .trends__right-btns {
@@ -1043,7 +1130,7 @@ watch([activePeriod, activeTrendsBtn], () => {
   width: calc(20% - 10px);
   padding: 5px;
   gap: 5px;
-  border: solid 1px;
+  border: solid 1px $primary;
   background-color: white;
   border-radius: 10px;
 }
@@ -1067,6 +1154,10 @@ watch([activePeriod, activeTrendsBtn], () => {
   color: white;
 }
 
+.trends__btn:not(.trends__btn--on):hover {
+  background-color: $primaryLight;
+}
+
 
 // 🌟RWD RWD RWD RWD RWD RWD
 @media (max-width:1200px) {
@@ -1075,66 +1166,62 @@ watch([activePeriod, activeTrendsBtn], () => {
   }
 }
 
-@media(max-width:860px) {
+@media(max-width:800px) {
   .value-card {
     width: calc(33% - 13px);
   }
 
   .values__pop-window {
-    flex-direction: column-reverse;
-    width: 90%;
-    height: 90%;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+    "input"
+    "records";
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
   }
 
   .records {
-    width: 100%;
-    height: 50%;
     border: 0;
-    border-top: solid 1px $primaryLight;
+    overflow: hidden;
   }
 
   .records__table {
     height: 100%;
   }
 
-  .records__list {
-    height: calc(100% - 40px);
-  }
-
-  .input {
-    width: 100%;
-    height: 50%;
-  }
-
-  .input__content {
-    flex-direction: row;
-    gap: 20px;
-  }
-
-  .input__card {
-    width: 50%;
-  }
 }
 
 @media(max-width:600px) {
   .value-card {
     width: calc(50% - 10px)
   }
-  .trends__content{
+
+  .trends__content {
     display: flex;
     flex-direction: column-reverse;
   }
-  .trends__line-chart{
+
+  .trends__line-chart {
     width: 100%;
   }
-  .trends__right-btns{
+
+  .trends__right-btns {
     width: 100%;
     display: flex;
     flex-direction: row;
   }
-  .trends__btn{
+
+  .trends__btn {
     width: 20%;
     height: 40px;
+  }
+}
+
+@media(max-height:520px) {
+  .pop-overlay {
+    align-items: flex-start;
   }
 }
 </style>

@@ -11,7 +11,12 @@ defineProps({
     type: String,
     default: '我是大標題', // 預設值
   },
+  showTitle: {
+    type: Boolean,
+    default: true
+  }
 })
+
 </script>
 <template>
   <main class="profile-layout">
@@ -34,10 +39,12 @@ defineProps({
     </aside>
 
     <section class="content-area">
-      <h3 class="content-title">
-        {{ title }}
-      </h3>
-      <hr style="margin: 16px 0" class="line" />
+      <template  v-if="showTitle">
+        <h3 class="content-title">
+          {{ title }}
+        </h3>
+        <hr style="margin: 16px 0" class="line"/>
+      </template>
 
       <slot></slot>
     </section>
@@ -98,7 +105,7 @@ defineProps({
         text-decoration: none;
         color: $primaryDark;
         border-radius: 8px;
-        transition: all .3s;
+        transition: all 0.3s;
 
         &:hover,
         &.router-link-active {
@@ -118,7 +125,7 @@ defineProps({
       border-radius: $radius_md;
       cursor: pointer;
       &:hover {
-        opacity: .9;
+        opacity: 0.9;
       }
     }
   }
@@ -134,9 +141,22 @@ defineProps({
       box-shadow: none;
       flex-direction: column;
 
-      .user-info,
-      .logout-btn {
-        display: none;
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        width: 100%;
+
+        .pf-img img {
+          width: 50px;
+          height: 50px;
+        }
+
+        .user-name {
+          margin-top: 0;
+          font-size: 18px;
+        }
       }
 
       .menu-list {
@@ -159,15 +179,11 @@ defineProps({
             display: none;
           }
 
+          &:hover,
           &.router-link-active {
             background: $primary;
             color: white;
             border-color: $primary;
-          }
-
-          &:not(.router-link-active) {
-            background: white;
-            color: $primaryDark;
           }
         }
       }
@@ -222,13 +238,13 @@ defineProps({
       }
 
       .menu-list {
-        display: flex; 
+        display: flex;
         flex-direction: row;
         margin: 0 0 16px 0;
         gap: 8px;
         overflow-x: auto;
         white-space: nowrap;
-        padding-bottom: 4px; 
+        padding-bottom: 4px;
 
         &::-webkit-scrollbar {
           display: none;
@@ -241,8 +257,11 @@ defineProps({
           font-size: 14px;
           background-color: #f5f5f5;
 
+          &:hover,
           &.router-link-active {
-            background: $linear2;
+            color: $white;
+            background-color: $primary;
+            border-color: $primary;
           }
         }
       }

@@ -17,7 +17,8 @@ export const allProducts = [
     title: '海洋鈣鎂D+強效錠',
     spec: '60錠 / 袋',
     price: 480,
-    tag: '熱銷',
+    tag: '熱銷冠軍',
+    keywords: '鈣片, 補鈣, 睡覺, 抽筋, 牛奶, 骨頭',
     desc: '嚴選愛爾蘭紅藻鈣，多孔結構吸收佳。搭配鎂與D3，穩固骨骼基石，睡前補充助入睡。',
     features: [
       '專利愛爾蘭海藻鈣：源自純淨海域，多孔性結構，吸收率高達 39.5%。',
@@ -46,7 +47,8 @@ export const allProducts = [
     title: '葡萄糖胺軟骨素複方',
     spec: '90錠 / 袋',
     price: 820,
-    tag: '關鍵保養',
+    tag: '長輩首選',
+    keywords: '膝蓋, 爬樓梯, 軟骨, 關節, 走路, 孝親',
     desc: '行動力升級！葡萄糖胺結合軟骨素，雙重滋補關鍵。添加貓爪藤，上下樓梯潤滑不卡關。', 
     features: [
       '雙重關鍵原料：高純度葡萄糖胺鹽酸鹽＋鯊魚軟骨素，提供潤滑與彈性。',
@@ -76,6 +78,7 @@ export const allProducts = [
     spec: '30膠囊 / 袋',
     price: 1350,
     tag: '',
+    keywords: '膠原蛋白, 運動, 健身, 關節, 跑步',
     desc: '美國專利UC-II®，低溫萃取保留活性。每日一顆，保護力勝葡萄糖胺兩倍，修復關鍵。', 
     features: [
       '美國專利 UC-II®：擁有哈佛醫學院等多項研究支持，40mg 足量添加。',
@@ -105,6 +108,7 @@ export const allProducts = [
     spec: '60錠 / 袋',
     price: 650,
     tag: '全素可食',
+    keywords: '素食, 薑黃, MSM, 關節痛, 久站',
     desc: '久站久坐首選！高純度MSM搭配薑黃，有效舒緩沉重感，告別僵硬，找回輕鬆自在節奏。', 
     features: [
       '99.9% 高純度 MSM：美國大廠原料，形成軟骨組織的重要關鍵成分。',
@@ -133,7 +137,8 @@ export const allProducts = [
     title: 'HMB肌力修復膠囊',
     spec: '60膠囊 / 袋',
     price: 1180,
-    tag: '',
+    tag: '長輩首選',
+    keywords: '肌肉, 肌少症, 老人, 跌倒, 蛋白質',
     desc: '鎖住肌肉力量！HMB搭配維生素D與BCAA，穩固下盤，預防跌倒，讓日常行走更有力。', 
     features: [
       '關鍵 HMB-Ca：每份含 1500mg，相當於補充大量雞蛋與牛肉的精華。',
@@ -162,7 +167,8 @@ export const allProducts = [
     title: 'MSM舒緩鎮痛配方',
     spec: '45錠 / 袋',
     price: 580,
-    tag: '強力舒緩',
+    tag: '',
+    keywords: '止痛, 舒緩, 鳳梨酵素, 運動傷害, 拉傷',
     desc: '急性不適加強版！高劑量MSM添加鳳梨酵素，針對強烈緊繃快速舒緩，運動恢復必備。', 
     features: [
       '加強型 MSM 配方：濃度提升，針對卡關不順提供強效支援。',
@@ -192,6 +198,7 @@ export const allProducts = [
     spec: '60軟膠囊 / 罐',
     price: 1280,
     tag: '熱銷冠軍',
+    keywords: '魚油, omega-3, 血管, 腦部, 記憶力, 考試',
     desc: '先進rTG萃取，吸收率倍增。85%高濃度Omega-3，調節機能，思緒清晰代謝順暢。', 
     features: [
       '85% 高濃度 Omega-3：EPA+DHA 黃金比例，一顆抵多顆。',
@@ -220,7 +227,8 @@ export const allProducts = [
     title: '還原型Q10能量軟膠囊',
     spec: '30軟膠囊 / 袋',
     price: 890,
-    tag: '日本專利',
+    tag: '夜間保養',
+    keywords: '心臟, 能量, 疲勞, 備孕, 皮膚',
     desc: '日本Kaneka還原型Q10，直接吸收無須轉換。啟動能量發電廠，找回年輕體力，氣色紅潤。', 
     features: [
       '日本 Kaneka 原廠：全球最大 Q10 供應商，酵母發酵製程，品質純淨。',
@@ -249,7 +257,8 @@ export const allProducts = [
     title: '納豆紅麴暢通配方',
     spec: '60膠囊 / 罐',
     price: 950,
-    tag: '晚間保養',
+    tag: '夜間保養',
+    keywords: '膽固醇, 血脂, 納豆, 紅麴, 循環, 晚上吃',
     desc: '專為循環負擔設計。高活性納豆激酶加紅麴，把握夜間修復期，清理堆積，維持管道暢通。', 
     features: [
       '高活性納豆激酶：每份含 2000FU，有效幫助溶解堆積物。',
@@ -279,6 +288,7 @@ export const allProducts = [
     spec: '60軟膠囊 / 罐',
     price: 1150,
     tag: '',
+    keywords: '蝦紅素, 氣色, 生理期, 磷蝦油, 抗氧化',
     desc: '南極純淨紅寶石。特殊磷脂質結構更好吸收，天然蝦紅素帶來好氣色，無魚腥味好入口。', 
     features: [
       '獨特磷脂質結構：兼具親水親油特性，進入體內快速吸收利用。',
@@ -308,6 +318,7 @@ export const allProducts = [
     spec: '90錠 / 罐',
     price: 780,
     tag: '',
+    keywords: '男性, 精力, 運動, 循環, 手腳冰冷',
     desc: '一氧化氮關鍵前驅物，擴充通道提升效率。推薦運動或男性保養，搭配鋅與馬卡，爆發力十足。', 
     features: [
       'NO 一氧化氮生成：精氨酸是重要原料，幫助放鬆管道，促進流動。',
@@ -336,7 +347,8 @@ export const allProducts = [
     title: '高濃縮無味大蒜精華',
     spec: '45錠 / 袋',
     price: 550,
-    tag: '換季必備',
+    tag: '長輩首選',
+    keywords: '大蒜, 免疫力, 感冒, 殺菌, 抵抗力',
     desc: '冷壓濃縮保留營養，去除刺鼻異味！天然防護罩增強保護力。小小一顆等於五千毫克新鮮大蒜。', 
     features: [
       '無味大蒜精：特殊去味技術，只有營養沒有口臭，社交不尷尬。',
@@ -365,7 +377,8 @@ export const allProducts = [
     title: '游離型葉黃素複方膠囊',
     spec: '30膠囊 / 袋',
     price: 980,
-    tag: '',
+    tag: '上班族必備',
+    keywords: '眼睛, 葉黃素, 藍光, 手機, 電腦, 乾澀',
     desc: '美國專利FloraGLO®游離型葉黃素，10:2黃金比例。過濾有害光線，隱形防護罩，3C族晶亮首選。', 
     features: [
       '專利游離型：分子小、好吸收，直接利用無須轉換。',
@@ -395,6 +408,7 @@ export const allProducts = [
     spec: '60膠囊 / 袋',
     price: 850,
     tag: '',
+    keywords: '夜盲, 開車, 花青素, 藍莓, 飛行員',
     desc: '飛行員的秘密！北歐野生山桑子，十倍花青素含量。適應光線變化，夜間開車、閱讀依然清晰銳利。', 
     features: [
       '高濃度花青素：超越一般藍莓，擁有強大的傳導與循環能力。',
@@ -423,7 +437,8 @@ export const allProducts = [
     title: '紅藻蝦紅素護明軟膠囊',
     spec: '45錠 / 袋',
     price: 1080,
-    tag: '超級維生素',
+    tag: '全素可食',
+    keywords: '素食, 蝦紅素, 眼睛酸, 對焦, 放鬆',
     desc: '超級維生素蝦紅素，保護力勝維他命C六千倍。深入調節核心，極速舒緩酸澀緊繃，找回靈活對焦。', 
     features: [
       '雨生紅球藻萃取：純植物來源，素食者可食用的天然蝦紅素。',
@@ -452,7 +467,8 @@ export const allProducts = [
     title: '高濃度DHA晶亮魚油',
     spec: '60軟膠囊 / 罐',
     price: 1120,
-    tag: '兒童可食',
+    tag: '長輩首選',
+    keywords: '兒童, 乾眼, 魚油, DHA, 水潤',
     desc: '專為水潤設計，高比例DHA鎖住水分。提升油層穩定，減少乾澀不適。清透小顆粒，兒童也可安心食。', 
     features: [
       '高含量 DHA：構成明亮視界的重要成分，比例高於 EPA。',
@@ -481,7 +497,8 @@ export const allProducts = [
     title: '全方位晶亮綜合維他命',
     spec: '60錠 / 罐',
     price: 680,
-    tag: '全家適用',
+    tag: '熱銷冠軍',
+    keywords: '維他命, 綜合, 枸杞, 決明子, 便宜, CP值',
     desc: '基礎保養一瓶搞定！維生素A、C、E結合枸杞決明子。維持暗處視覺，中西合併，全家人溫和滋補。', 
     features: [
       '基礎營養打底：提供晶亮健康所需的維生素群與礦物質鋅。',

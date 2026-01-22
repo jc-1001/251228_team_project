@@ -16,16 +16,24 @@ const selectCategory = (name) => {
   currentCategory.value = name
 }
 
-// 切換各分類中的商品卡片
+// 搜尋文字
+const searchQuery = ref('')
+
+// 搜尋邏輯
 // 筆記:computed計算屬性，是為了將一個「運算過程」轉換為一個「具備快取能力的響應式狀態」
 const filteredProducts = computed(() => {
-  if (currentCategory.value === '全部商品') {
-    return product.value
-  } 
-  return product.value.filter((item)=>{
-    return item.category === currentCategory.value
+  const query = searchQuery.value.toLowerCase().trim()
+
+  return product.value.filter((item) => {
+    const matchCategory = currentCategory.value === '全部商品' || item.category === currentCategory.value
+    
+    const matchSearch = query === '' || item.title.toLowerCase().includes(query) || (item.keywords && item.keywords.toLowerCase().includes(query))
+
+    return matchCategory && matchSearch
   })
 })
+
+
 </script>
 
 <template>
@@ -35,11 +43,20 @@ const filteredProducts = computed(() => {
       subtitle="用健康積分兌換好禮，照顧自己也照顧家人!"
       :imageSrc="bannerImage"
     class="banner" />
-    <div class="category_btns">
-      <button v-for="cat in categories" :key="cat" class="category_btns_el" :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
+    <div class="controls_container">
+      <div class="category_btns">
+        <button v-for="cat in categories" :key="cat" class="category_btns_el" :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
+      </div>
+      <div class="search_wrapper">
+        <span class="material-symbols-rounded search_icon">search</span>
+        <input type="text" v-model="searchQuery" placeholder="請輸入商品名稱或關鍵字">
+      </div>
     </div>
     <div class="product_card_list">
       <ProductCard v-for="item in filteredProducts" :key="item.id" v-bind="item"/>
+      <div v-if="filteredProducts.length === 0" class="no-result">
+        未找到相關商品
+      </div>
     </div>
   </div>
 </template>
@@ -47,21 +64,17 @@ const filteredProducts = computed(() => {
 <style lang="scss" scoped>
 .mall_page {
   .banner {
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
 
   .category_btns {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 40px;
-    padding-bottom: 4px;
+    gap: 12px;
     .category_btns_el {
-      padding: 0 12px;
-      width: 170px;
-      height: 45px;
+      padding: 5px 12px;
+      width: 150px;
       @include body1(true);
-      line-height: 43px;
       background-color: $white;
       color: $grayDark;
       text-align: center;
@@ -77,16 +90,65 @@ const filteredProducts = computed(() => {
         border: 1px solid $primary;
       }
       @media screen and (max-width: 768px) {
-        flex: 1 1 150px;
+        flex: 1 1 auto;
+        padding: 8px 12px;
+        @include body2(true);
       }
     }
   }
 
   .product_card_list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // 概念類似於 repeat(數量, 尺寸(最小, 最大))，數量的另一種選擇為auto-fill
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); // 概念類似於 repeat(數量, 尺寸(最小, 最大))，數量的另一種選擇為auto-fill
     grid-template-rows: auto;
     gap: 32px;
+    .no-result {
+      grid-column: 1 / -1;
+      padding: 40px;
+      @include body1;
+      text-align: center;
+      color: $grayDark;
+    }
+  }
+}
+
+.controls_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 40px;
+  .search_wrapper {
+    // flex: 1;
+    position: relative;
+    width: 400px;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
+    input {
+      padding: 8px 12px 8px 40px;
+      width: 100%;
+      @include body3;
+      outline: none;
+      color: $black;
+      border-radius: 50px;
+      border: 1px solid $grayDark;
+      transition: all .3s;
+      &:focus {
+        border: 1px solid $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+        outline: none;
+      }
+    }
+    .search_icon {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      color: $primaryDark;
+      pointer-events: none;
+    }
   }
 }
 </style>
