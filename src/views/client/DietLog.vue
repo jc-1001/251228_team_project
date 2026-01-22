@@ -5,6 +5,7 @@ import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord
 import EditDietaryRecord from '@/components/common/client/modals/EditDietaryRecord.vue'
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs';
+import dietBanner from '@/assets/images/Banner_diary.svg'
 
 const currentViewDate = ref(dayjs());
 // 填寫卡片顯示綠底
@@ -211,7 +212,7 @@ const handleDeleteRecord = (id) => {
     <TheHeader
     title="飲食日記"
     subtitle="拍照上傳，簡單步驟將每日飲食好好記錄。"
-    imageSrc="/src/assets/images/Banner_diary.svg"
+    :imageSrc="dietBanner"
     />
     <router-view />
     <!-- 日曆 -->
