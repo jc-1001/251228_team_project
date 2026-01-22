@@ -12,8 +12,8 @@ const props = defineProps({
 })
 
 // 下方資訊tab
-const infoTab = ref(['產品介紹', '商品規格', '配送須知'])
-const currentTab = ref('產品介紹')
+const infoTab = ref(['商品介紹', '商品規格', '配送須知'])
+const currentTab = ref('商品介紹')
 
 
 // info_tab切換
@@ -28,7 +28,7 @@ const selectTab = (tab) => {
         :class="{ 'active': currentTab === tab }">{{ tab }}</li>
     </ul>
     <div class="info_content">
-      <div class="feature_block" v-if="currentTab === '產品介紹'">
+      <div class="feature_block" v-if="currentTab === '商品介紹'">
         <ul class="feature_list">
           <li v-for="feature in features" :key="feature">{{ feature }}</li>
         </ul>
