@@ -1,72 +1,76 @@
 <script setup>
-const timeSlots = ['早上', '中午', '晚上', '睡前']
+import { ref } from 'vue'
+
+const selectedUsage = ref('before')
+const selectedQty = ref(1)
+const timeSlots = ['早上', '中午', '下午', '晚上']
 const usageOptions = [
-  { label: '餐前', value: 'before' },
-  { label: '餐後', value: 'after' },
+  { label: '飯前', value: 'before' },
+  { label: '飯後', value: 'after' },
   { label: '睡前', value: 'bedtime' },
 ]
 const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
-  if (slot === '睡前') {
+  if (slot === '晚上') {
     return [{ label: '睡前', value: 'bedtime' }]
   }
   return usageOptions
 }
-const emit = defineEmits(['closeModal'])
+const emit = defineEmits(['closeCardDetail'])
 
-const closeModal = () => {
-  emit('closeModal')
+const closeCardDetail = () => {
+  emit('closeCardDetail')
 }
 
 const onOverlayClick = () => {
-  closeModal()
+  closeCardDetail()
 }
 
 const onKeydown = (event) => {
   if (event.key === 'Escape') {
-    closeModal()
+    closeCardDetail()
   }
 }
 </script>
 
 <template>
   <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
-    <div class="medicine-modal__card"  @click.stop>
-      <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">
+    <div class="medicine-modal__card" @click.stop>
+      <button @click="closeCardDetail" class="medicine-modal__close" type="button" aria-label="?њй?">
         <span class="material-symbols-outlined">close</span>
       </button>
-      <h1 class="medicine-modal__title">新增藥品</h1>
-      <form class="medicine-modal__content"  action="#">
+      <h1 class="medicine-modal__title">藥品詳細</h1>
+      <button class="medicine-modal__edit" type="button">編輯</button>
+      <form class="medicine-modal__content" action="#">
         <div class="medicine-modal__body">
           <section class="medicine-modal__image">
-            <input type="file" id="medicine-image"  class="medicine-modal__file" />
+            <input type="file" id="medicine-image" disabled class="medicine-modal__file" />
             <label class="medicine-modal__image-drop" for="medicine-image">
-              <img src="@/assets/images/camera.svg" alt="camera icon" />
-              點擊或拖曳上傳藥品照片
+              <img src="@/assets/images/mdc1_1.jpg" alt="camera icon" />
             </label>
           </section>
 
           <section class="medicine-modal__form">
             <div class="form-group">
-              <label for="medicine-name" >藥品名</label>
-              <input id="medicine-name"  type="text" placeholder="例如：阿斯匹靈" />
+              <label for="medicine-name">藥品名稱</label>
+              <input id="medicine-name" disabled="true" type="text" value="脈優" />
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label for="expiration-date">有效期限</label>
-                <input id="expiration-date" type="date" />
+                <input id="expiration-date" disabled="true" type="date" value="2026-12-31" />
               </div>
               <div class="form-group">
                 <label for="quantity">藥品數量</label>
-                <input id="quantity" type="text" />
+                <input id="quantity" disabled="true" type="text" value="40" />
               </div>
             </div>
 
             <div class="form-group">
               <label for="notes">備註</label>
-              <input id="notes" type="text" />
+              <input id="notes" disabled="true" type="text" value="" />
             </div>
 
             <p class="medicine-modal__hint">
@@ -80,17 +84,18 @@ const onKeydown = (event) => {
 
               <template v-for="slot in timeSlots" :key="slot">
                 <div class="schedule__row-label">{{ slot }}</div>
-                <select class="schedule__select">
+                <select class="schedule__select" v-model="selectedUsage">
                   <option
                     v-for="opt in usageOptionsBySlot(slot)"
                     :key="opt.value"
                     :value="opt.value"
+                    disabled="true"
                   >
                     {{ opt.label }}
                   </option>
                 </select>
-                <select class="schedule__select">
-                  <option v-for="qty in quantityOptions" :key="qty" :value="qty">
+                <select class="schedule__select" v-model="selectedQty">
+                  <option v-for="qty in quantityOptions" :key="qty" :value="qty" disabled="true">
                     {{ qty }}
                   </option>
                 </select>
@@ -100,7 +105,7 @@ const onKeydown = (event) => {
         </div>
 
         <div class="medicine-modal__footer">
-          <button class="btn-primary" type="submit">儲存</button>
+          <button class="btn-primary" type="submit">關閉</button>
         </div>
       </form>
     </div>
@@ -117,7 +122,7 @@ const onKeydown = (event) => {
 .medicine-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.5);
   display: grid;
   place-items: center;
   z-index: 1000;
@@ -134,7 +139,18 @@ const onKeydown = (event) => {
     padding: 32px 40px;
     gap: 16px;
     overflow: auto;
-
+    .medicine-modal__edit {
+      position: absolute;
+      top: 56px;
+      right: 80px;
+      padding: 8px 16px;
+      background-color: $primaryDark;
+      color: $white;
+      border: none;
+      border-radius: $radius_md;
+      cursor: pointer;
+      @include body3;
+    }
     .medicine-modal__title {
       @include title2;
       color: $primaryDark;
@@ -179,6 +195,11 @@ const onKeydown = (event) => {
             text-align: center;
             color: $primaryDark;
             @include body3;
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
           }
         }
 

@@ -4,6 +4,7 @@ import TheHeader from '@/components/common/TheHeader.vue'
 import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
+import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
 
 // 引入燈箱元件
 // 快速紀錄
@@ -175,7 +176,7 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <NewMedicineModals :info="popupInfo" @close="closePopup" />
+              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -231,6 +232,7 @@ const closePopup = () => {
             <span class="material-symbols-rounded"></span>
             <p>藥物庫存警示</p>
           </div>
+          <HomeReserveMedicine />
         </div>
       </section>
     </main>

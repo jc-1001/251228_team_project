@@ -16,18 +16,6 @@ defineProps({
     type: String,
     default: 'slide',
   },
-  // effectOptions: {
-  //   type: Object,
-  //   default: () => ({
-     
-  //       rotate: 0,
-  //       stretch: 0,
-  //       depth: 0,
-  //       modifier: 1,
-  //       slideShadows: false,
-    
-  //   }),
-  // },
   items: {
     type: Array,
     default: () => [],
@@ -75,7 +63,7 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['createClick'])
+const emit = defineEmits(['createClick', 'showCardDetail'])
 </script>
 
 <template>
@@ -92,7 +80,7 @@ const emit = defineEmits(['createClick'])
       class="medicine-swiper"
     >
       <SwiperSlide v-for="item in items" :key="item.id">
-        <MedicineCard :item="item" />
+        <MedicineCard :item="item" @showCardDetail="emit('showCardDetail', item)" />
       </SwiperSlide>
     </Swiper>
   </section>
