@@ -7,7 +7,7 @@ const cartStore = useCartStore()
   <section class="checkout_section">
     <h3 class="section_title">
       <span class="material-symbols-rounded icon icon">shopping_bag</span>
-      購買清單
+      商品明細
     </h3>
     <ul class="item_list">
       <li v-for="item in cartStore.checkoutList" :key="item.id" class="item_row">
