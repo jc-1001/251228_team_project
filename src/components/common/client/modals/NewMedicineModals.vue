@@ -3,7 +3,6 @@ import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMedicineStore } from '@/stores/medicine.js'
 
-
 const activeTab = ref(0)
 const tabs = [
   { key: '早上', label: '早上' },
@@ -21,8 +20,10 @@ onMounted(() => {
 })
 
 const currentTabKey = computed(() => tabs[activeTab.value]?.key)
-const visibleItems = computed(()=>{
-  return items.value.filter((item)=>Array.isArray(item.timeCourse) && item.timeCourse.includes(currentTabKey.value))
+const visibleItems = computed(() => {
+  return items.value.filter(
+    (item) => Array.isArray(item.timeCourse) && item.timeCourse.includes(currentTabKey.value),
+  )
 })
 
 const toggleChecked = (item) => {
@@ -51,7 +52,7 @@ const onKeydown = (event) => {
         <button class="new-medicine__close" @click="closeModal" type="button" aria-label="Close">
           <span class="material-symbols-outlined">close</span>
         </button>
-        <p class="new-medicine__date">Today: 2026/01/18</p>
+        <p class="new-medicine__date">今日日期:2026/01/22</p>
       </header>
 
       <div class="new-medicine__tabs">
@@ -100,7 +101,7 @@ const onKeydown = (event) => {
 </template>
 
 <style scoped lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 .new-medicine__overlay {
   position: fixed;
   inset: 0;
@@ -109,13 +110,14 @@ const onKeydown = (event) => {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow-y: auto;
 
   .new-medicine__modal {
     background-color: $white;
     padding: 24px;
     border-radius: 12px;
-    width: 420px;
-    height: 667px;
+    width: 400px;
+    height: min(667px, 70vh);
     position: relative;
     display: grid;
     grid-template-rows: auto auto 1fr auto;
@@ -130,20 +132,22 @@ const onKeydown = (event) => {
   }
 
   .new-medicine__title {
-    margin: 6px 0 0;
+    @include subtitle1(true);
+    margin: 8px 0 0;
     color: $primaryDark;
   }
 
   .new-medicine__date {
-    margin: 0;
-    color: $gray;
-    font-size: 14px;
+    color: $black;
+    @include body2;
+    margin-bottom: 16px;
   }
 
-.new-medicine__close{
+  .new-medicine__close {
     @include closeButton;
     padding-top: 5px;
   }
+  
 
   .new-medicine__tabs {
     display: grid;
@@ -152,19 +156,20 @@ const onKeydown = (event) => {
   }
 
   .new-medicine__tab {
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid $primaryDark;
-    background: $white;
-    color: $primaryDark;
-    font-size: 14px;
-
-      &:hover,
-      &.active {
-        color: $white;
-        background-color: $primary;
-        border: 1px solid $primary;
-  }
+        flex: 1;
+        padding: 4px 0;
+        border-radius: 30px;
+        @include body1(true);
+        border: 1px solid $primaryDark;
+        background: $white;
+        color: $primaryDark;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        &.is-active {
+            background: $primaryDark;
+            color: $white;
+        }
   }
   .new-medicine__content {
     gap: 12px;
@@ -232,7 +237,11 @@ const onKeydown = (event) => {
     place-items: center;
     color: $white;
     background: $grayLight;
-
+    &:hover {
+      color: $white;
+      background-color: $primary;
+      border: 1px solid $primary;
+    }
     &.is-checked {
       background: $primaryDark;
       border-color: $primaryDark;
@@ -240,13 +249,20 @@ const onKeydown = (event) => {
   }
 
   .new-medicine__submit {
-    width: 100%;
-    height: 48px;
-    border-radius: 8px;
-    background-color: $primaryDark;
+    flex: 1;
+    background: $primaryDark;
     color: $white;
+    padding: 8px;
     border: none;
+    border-radius: $radius_sm;
+    @include subtitle2(true);
     cursor: pointer;
+    transition: background 0.3s;
+    &:hover {
+        background-color: $white;
+        color: $primaryDark;
+        outline: 1px solid $primaryDark;
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
-import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+// import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
@@ -143,17 +143,18 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-<<<<<<< HEAD
+
+              <!-- <HomeCommonModal
+=======
               <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
                 @update:modelValue="closePopup" @close="closePopup" />
-=======
               <HomeCommonModal
                 :modelValue="true"
                 :title="`${popupInfo.name}`"
                 :data="popupInfo"
                 @update:modelValue="closePopup"
                 @close="closePopup"
-              />
+              /> -->
               <NewDietaryRecord 
                 v-if="popupInfo.type === 'diet'"
                 :isOpen="true" 
@@ -161,7 +162,6 @@ const closePopup = () => {
                 @close="closePopup"
                 @submit="handleDietSubmit"
               />
->>>>>>> 821baae957539a19e7ad0727c8b3e8196c5d0a50
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
               <!-- <ConfirmActionModal
                 ref="productModal"
@@ -173,7 +173,11 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
+              <NewMedicineModals
+               v-if="popupInfo.type === 'medicine'"
+                :info="popupInfo" 
+                @close="closePopup"
+                :data = "todayDate" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>

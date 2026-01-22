@@ -16,4 +16,3 @@ import MedicineSection from '@/views/client/Medicine/common/MedicineSection.vue'
     <MedicineSection />
   </section>
 </template>
-<style lang="scss" scoped></style>

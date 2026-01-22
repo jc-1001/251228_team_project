@@ -32,15 +32,15 @@ const onKeydown = (event) => {
 
 <template>
   <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
-    <div class="medicine-modal__card"  @click.stop>
+    <div class="medicine-modal__card" @click.stop>
       <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">
         <span class="material-symbols-outlined">close</span>
       </button>
       <h1 class="medicine-modal__title">新增藥品</h1>
-      <form class="medicine-modal__content"  action="#">
+      <form class="medicine-modal__content" action="#">
         <div class="medicine-modal__body">
           <section class="medicine-modal__image">
-            <input type="file" id="medicine-image"  class="medicine-modal__file" />
+            <input type="file" id="medicine-image" class="medicine-modal__file" />
             <label class="medicine-modal__image-drop" for="medicine-image">
               <img src="@/assets/images/camera.svg" alt="camera icon" />
               點擊或拖曳上傳藥品照片
@@ -49,8 +49,8 @@ const onKeydown = (event) => {
 
           <section class="medicine-modal__form">
             <div class="form-group">
-              <label for="medicine-name" >藥品名</label>
-              <input id="medicine-name"  type="text" placeholder="例如：阿斯匹靈" />
+              <label for="medicine-name">藥品名</label>
+              <input id="medicine-name" type="text" placeholder="例如：阿斯匹靈" />
             </div>
 
             <div class="form-row">
@@ -126,7 +126,7 @@ const onKeydown = (event) => {
     position: relative;
     width: 1200px;
     max-width: 90vw;
-    min-height: 500px;
+    height: min(667px, 80vh);
     // max-height: 90vh;
     background-color: $white;
     border-radius: $radius_md;
@@ -250,14 +250,20 @@ const onKeydown = (event) => {
         justify-content: center;
 
         .btn-primary {
-          min-width: 200px;
-          padding: 12px 24px;
-          background-color: $primaryDark;
+          flex: .3;
+          background: $primaryDark;
           color: $white;
+          padding: 8px;
           border: none;
-          border-radius: $radius_md;
+          border-radius: $radius_sm;
+          @include subtitle2(true);
           cursor: pointer;
-          @include body2;
+          transition: background 0.3s;
+          &:hover {
+            background-color: $white;
+            color: $primaryDark;
+            outline: 1px solid $primaryDark;
+          }
         }
       }
     }

@@ -153,7 +153,7 @@ const handleMinus = ()=> {
       flex-wrap: wrap;
       .btn_add_to_cart {
         flex: 2;
-        padding: 8px 40px;
+        padding: 8px 32px;
         border: none;
         border-radius: $radius-sm;
         color: $white;

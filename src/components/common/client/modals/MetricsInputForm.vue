@@ -117,13 +117,15 @@ const closePop = () => emit('close')
 
   <div class="pop-overlay" @click.self="closePop">
     <form class="input" @submit.prevent="onSave">
-      <div class="close-pop__btn" @click="closePop">X</div>
+      <button class="close-pop__btn" @click="closePop">
+        <span class="material-symbols-outlined">close</span>
+      </button>
       <div class="input__header">
         <div class="input__title">
           {{ activeMetricKey === 'bloodPressure' ? '血壓/心律記錄' : `${currentMetric?.title ?? ''}記錄` }}
         </div>
         <div class="input__date">
-          <span>日期:</span>
+          <span>今日日期:</span>
           <span>{{ formDate }}</span>
         </div>
       </div>
@@ -168,7 +170,6 @@ const closePop = () => emit('close')
 </template>
 
 <style lang="scss" scoped>
-  
 // 遮罩：滿版 + 置中
 .pop-overlay {
   position: fixed;
@@ -187,7 +188,7 @@ const closePop = () => emit('close')
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 420px;
+  width: 400px;
   padding: 20px;
   border: solid 1px;
   border-radius: 10px;
@@ -206,6 +207,7 @@ const closePop = () => emit('close')
   height: 30px;
   color: white;
   background-color: $primaryDark;
+  border: none;
   border-radius: 100px;
   cursor: pointer;
 }
@@ -222,11 +224,13 @@ const closePop = () => emit('close')
 .input__title {
   color: $primaryDark;
   font-weight: 700;
-  font-size: 20px;
+  @include subtitle1(true);
 }
 
 .input__date {
   font-size: 14px;
+  @include body2;
+  margin-top: 8px;
 }
 
 .input__content {
@@ -243,6 +247,7 @@ const closePop = () => emit('close')
 .input__card__title {
   font-weight: 700;
   padding: 5px 0;
+  @include body1(true);
 }
 
 .input__card__unit {
@@ -278,18 +283,21 @@ const closePop = () => emit('close')
 }
 
 .input__btn {
-  width: 100%;
-  height: 40px;
-  margin-top: 20px;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: $primaryDark;
-  transition: ease 0.2s;
+    width: 100%;
+    padding: 8px;
+    margin-top: 20px;
+    background: $primaryDark;
+    color: $white;
+    border: none;
+    border-radius: $radius_sm;
+    @include subtitle2(true);
+    cursor: pointer;
+    transition: background 0.3s;
+    &:hover {
+        background-color: $white;
+        color: $primaryDark;
+        outline: 1px solid $primaryDark;
+    }
 }
 
-.input__btn:hover {
-  opacity: 0.9;
-}
 </style>

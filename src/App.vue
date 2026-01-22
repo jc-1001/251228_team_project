@@ -8,6 +8,7 @@ import TheTopIcon from './components/common/TheTopIcon.vue'
 import homeBg from '@/assets/images/Bg_home.svg'
 import shopBg from '@/assets/images/shop/bg_deco_pill.svg?url'
 import checkoutBg from '@/assets/images/shop/banner_img_checkout.svg?url'
+import detailBg from '@/assets/images/shop/banner_img_detail.svg?url'
 import metricBg from '@/assets/images/BG_metrics.svg?url'
 import DietBg from '@/assets/images/BG_diary.svg?url'
 
@@ -37,6 +38,12 @@ const changeBg = computed(() => {
   }
   if (route.path.includes('checkout')) {
     return { 'background-image': `url("${checkoutBg}")`, 'background-position': 'right bottom' }
+  }
+  if (route.path.includes('orderlist')) {
+    return { 'background-image': `url("${detailBg}")`, 'background-position': 'right top', 'background-size': '750px' }
+  }
+  if (route.path.includes('ORD')) {
+    return { 'background-image': `url("${detailBg}")`, 'background-position': 'right top', 'background-size': '750px' }
   }
   if (route.path.includes('medicine')) {
     return { 'background-image': `url("${medicinebg}")`, 'background-position': 'right 250px' }

@@ -309,6 +309,12 @@ const goCheckout = () => {
 
       img {
         width: 25%;
+        @media (max-width: 768px) {
+          width: 50%;
+        }
+        @media (max-width: 576px) {
+          width: 60%;
+        }
       }
     }
   }
