@@ -277,7 +277,7 @@ main {
   }
 
   .block-title {
-    padding: 20px;
+    padding: 8px 0 0 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小

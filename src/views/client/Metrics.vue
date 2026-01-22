@@ -906,6 +906,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 // 🌟彈窗🌟
 .values__pop-window {
+  border-radius: 10px;
   position: relative;
   display: grid;
   grid-template-columns: 3fr 2fr;

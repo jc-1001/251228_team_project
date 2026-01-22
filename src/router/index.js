@@ -2,12 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
-    path: '/Portal',
+    path: '/',
     name: 'Portal',
     component: () => import('@/views/public/PortalView.vue'),
     meta: {
       title: '入口',
-    },
+    }
+  },
+  {
     path: '/support',
     name: 'support',
     component: () => import('@/views/client/Support.vue'),
@@ -22,7 +24,7 @@ const routes = [
     component: () => import('@/views/public/LoginView.vue'),
   },
   {
-    path: '/',
+    path: '/Landing',
     name: 'Landing',
     // 指向 views/public 下的 LandingPage.vue
     component: () => import('@/views/public/LandingPage.vue'),
@@ -154,21 +156,7 @@ const routes = [
       title: 'LoginView_B',
     }
   },
-{
-    path: '/Users',
-    name: 'Users',
-    component: () => import('@/views/admin/Users.vue'),
-    // meta: {
-    //   showTopIcon: true,
-    //   showSidebar: true,
-    // },
-  },
-  {
-    path: '/updateUserStatus',
-    name: 'updateUserStatus',
-    component: () => import('@/views/admin/updateUserStatus.vue'),
-  },
-  
+
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
   {
     path: '/:pathMatch(.*)*',
