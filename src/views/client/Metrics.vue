@@ -664,7 +664,9 @@ watch([activePeriod, activeTrendsBtn], () => {
       <div class="pop-overlay" v-if="isPopOpen" @click.self="closePop">
         <div class="values__pop-window">
           <!-- 關閉按鈕 -->
-          <div class="close-pop__btn" @click="closePop">X</div>
+          <div class="close-pop__btn" @click="closePop">
+            <img src="/public/images/metrics/close_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="">
+          </div>
           <!-- 🌟歷史記錄(左) -->
           <div class="records">
             <div class="records__table">
