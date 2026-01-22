@@ -14,7 +14,7 @@ const allFaqs = ref([
 
 // 2. 分類按鈕資料
 const categories = ref([
-  { id: 'all', title: '全部問題' },
+  { id: 'all', title: '全部' },
   { id: 'account', title: '帳號管理' },
   { id: 'data', title: '積分與獎勵' },
   { id: 'shop', title: '商城與訂單' },
@@ -110,31 +110,38 @@ const toggleAccordion = (index) => {
 
 /* 分類按鈕樣式修改 */
 .category-tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 60px;    /* 調整此數值可以讓這一列再往下一點 */
-  margin-bottom: 40px;
-
-  .tab-btn {
-    padding: 12px 30px;
-    border-radius: 4px; /* 設定為方形 (4px 僅提供微小轉角，視覺較不生硬) */
-    border: 1px solid #2E6669;
-    background: white;
-    color: #2E6669;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-weight: 500;
-    font-size: 16px;
-
-    &:hover, &.active {
-      background: #2E6669;
-      color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    margin: 15px ;
+    gap: 16px;
+    // margin-bottom: 40px;
+    // padding-bottom: 4px;
+    .tab-btn {
+      padding: 0 12px;
+      width: 150px;
+      // width: 170px;
+      height: 45px;
+      @include body1(true);
+      line-height: 43px;
+      background-color: $white;
+      color: $grayDark;
+      text-align: center;
+      border: 1px solid $grayDark;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all .3s;
+      white-space: nowrap;
+      &:hover,
+      &.active {
+        color: $white;
+        background-color: $primary;
+        border: 1px solid $primary;
+      }
+      @media screen and (max-width: 768px) {
+        flex: 1 1 150px;
+      }
     }
   }
-}
 
 .accordion-group {
   background: white;
