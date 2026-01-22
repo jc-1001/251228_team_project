@@ -37,7 +37,12 @@ const onKeydown = (event) => {
 <template>
   <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
     <div class="medicine-modal__card" @click.stop>
-      <button @click="closeCardDetail" class="medicine-modal__close" type="button" aria-label="?њй?">
+      <button
+        @click="closeCardDetail"
+        class="medicine-modal__close"
+        type="button"
+        aria-label="關閉"
+      >
         <span class="material-symbols-outlined">close</span>
       </button>
       <h1 class="medicine-modal__title">藥品詳細</h1>
@@ -271,14 +276,20 @@ const onKeydown = (event) => {
         justify-content: center;
 
         .btn-primary {
-          min-width: 200px;
-          padding: 12px 24px;
-          background-color: $primaryDark;
+          flex: .3;
+          background: $primaryDark;
           color: $white;
+          padding: 8px;
           border: none;
-          border-radius: $radius_md;
+          border-radius: $radius_sm;
+          @include subtitle2(true);
           cursor: pointer;
-          @include body2;
+          transition: background 0.3s;
+          &:hover {
+            background-color: $white;
+            color: $primaryDark;
+            outline: 1px solid $primaryDark;
+          }
         }
       }
     }

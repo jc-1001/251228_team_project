@@ -19,13 +19,13 @@ const goToRestock = () => {
 .home-reserve-medicine {
   background-color: $white;
   border-radius: 8px;
-  padding: 0 24px;
+  padding: 24px;
 
   &__subtitle {
     @include body3;
     color: $primary;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 24px;
   }
 
   &__content {
