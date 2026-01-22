@@ -1,7 +1,18 @@
 <script setup>
-const navigateTo = (type) => {
-    console.log(`到 ${type}`);
-};
+
+    import { useRouter } from 'vue-router'
+    const router = useRouter()
+
+    const navigateTo = (type) => {
+        if (type === 'login') {
+            router.push('/login') 
+        } else if (type === 'Adminlogin') {
+        // 我的localhost port是5173，Tibame的好像是5500 這個部分要再確認~ 
+        const adminUrl = 'http://localhost:5173/adminlogin' 
+        window.location.href = adminUrl
+        }
+    };
+    
 </script>
 
 <template>
@@ -10,13 +21,13 @@ const navigateTo = (type) => {
             <img src="@/assets/images/PortalView_logo.svg" alt="logo" class="logo"/>
         </header>
         <div class="selection-grid">
-            <button class="entry-card" @click="navigateTo('client')">
+            <button class="entry-card" @click="navigateTo('login')">
                 <div class="icon-wrapper">
                     <img src="@/assets/images/PortalView_client.svg" alt="前台"/>
                 </div>
                 <span class="label">前台</span>
             </button>
-            <button class="entry-card" @click="navigateTo('admin')">
+            <button class="entry-card" @click="navigateTo('Adminlogin')">
                 <div class="icon-wrapper">
                     <img src="@/assets/images/PortalView_admin.svg" alt="後台"/>
                 </div>
