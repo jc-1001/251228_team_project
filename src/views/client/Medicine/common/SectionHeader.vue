@@ -34,7 +34,7 @@ const emit = defineEmits(['createClick'])
     border: none;
     border-radius: $radius_md;
     padding: 8px 16px;
-    margin: 0 60px;
+    margin: 0 40px;
     cursor: pointer;
     &:hover {
     

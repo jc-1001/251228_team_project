@@ -5,7 +5,7 @@ const usageOptions = [
   { label: "餐後", value: "after" },
   { label: "睡前", value: "bedtime" }
 ];
-const quantityOptions = [1, 2, 3];
+const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const usageOptionsBySlot = (slot) => {
   if (slot === "睡前") {
@@ -44,6 +44,7 @@ const onKeydown = (event) => {
           <section class="medicine-modal__image">
             <input type="file" id="medicine-image" class="medicine-modal__file" />
             <label class="medicine-modal__image-drop" for="medicine-image">
+              <img src="@/assets/images/camera.svg" alt="camera icon">
               點擊或拖曳上傳藥品照片
             </label>
           </section>
@@ -125,13 +126,14 @@ const onKeydown = (event) => {
     position: relative;
     width: 1200px;
     max-width: 90vw;
-    min-height: 720px;
+    min-height: 500px;
+    // max-height: 90vh;
     background-color: $white;
     border-radius: $radius_md;
     box-shadow: $shadowDark;
     padding: 32px 40px;
-
     gap: 16px;
+    overflow: auto;
 
     .medicine-modal__title {
       @include title2;
@@ -262,4 +264,69 @@ const onKeydown = (event) => {
     }
   }
 }
+@media (max-width: 1024px) {
+  .medicine-modal__overlay .medicine-modal__card {
+    width: min(920px, 92vw);
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .medicine-modal__overlay {
+    place-items: start center;
+    padding: 16px;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card {
+    padding: 24px 20px;
+    max-height: 90vh;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body {
+    gap: 20px;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__image .medicine-modal__image-drop {
+    height: clamp(220px, 45vw, 320px);
+  }
+}
+
+@media (max-width: 400px) {
+  .medicine-modal__overlay .medicine-modal__card {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: none;
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__form input,
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__form select {
+    min-height: 44px;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__form .medicine-modal__schedule {
+    grid-template-columns: 64px 1fr;
+    gap: 8px 10px;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__form .medicine-modal__schedule .schedule__head:nth-child(3) {
+    display: none;
+  }
+
+  .medicine-modal__overlay .medicine-modal__card .medicine-modal__content .medicine-modal__body .medicine-modal__form .medicine-modal__schedule .schedule__select:nth-of-type(2n) {
+    grid-column: 1 / -1;
+  }
+}
+
+
+
 </style>

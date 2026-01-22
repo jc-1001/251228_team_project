@@ -21,7 +21,7 @@ const { item } = defineProps({
 </template>
 <style scoped lang="scss">
 .card {
-  min-width: 300px;
+  min-width: 200px;
   display: grid;
   justify-items: center;
   align-items: center;

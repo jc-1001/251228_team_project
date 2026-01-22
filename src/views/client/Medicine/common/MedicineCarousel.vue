@@ -2,15 +2,32 @@
 import SectionHeader from '@/views/client/Medicine/common/SectionHeader.vue'
 import MedicineCard from '@/views/client/Medicine/common/MedicineCard.vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation } from 'swiper/modules'
+import { Navigation, EffectCards } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
+import 'swiper/css/effect-cards'
 
 defineProps({
   title: {
     type: String,
     default: '',
   },
+  effect: {
+    type: String,
+    default: 'slide',
+  },
+  // effectOptions: {
+  //   type: Object,
+  //   default: () => ({
+     
+  //       rotate: 0,
+  //       stretch: 0,
+  //       depth: 0,
+  //       modifier: 1,
+  //       slideShadows: false,
+    
+  //   }),
+  // },
   items: {
     type: Array,
     default: () => [],
@@ -33,7 +50,28 @@ defineProps({
   },
   breakpoints: {
     type: Object,
-    default: null,
+    default: () => ({
+      1: {
+        slidesPerView: 1,
+        spaceBetween: 16,
+        effect: 'cards',
+      },
+      640: {
+        slidesPerView: 2,
+        spaceBetween: 16,
+        effect: 'slide',
+      },
+      1024: {
+        slidesPerView: 3,
+        spaceBetween: 16,
+        effect: 'slide',
+      },
+      1440: {
+        slidesPerView: 4,
+        spaceBetween: 16,
+        effect: 'slide',
+      },
+    }),
   },
 })
 
@@ -44,12 +82,13 @@ const emit = defineEmits(['createClick'])
   <section class="medicine-section">
     <SectionHeader :title="title" @createClick="emit('createClick')" />
     <Swiper
-      :modules="[Navigation]"
+      :modules="[Navigation, EffectCards]"
       :slides-per-view="slidesPerView"
       :space-between="spaceBetween"
       :loop="loop"
       :navigation="navigation"
       :breakpoints="breakpoints"
+      :effect="effect"
       class="medicine-swiper"
     >
       <SwiperSlide v-for="item in items" :key="item.id">
