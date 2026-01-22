@@ -34,19 +34,20 @@ const goToRestock = () => {
   }
 
   &__button {
-    @include body2(true);
-    background-color: $primaryDark;
-    width: 100%;
+    flex: 1;
+    background: $primaryDark;
     color: $white;
+    padding: 8px;
     border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
+    border-radius: $radius_sm;
+    @include subtitle2(true);
     cursor: pointer;
-    margin: 24px 8px;
-
+    transition: background 0.3s;
     &:hover {
-      background-color: $white;
+        background-color: $white;
         color: $primaryDark;
+        outline: 1px solid $primaryDark;
+    
     }
   }
 }

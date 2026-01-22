@@ -1,7 +1,7 @@
 <script setup>
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
-import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+// import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
@@ -120,13 +120,13 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <HomeCommonModal
+              <!-- <HomeCommonModal
                 :modelValue="true"
                 :title="`${popupInfo.name}`"
                 :data="popupInfo"
                 @update:modelValue="closePopup"
                 @close="closePopup"
-              />
+              /> -->
               <NewDietaryRecord 
                 v-if="popupInfo.type === 'diet'"
                 :isOpen="true" 
@@ -145,7 +145,11 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
+              <NewMedicineModals
+               v-if="popupInfo.type === 'medicine'"
+                :info="popupInfo" 
+                @close="closePopup"
+                :data = "todayDate" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
