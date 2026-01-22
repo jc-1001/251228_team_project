@@ -75,8 +75,8 @@ const statusClass = computed(() => {
 }
 
 .status-normal {
-  color: white;
-  background-color: $primary;
+  color: $primary;
+  background-color: $primaryLight;
 }
 
 .status-high {

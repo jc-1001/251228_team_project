@@ -62,7 +62,7 @@ const handleTimeClick = () => {
                 </button>
                 <div class="modal-header">
                     <h2 class="title">飲食記錄</h2>
-                    <p class="date-text">今日日期：{{ date?.replace(/-/g, '/') }}</p>
+                    <p class="date-text">今日日期：{{ date }}</p>
                 </div>
                 <div class="upload-section" @click="$refs.fileInput.click()" @drop.prevent="handleImageUpload" @dragover.prevent>
                     <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload">
@@ -120,15 +120,15 @@ const handleTimeClick = () => {
     align-items: center;
     z-index: 2000;
     padding: 20px;
+    overflow-y: auto;
 }
 .new-record-card {
     background: $white;
     width: 400px;
     height: 560px;
-    border-radius: 24px;
+    border-radius: $radius_md;
     padding: 32px 24px;
     position: relative;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
 .close-circle {
     @include closeButton;
@@ -154,7 +154,7 @@ const handleTimeClick = () => {
     height: 30%;
     aspect-ratio: 16 / 9;
     background: $primaryLight;
-    border-radius: $radius_md;
+    border-radius: $radius_sm;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -232,7 +232,7 @@ const handleTimeClick = () => {
     textarea {
         width: 100%;
         border: 1px solid $black;
-        border-radius: 12px;
+        border-radius: $radius_sm;
         padding: 12px;
         resize: none;
         &::placeholder {

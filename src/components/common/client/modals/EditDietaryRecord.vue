@@ -50,7 +50,7 @@ const close = () => {
 };
 const submitForm = () => {
     if (!formData.value.preview) {
-        alert("照片不能為空喔！");
+        alert("照片不能為空！");
         return;
     }
     const displayType = (formData.value.type === 'custom') 
@@ -79,7 +79,7 @@ const handleTimeClick = () => {
                 </button>
                 <div class="modal-header">
                     <h2 class="title">編輯飲食記錄</h2>
-                    <p class="date-text">{{ date?.replace(/-/g, '/') }}</p>
+                    <p class="date-text">今日日期：{{ date }}</p>
                 </div>
                 <div class="upload-section" @click="$refs.fileInput.click()">
                     <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload">
@@ -118,18 +118,6 @@ const handleTimeClick = () => {
 </template>
 
 <style lang="scss" scoped>
-    .diet-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000; 
-}
 .diet-modal-overlay {
     position: fixed;
     top: 0;
@@ -142,12 +130,13 @@ const handleTimeClick = () => {
     align-items: center;
     z-index: 2000;
     padding: 20px;
+    overflow-y: auto;
 }
 .new-record-card {
     background: $white;
     width: 400px;
     height: 560px;
-    border-radius: 24px;
+    border-radius: $radius_md;
     padding: 32px 24px;
     position: relative;
     box-shadow: 0 8px 30px rgba(0,0,0,0.1);
