@@ -3,6 +3,7 @@ import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
+import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
 
 // 引入燈箱元件
 // 快速紀錄
@@ -185,6 +186,7 @@ const closePopup = () => {
             <span class="material-symbols-rounded"></span>
             <p>藥物庫存警示</p>
           </div>
+          <HomeReserveMedicine />
         </div>
       </section>
     </main>

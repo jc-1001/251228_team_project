@@ -96,6 +96,7 @@ const routes = [
       showTopIcon: true,
       // showHeader: true,
       showSidebar: true,
+      title: '數位藥箱',
     }
   },
   {

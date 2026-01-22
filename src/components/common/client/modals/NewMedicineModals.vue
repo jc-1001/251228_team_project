@@ -9,6 +9,7 @@ const tabs = [
   { key: '早上', label: '早上' },
   { key: '中午', label: '中午' },
   { key: '晚上', label: '晚上' },
+  { key: '睡前', label: '睡前' },
 ]
 
 const medicineStore = useMedicineStore()
@@ -48,7 +49,7 @@ const onKeydown = (event) => {
       <header class="new-medicine__header">
         <h2 class="new-medicine__title">吃藥紀錄</h2>
         <button class="new-medicine__close" @click="closeModal" type="button" aria-label="Close">
-          X
+          <span class="material-symbols-outlined">close</span>
         </button>
         <p class="new-medicine__date">Today: 2026/01/18</p>
       </header>
@@ -88,7 +89,7 @@ const onKeydown = (event) => {
             </div>
           </div>
           <div class="new-medicine__status" :class="{ 'is-checked': item.checked }">
-            <span v-if="item.checked">✓</span>
+            <span v-if="item.checked" class="material-symbols-outlined">check</span>
           </div>
         </div>
       </div>
@@ -99,10 +100,11 @@ const onKeydown = (event) => {
 </template>
 
 <style scoped lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 .new-medicine__overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -138,21 +140,14 @@ const onKeydown = (event) => {
     font-size: 14px;
   }
 
-  .new-medicine__close {
+.new-medicine__close{
     @include closeButton;
-    position: absolute;
-    right: 18px;
-    top: 16px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: $primaryDark;
-    color: $white;
+    padding-top: 5px;
   }
 
   .new-medicine__tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
   }
 
@@ -164,12 +159,13 @@ const onKeydown = (event) => {
     color: $primaryDark;
     font-size: 14px;
 
-    &.is-active {
-      background: $primaryDark;
-      color: $white;
-    }
+      &:hover,
+      &.active {
+        color: $white;
+        background-color: $primary;
+        border: 1px solid $primary;
   }
-
+  }
   .new-medicine__content {
     gap: 12px;
     overflow: auto;
@@ -251,6 +247,18 @@ const onKeydown = (event) => {
     color: $white;
     border: none;
     cursor: pointer;
+  }
+}
+
+@media (max-width: 420px) {
+  .new-medicine__overlay {
+    padding: 16px;
+  }
+
+  .new-medicine__overlay .new-medicine__modal {
+    width: 100%;
+    max-width: 100%;
+    height: min(667px, 90vh);
   }
 }
 </style>
