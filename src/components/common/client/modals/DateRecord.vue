@@ -5,7 +5,7 @@ const props = defineProps({
     date: String,
     meals: Array
 });
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'open-add', 'open-edit']);
 // 左右切換
 const scrollContainer = ref(null);
 const scroll = (direction) => {
@@ -22,9 +22,11 @@ const closeModal = () => {
 };
 const handleEdit = (meal) => {
     console.log('編輯:', meal);
+    emit('open-edit', meal);
 };
 const handleAddMeal = () => {
     console.log('新增');
+    emit('open-add');
 };
 const saveEdit = (updatedMeal) => {
     emit('update-diet', { date: props.date, meal: updatedMeal });
@@ -42,7 +44,7 @@ const saveEdit = (updatedMeal) => {
                 <button class="btn-add" @click="handleAddMeal">新增</button>
             </div>
             <div class="meals-wrapper">
-                <span class="material-symbols-outlined" @click="scroll('prev')">arrow_back_ios</span>
+                <span class="material-symbols-outlined arrow-btn prev" @click="scroll('prev')">arrow_back_ios</span>
                 <div class="meals-scroll-container" ref="scrollContainer">
                     <div v-for="meal in meals" :key="meal.id" class="meal-card">
                         <div class="meal-type">{{ meal.type }}</div>
@@ -50,9 +52,9 @@ const saveEdit = (updatedMeal) => {
                             <div class="image-box" :class="{ 'is-empty': !meal.image }">
                                 <img v-if="meal.image" :src="meal.image" alt="meal" />
                                 <span v-else class="empty-text">無記錄</span>
-                                <div class="hover-mask" @click="handleEdit(meal)">
+                                <div class="hover-mask edit-trigger" @click.stop="$emit('open-edit', meal)">
                                     <div class="pencil-icon">
-                                        <i class="fas fa-pencil-alt"><img src="@/assets/images/pen.svg" alt=""></i>
+                                        <img src="@/assets/images/pen.svg" alt="edit">
                                     </div>
                                 </div>
                             </div>
@@ -62,7 +64,7 @@ const saveEdit = (updatedMeal) => {
                         </div>
                     </div>
                 </div>
-                <span class="material-symbols-outlined" @click="scroll('next')">arrow_forward_ios</span>
+                <span class="material-symbols-outlined arrow-btn next" @click="scroll('next')">arrow_forward_ios</span>
             </div>
         </div>
     </div>
@@ -70,13 +72,12 @@ const saveEdit = (updatedMeal) => {
 </template>
 <style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
-
 .diet-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
@@ -98,6 +99,7 @@ const saveEdit = (updatedMeal) => {
     padding-top: 5px;
 }
 .modal-header {
+    @include subtitle1(true);
     text-align: center;
     margin-bottom: 24px;
 }
@@ -117,13 +119,19 @@ const saveEdit = (updatedMeal) => {
     padding: 4px 12px;
     border-radius: $radius_md;
     cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+    background-color: $white;
+    color: $primaryDark;
+    outline: 1px solid $primaryDark;
+    }
 }
 // Card
 .meals-wrapper {
     display: flex;
     align-items: center;
     gap: 16px;
-
+    overflow: hidden;
     .material-symbols-outlined {
         background: none;
         border: none;
@@ -153,16 +161,26 @@ const saveEdit = (updatedMeal) => {
     .image-wrapper {
         position: relative;
         width: 100%;
-        aspect-ratio: 1 / 1; //圖片比例成正方形
+        height: auto;
+        aspect-ratio: 1 / 1 !important; //圖片比例成正方形
         border-radius: 10px 10px 0 0;
         overflow: hidden;
         background: $primaryLight;
+        flex-shrink: 0;
         .image-box {
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: absolute;
+            &.is-empty {
+                width: 100%;
+                height: 100%;
+                background-color: $primaryLight;
+            }
             img {
                 width: 100%;
                 height: 100%;
@@ -230,5 +248,77 @@ const saveEdit = (updatedMeal) => {
 }
 .fade-enter-from, .fade-leave-to {
     opacity: 0;
+}
+/* RWD */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 90%;
+        max-width: 400px;
+        height: 85vh;
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+    }
+    .modal-header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-shrink: 0;
+        .display-date {
+            margin-bottom: 8px;
+        }
+        .btn-add {
+            margin-right: 48px;
+            align-self: flex-end;
+            position: relative;
+            z-index: 10;
+        }
+    }
+    .meals-wrapper {
+        width: 100%;
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        .arrow-btn {
+            display: none;
+        }
+    }
+    .meals-scroll-container {
+        margin-top: 0;
+        flex-direction: column; 
+        align-items: center;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-top: 16px;
+    }
+    .meal-card {
+        flex: 0 0 auto;
+        width: 300px;
+        margin-bottom: 24px;
+        .image-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1; // 強制手機版也是正方形
+        }
+        .meal-type {
+            @include subtitle1(true);
+            margin-bottom: 24px;
+        } 
+        .edit-trigger {
+            opacity: 1 !important;
+            background: transparent;
+            position: absolute;
+            padding: 0;
+            z-index: 10;
+            img {
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
 }
 </style>

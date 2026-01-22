@@ -2,6 +2,7 @@
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 
 // 引入燈箱元件
@@ -9,7 +10,11 @@ import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionModal.vue'
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
+<<<<<<< HEAD
 import MetricsInputForm from '@/components/common/client/modals/MetricsInputForm.vue'
+=======
+import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
+>>>>>>> 821baae957539a19e7ad0727c8b3e8196c5d0a50
 
 // 六個燈箱初始化
 const isModalOpen = ref(false)
@@ -17,6 +22,15 @@ const selectedData = ref({
   time: '2026-01-17',
   inputLabel: '使用者帳號',
 })
+
+//飲食紀錄相關
+const todayDate = ref(dayjs().format('YYYY-MM-DD'))
+// 處理儲存後的動作
+const handleDietSubmit = (data) => {
+  console.log('收到飲食紀錄資料：', data)
+  // 串接API儲存資料
+  closePopup() // 儲存後關閉
+}
 
 const fastButton = ref([
   { name: '吃藥', icon: 'medication', type: 'medicine' },
@@ -131,8 +145,25 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
+<<<<<<< HEAD
               <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
                 @update:modelValue="closePopup" @close="closePopup" />
+=======
+              <HomeCommonModal
+                :modelValue="true"
+                :title="`${popupInfo.name}`"
+                :data="popupInfo"
+                @update:modelValue="closePopup"
+                @close="closePopup"
+              />
+              <NewDietaryRecord 
+                v-if="popupInfo.type === 'diet'"
+                :isOpen="true" 
+                :date="todayDate"
+                @close="closePopup"
+                @submit="handleDietSubmit"
+              />
+>>>>>>> 821baae957539a19e7ad0727c8b3e8196c5d0a50
               <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
               <!-- <ConfirmActionModal
                 ref="productModal"
