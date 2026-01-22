@@ -11,7 +11,12 @@ defineProps({
     type: String,
     default: '我是大標題', // 預設值
   },
+  showTitle: {
+    type: Boolean,
+    default: true
+  }
 })
+
 </script>
 <template>
   <main class="profile-layout">
@@ -34,10 +39,12 @@ defineProps({
     </aside>
 
     <section class="content-area">
-      <h3 class="content-title">
-        {{ title }}
-      </h3>
-      <hr style="margin: 16px 0" class="line" />
+      <template  v-if="showTitle">
+        <h3 class="content-title">
+          {{ title }}
+        </h3>
+        <hr style="margin: 16px 0" class="line"/>
+      </template>
 
       <slot></slot>
     </section>
@@ -241,8 +248,11 @@ defineProps({
           font-size: 14px;
           background-color: #f5f5f5;
 
+          &:hover,
           &.router-link-active {
-            background: $linear2;
+            color: $white;
+            background-color: $primary;
+            border-color: $primary;
           }
         }
       }
