@@ -121,10 +121,11 @@ const handleMetricSave = (payload) => {
 const closePopup = () => {
   popupInfo.value = null
 }
+import HeaderImage from '@/assets/images/HomeView-header.svg'
 </script>
 <template>
   <div class="home-container">
-    <TheHeader title="早安，陳小姐！" subtitle="今天感覺如何？別忘了量血壓喔～" imageSrc="/src/assets/images/HomeView-header.svg" />
+    <TheHeader title="早安，陳小姐！" subtitle="今天感覺如何？別忘了量血壓喔～" :imageSrc= "HeaderImage" />
 
     <router-view />
     <!-- 左欄 -->

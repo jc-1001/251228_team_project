@@ -7,6 +7,7 @@ import { ref, computed, onMounted, watch, nextTick } from "vue"
 
 import axios from 'axios'
 import TheHeader from "@/components/common/TheHeader.vue";
+import HeaderImage from "@/assets/images/Banner_metrics.svg"
 import status_label from "@/components/common/metrics/status_label.vue";
 
 import { Chart, registerables } from 'chart.js'
@@ -590,7 +591,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 <template>
   <div class="metrics_container">
-    <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" image-src="src/assets/images/Banner_metrics.svg">
+    <TheHeader title="身體數值中心" subtitle="從各項數據指標了解自己的身體狀態。" :imageSrc="HeaderImage">
     </TheHeader>
 
     <div class="test">
