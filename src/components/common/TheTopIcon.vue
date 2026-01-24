@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import AppIcon from '@/components/common/AppIcon.vue'
 
 const cartStore = useCartStore()
 
@@ -9,7 +10,7 @@ const cartQty = computed(() => {
   return cartStore.cartList.length
 })
 
-const topIcons = computed(() =>[
+const topIcons = computed(() => [
   {
     // 鈴鐺標記有選單
     id: 'notice',
@@ -76,7 +77,7 @@ const showBadge = (item) => {
       @mouseenter="item.id === 'notice' ? (isDropdownOpen = true) : null"
       @mouseleave="isDropdownOpen = false"
     >
-      <span class="material-symbols-rounded">{{ item.icon }}</span>
+      <AppIcon :name="item.icon" size="24" />
       <!-- 數字紅點 -->
       <template v-if="showBadge(item)">
         <div v-if="typeof item.badge === 'number'" class="badge-number">
@@ -135,8 +136,7 @@ const showBadge = (item) => {
   justify-content: center;
   cursor: pointer;
   position: relative;
-}
-.material-symbols-rounded {
+  // icon顏色
   color: $primaryDark;
 }
 // 提醒紅點
