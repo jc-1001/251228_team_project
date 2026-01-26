@@ -8,7 +8,7 @@
             router.push('/Landing') 
         } else if (type === 'Adminlogin') {
         // 我的localhost port是5173，Tibame的好像是5500 這個部分要再確認~ 
-        const adminUrl = 'https://tibamef2e.com/cjd102/g1/admin/' 
+        const adminUrl = 'http://localhost:5173'
         window.location.href = adminUrl
         }
     };
@@ -34,13 +34,23 @@
                 <span class="label">後台</span>
             </button>
         </div>
+            <p style="text-align: center;">
+                <br>
+                <!-- <strong></strong><br> -->
+                <small><b>Cjd105_Group1 UniCare 身體健康數據中控台</b><br>
+                    <b>組員</b>
+                    01 游佳純丨02 徐子益丨05 羅方敏丨12 劉岳霖丨13 李妮丨17 黃煜軒 (依座號排列)
+                </small>
+            </p>
     </main>
-    <p><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
+    <p style="color: darkgrey;">
+        <small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
             本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
             均由學員負法律上責任,緯育公司概不負責。若有侵權疑慮,您可以私訊
             <a href="https://www.facebook.com/TibaMe" style="color: #00BDD3;">緯育TibaMe</a>,
             後續會由專人協助處理。
-      </small></p>
+        </small>
+    </p>
 </template>
 
 <style lang="scss" scoped>
