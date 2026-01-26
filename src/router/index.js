@@ -23,6 +23,15 @@ const routes = [
     name: 'Login',
     component: () => import('@/views/public/LoginView.vue'),
   },
+   {
+    path: '/Register',
+    name: 'Register',
+    component: () => import('@/views/public/RegisterView.vue'),
+    meta: {
+      title: '',
+    }
+
+  },
   {
     path: '/Landing',
     name: 'Landing',
@@ -178,5 +187,25 @@ router.beforeEach(async (to, from) => {
     document.title = `${to.meta.title} - UniCare`
   }
 })
+
+router.beforeEach((to, from, next) => {
+  // 取得登入狀態
+  const isAdminAuthenticated = localStorage.getItem('isAdminLogin') === 'true';
+  const isUserAuthenticated = localStorage.getItem('isUserLogin') === 'true';
+
+  // 前台會員
+  const userAuthRequired = ['home', 'shop', 'Medicine', 'Metrics', 'Home'];
+  // 後台管理
+  const adminAuthRequired = ['Dashboard', 'UserList', 'ProductList', 'OrderList', 'NoticeList'];
+
+  if (adminAuthRequired.includes(to.name) && !isAdminAuthenticated) {
+    next({ name: 'Adminlogin' });
+  } else if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
+    alert('請先登入會員');
+    next({ name: 'Login' });
+  } else {
+    next();
+  }
+});
 
 export default router

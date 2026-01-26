@@ -17,6 +17,16 @@ defineProps({
   }
 })
 
+import { useRouter } from 'vue-router'; 
+const router = useRouter();
+
+const handleUserLogout = () => {
+  if (confirm('確定要登出會員中心嗎？')) {
+    localStorage.removeItem('isUserLogin'); // 清除通行證
+    router.push({ name: 'Portal' });       // 導回
+  }
+}
+
 </script>
 <template>
   <main class="profile-layout">
@@ -35,7 +45,10 @@ defineProps({
         </RouterLink>
       </nav>
 
-      <button class="logout-btn">登出</button>
+      <button class="logout-btn" @click="handleUserLogout">
+        <span class="material-symbols-rounded">logout</span>
+        登出
+      </button>
     </aside>
 
     <section class="content-area">
