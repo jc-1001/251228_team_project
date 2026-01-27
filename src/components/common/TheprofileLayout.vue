@@ -10,7 +10,7 @@ const profileItem = ref([
 defineProps({
   title: {
     type: String,
-    default: '我是大標題', // 預設值
+    default: '個人中心', // 預設值
   },
   showTitle: {
     type: Boolean,

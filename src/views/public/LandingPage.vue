@@ -1,6 +1,6 @@
 
 <template>
-  <div class="landing-page">
+  <div class="landing-page" id="gotop">
     <header class="main-header">
       <div class="logo">
         <router-link to="/"><img :src="logo" alt="UniCare Logo"></router-link>
@@ -25,7 +25,7 @@
       </nav>
     </header>
 
-    <div class="container" id="gotop">
+    <div class="container">
       <div class="banner" :style="{ '--banner-url': `url(${banner})` }">
         <div class="banner-txt">
           <ul><li>
