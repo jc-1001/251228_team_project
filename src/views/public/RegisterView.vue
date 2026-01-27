@@ -3,13 +3,15 @@ import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+// 1. 根據 ER_MODEL 定義響應式資料欄位
 const memberProfile = reactive({
   full_name: '',                 // 姓名
-  email: '',                     // 帳號
+  email: '',                     // 電子信箱 (唯一識別)
   password: '',                  // 密碼
-  confirmPassword: '',           // 前端確認用
+  confirmPassword: '',           // 確認密碼
   phone_number: '',              // 電話
-  gender: 'F',                   // 性別
+  gender: 'F',                   // 性別 (M/F/O)
   birth_date: '',                // 生日
   blood_type: 'A',               // 血型
   height: null,                  // 身高
@@ -19,35 +21,64 @@ const memberProfile = reactive({
   allergy_history: '',           // 過敏病史
   is_smoking: false,             // 抽菸習慣
   is_drinking: false,            // 飲酒習慣
-  emergency_contact_name: '',    // 緊急聯絡人姓名
+  emergency_contact_name: '',    // 緊急聯絡人
   emergency_contact_relationship: '', // 關係
   emergency_contact_phone: '',   // 緊急聯絡人電話
 });
 
+// 2. 註冊與自動編號邏輯
 const handleRegister = () => {
-  // 1. 取得目前所有使用者，若無則建立空陣列
-  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-
-  // 2. 檢查是否已註冊過
-  if (allUsers.find(u => u.email === memberProfile.email)) {
-    alert('此 Email 已被註冊！');
+  // 基礎驗證
+  if (memberProfile.password !== memberProfile.confirmPassword) {
+    alert('密碼與確認密碼不符！');
     return;
   }
 
-  // 3. 加入新使用者並存回 LocalStorage
-  allUsers.push({ ...memberProfile, id: Date.now() }); // 給一個唯一 ID
+  // A. 取得目前所有使用者陣列
+  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+
+  // B. 檢查 Email 是否重複
+  if (allUsers.find(u => u.email === memberProfile.email)) {
+    alert('此 Email 已被註冊，請換一個或直接登入。');
+    return;
+  }
+
+  // C. 自動產生累加的會員編號 (M00001 格式)
+  const generateMemberId = () => {
+    if (allUsers.length === 0) return 'M00001';
+    
+    // 找出最後一筆資料的 ID 數字部分並加 1
+    const lastId = allUsers[allUsers.length - 1].member_id || 'M00000';
+    const nextNum = parseInt(lastId.replace('M', '')) + 1;
+    return `M${nextNum.toString().padStart(5, '0')}`;
+  };
+
+  const newMemberId = generateMemberId();
+
+  // D. 準備最終儲存物件
+  const newUser = {
+    ...memberProfile,
+    member_id: newMemberId, // 會員流水號
+    id: Date.now(),         // 系統唯一識別 ID (用於路由)
+    created_at: new Date().toLocaleString()
+  };
+
+  // E. 寫入 LocalStorage
+  allUsers.push(newUser);
   localStorage.setItem('allUsers', JSON.stringify(allUsers));
   
-  // 4. 同步更新「當前登入者」供 ProfileEdit 使用
-  localStorage.setItem('userProfile', JSON.stringify(memberProfile));
+  // F. 同步至「當前登入者」，讓個人檔案頁 (ProfileEdit) 能立刻抓到
+  localStorage.setItem('userProfile', JSON.stringify(newUser));
 
-  alert('註冊成功！');
+  alert(`註冊成功！您的會員編號為：${newMemberId}`);
+
+  // G. 跳轉到首頁 (路徑請確保與 router/index.js 一致)
   router.push('/home');
 };
 </script>
 
 <template>
-  <div class="profile-page">
+  <div class="register-page">
     <div class="content-wrapper">
       <main class="profile-card">
         <h1 class="section-title">會員註冊系統</h1>
@@ -61,23 +92,23 @@ const handleRegister = () => {
                 <input type="text" v-model="memberProfile.full_name" placeholder="請輸入全名" required>
               </div>
               <div class="form-group">
-                <label>電子信箱 (Email)</label>
+                <label>電子信箱</label>
                 <input type="email" v-model="memberProfile.email" placeholder="example@mail.com" required>
               </div>
               <div class="form-group">
-                <label>密碼</label>
-                <input type="password" v-model="memberProfile.password" placeholder="設定您的密碼" required>
+                <label>設定密碼</label>
+                <input type="password" v-model="memberProfile.password" required>
               </div>
               <div class="form-group">
                 <label>確認密碼</label>
-                <input type="password" v-model="memberProfile.confirmPassword" placeholder="再次輸入密碼" required>
+                <input type="password" v-model="memberProfile.confirmPassword" required>
               </div>
               <div class="form-group">
-                <label>電話</label>
+                <label>手機電話</label>
                 <input type="text" v-model="memberProfile.phone_number" placeholder="09xx-xxx-xxx">
               </div>
               <div class="form-group">
-                <label>生日</label>
+                <label>出生日期</label>
                 <input type="date" v-model="memberProfile.birth_date">
               </div>
             </div>
@@ -107,49 +138,7 @@ const handleRegister = () => {
               </div>
               <div class="form-group full-width">
                 <label>慢性病說明</label>
-                <input type="text" v-model="memberProfile.chronic_disease_description" placeholder="請填寫慢性病，無則填無">
-              </div>
-              <div class="form-group full-width">
-                <label>家族病史</label>
-                <input type="text" v-model="memberProfile.family_history" placeholder="例如：糖尿病、心臟病史">
-              </div>
-              <div class="form-group full-width">
-                <label>過敏病史</label>
-                <input type="text" v-model="memberProfile.allergy_history" placeholder="例如：藥物過敏、海鮮過敏">
-              </div>
-              <div class="form-group">
-                <label>抽菸習慣</label>
-                <div class="radio-group">
-                  <label><input type="radio" :value="true" v-model="memberProfile.is_smoking"> 有</label>
-                  <label><input type="radio" :value="false" v-model="memberProfile.is_smoking"> 無</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>飲酒習慣</label>
-                <div class="radio-group">
-                  <label><input type="radio" :value="true" v-model="memberProfile.is_drinking"> 有</label>
-                  <label><input type="radio" :value="false" v-model="memberProfile.is_drinking"> 無</label>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <hr class="divider">
-
-          <section class="form-section">
-            <h3 class="subsection-title">緊急聯絡資訊</h3>
-            <div class="input-grid">
-              <div class="form-group">
-                <label>緊急聯絡人姓名</label>
-                <input type="text" v-model="memberProfile.emergency_contact_name">
-              </div>
-              <div class="form-group">
-                <label>關係</label>
-                <input type="text" v-model="memberProfile.emergency_contact_relationship">
-              </div>
-              <div class="form-group">
-                <label>緊急聯絡人電話</label>
-                <input type="text" v-model="memberProfile.emergency_contact_phone">
+                <input type="text" v-model="memberProfile.chronic_disease_description" placeholder="無則填寫「無」">
               </div>
             </div>
           </section>
@@ -165,10 +154,9 @@ const handleRegister = () => {
 
 <style lang="scss" scoped>
 $primary-teal: #2E6669;
-$bg-light: #F6F7F9;
 
-.profile-page {
-  background-color: $bg-light;
+.register-page {
+  background-color: #F6F7F9;
   padding: 40px 10%;
   min-height: 100vh;
 }
@@ -204,22 +192,14 @@ $bg-light: #F6F7F9;
 .form-group {
   display: flex;
   flex-direction: column;
-  label { margin-bottom: 8px; font-weight: 500; color: #555; }
+  label { margin-bottom: 8px; font-weight: 500; }
   input, select {
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 15px;
     &:focus { border-color: $primary-teal; outline: none; }
   }
   &.full-width { grid-column: span 2; }
-}
-
-.radio-group {
-  display: flex;
-  gap: 25px;
-  padding: 10px 0;
-  label { display: flex; align-items: center; cursor: pointer; input { margin-right: 8px; } }
 }
 
 .divider { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
@@ -237,15 +217,12 @@ $bg-light: #F6F7F9;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
+    &:hover { background: darken($primary-teal, 5%); transform: translateY(-2px); transition: 0.3s; }
   }
 }
 
-@media (max-width: 768px) {
-  .input-grid { grid-template-columns: 1fr; }
-  .form-group.full-width { grid-column: span 1; }
-}
-
 @media (max-width: 480px) {
+  .input-grid { grid-template-columns: 1fr; }
   .profile-card { padding: 25px 15px; }
   .action-bar .btn-save { width: 100%; }
 }

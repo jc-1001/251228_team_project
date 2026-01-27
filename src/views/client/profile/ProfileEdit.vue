@@ -30,12 +30,28 @@ onMounted(() => {
     profile.value = JSON.parse(savedData)
   }
 })
-
-// 儲存修改
 const handleSave = () => {
-  localStorage.setItem('userProfile', JSON.stringify(profile.value))
-  alert('個人檔案更新成功！')
-}
+  // 1. 先更新「當前登入者」的資料 (供前台顯示用)
+  localStorage.setItem('userProfile', JSON.stringify(profile.value));
+
+  // 2. 更新「所有使用者陣列」 (供後端 UserList 顯示用)
+  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+  
+  // 尋找陣列中符合該 email 的使用者索引
+  const index = allUsers.findIndex(u => u.email === profile.value.email);
+
+  if (index !== -1) {
+    // 找到該使用者，用新的資料蓋掉舊的
+    allUsers[index] = { ...allUsers[index], ...profile.value };
+    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    alert('個人檔案與後台資料已同步更新！');
+  } else {
+    // 若找不到 (可能是直接從個人頁開始用而沒註冊過)，則新增一筆
+    allUsers.push({ ...profile.value, id: Date.now() });
+    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    alert('資料已儲存並建立新紀錄！');
+  }
+};
 </script>
 
 <template>
