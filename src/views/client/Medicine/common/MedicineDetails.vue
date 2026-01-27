@@ -6,6 +6,7 @@ import editMedicineCard from '@/views/client/Medicine/common/editMedicineCard.vu
 // const selectedQty = ref(1)
 const timeSlots = ['早上', '中午', '下午', '晚上']
 const usageOptions = [
+  { label: '無', value: 'none' },
   { label: '飯前', value: 'before' },
   { label: '飯後', value: 'after' },
   { label: '睡前', value: 'bedtime' },
@@ -14,7 +15,7 @@ const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
   if (slot === '晚上') {
-    return [{ label: '睡前', value: 'bedtime' }]
+    return [{ label: '無', value: 'none' }, { label: '睡前', value: 'bedtime' }]
   }
   return usageOptions
 }
@@ -266,7 +267,7 @@ const openEditCard = () => {
 
         .btn-primary {
           flex: .3;
-          background: $primaryDark;
+          background: $accent;
           color: $white;
           padding: 8px;
           border: none;
@@ -275,9 +276,9 @@ const openEditCard = () => {
           cursor: pointer;
           transition: background 0.3s;
           &:hover {
-            background-color: $white;
-            color: $primaryDark;
-            outline: 1px solid $primaryDark;
+            background-color: $accentLight;
+            color: $accent;
+            outline: 1px solid $accent;
           }
         }
       }

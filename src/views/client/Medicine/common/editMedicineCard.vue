@@ -1,10 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 
-// const selectedUsage = ref('before')
-// const selectedQty = ref(1)
 const timeSlots = ['早上', '中午', '下午', '晚上']
 const usageOptions = [
+  { label: '無', value: 'none' },
   { label: '飯前', value: 'before' },
   { label: '飯後', value: 'after' },
   { label: '睡前', value: 'bedtime' },
@@ -13,11 +12,12 @@ const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
   if (slot === '晚上') {
-    return [{ label: '睡前', value: 'bedtime' }]
+    return [{ label: '無', value: 'none' }, { label: '睡前', value: 'bedtime' }]
   }
   return usageOptions
 }
 const emit = defineEmits(['closeEditCard'])
+const isActive = ref(true)
 
 const closeEditCard = () => {
   emit('closeEditCard')
@@ -40,6 +40,13 @@ const onKeydown = (event) => {
       <button @click="closeEditCard" class="medicine-modal__close" type="button" aria-label="關閉">
         <span class="material-symbols-outlined">close</span>
       </button>
+      <label>
+        <input v-model="isActive" type="checkbox" class="checkbox" />
+        <span class="btn-box">
+          <span class="btn"></span>
+        </span>
+        <span class="text">{{ isActive ? '已啟用' : '已停用' }}</span>
+      </label>
       <h1 class="medicine-modal__title">修改詳情</h1>
       <form class="medicine-modal__content" action="#">
         <div class="medicine-modal__body">
@@ -56,7 +63,7 @@ const onKeydown = (event) => {
                 </div>
                 <div class="form-group">
                   <label for="quantity">藥品數量</label>
-                  <input id="quantity" type="text" />
+                  <input id="quantity" type="number" />
                 </div>
               </div>
             </div>
@@ -72,7 +79,6 @@ const onKeydown = (event) => {
               <label for="notes">備註</label>
               <input id="notes" type="text" />
             </div>
-
 
             <div class="medicine-modal__schedule">
               <div class="schedule__head"></div>
@@ -101,7 +107,7 @@ const onKeydown = (event) => {
         </div>
 
         <div class="medicine-modal__footer">
-          <button class="btn-primary" type="submit" >儲存</button>
+          <button class="btn-primary" type="submit">儲存</button>
           <button class="btn-delete" type="submit" @click="closeEditCard">刪除</button>
         </div>
       </form>
@@ -216,7 +222,6 @@ const onKeydown = (event) => {
           display: grid;
           gap: 16px;
 
-
           .medicine-modal__schedule {
             display: grid;
             grid-template-columns: 80px 1fr 1fr;
@@ -252,7 +257,7 @@ const onKeydown = (event) => {
         gap: 24px;
 
         .btn-primary {
-          flex: .3;
+          flex: 0.3;
           background: $primaryDark;
           color: $white;
           padding: 8px;
@@ -269,24 +274,63 @@ const onKeydown = (event) => {
         }
       }
       .btn-delete {
-          flex: .3;
-          background: $primaryDark;
-          color: $white;
-          padding: 8px;
-          border: none;
-          border-radius: $radius_sm;
-          @include subtitle2(true);
-          cursor: pointer;
-          transition: background 0.3s;
-          &:hover {
-            background-color: $white;
-            color: $primaryDark;
-            outline: 1px solid $primaryDark;
-          }
+        flex: 0.3;
+        background: $accent;
+        color: $white;
+        padding: 8px;
+        border: none;
+        border-radius: $radius_sm;
+        @include subtitle2(true);
+        cursor: pointer;
+        transition: background 0.3s;
+        &:hover {
+          background-color: $accentLight;
+          color: $accent;
+          outline: 1px solid $accent;
         }
       }
     }
   }
+}
+
+.btn-box {
+  cursor: pointer;
+  display:inline-block;
+  vertical-align:middle;
+  width: 40px;
+  height: 20px;
+  border-radius:100px;
+  background-color: $disabled;
+  box-shadow: 0px 3px 0px rgba(0,0,0,.13) inset;
+}
+.btn-box .btn {
+  display:inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius:50%;
+  background-color: #fff;
+  margin-left: 0;
+  transition: .5s;
+  box-shadow:1px 2px 5px rgba(0,0,0,.3);
+}
+.text{
+  display:inline-block;
+  vertical-align:middle;
+  margin-left:10px;
+  @include body2;
+  color: $primaryDark;
+}
+.checkbox {
+  position:absolute;
+  opacity:0;
+}
+.checkbox:checked + .btn-box {
+  background-color: $primary;
+}
+.checkbox:checked + .btn-box .btn {
+  margin-left: 20px;
+}
+
 
 @media (max-width: 1024px) {
   .medicine-modal__overlay {

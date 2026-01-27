@@ -1,4 +1,7 @@
 <script setup>
+import { ref, onBeforeUnmount } from 'vue'
+const previewUrl = ref('')
+
 const timeSlots = ['早上', '中午', '晚上', '睡前']
 const usageOptions = [
   { label: '無', value: 'none' },
@@ -10,7 +13,7 @@ const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
   if (slot === '睡前') {
-    return [{ label: '睡前', value: 'bedtime' }]
+    return [{ label: '無', value: 'none' }, { label: '睡前', value: 'bedtime' }]
   }
   return usageOptions
 }
@@ -29,6 +32,27 @@ const onKeydown = (event) => {
     closeModal()
   }
 }
+
+const clearPreview = () => {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = ''
+  }
+}
+
+const handleFileChange = (event) => {
+  const file = event.target.files?.[0]
+  if (!file) {
+    clearPreview()
+    return
+  }
+  clearPreview()
+  previewUrl.value = URL.createObjectURL(file)
+}
+
+onBeforeUnmount(() => {
+  clearPreview()
+})
 </script>
 
 <template>
@@ -57,10 +81,17 @@ const onKeydown = (event) => {
                 </div>
               </div>
             </div>
-            <input type="file" accept="image/*" id="medicine-image" class="medicine-modal__file" />
-            <label  class="medicine-modal__image-drop" for="medicine-image">
-              <img  src="@/assets/images/camera.svg" alt="camera icon" />
-              點擊或拖曳上傳藥品照片
+            <input
+              type="file"
+              accept="image/*"
+              id="medicine-image"
+              class="medicine-modal__file"
+              @change="handleFileChange"
+            />
+            <label class="medicine-modal__image-drop" for="medicine-image">
+              <img v-if="previewUrl" :src="previewUrl" alt="medicine preview" class="input-img" />
+              <img v-else src="@/assets/images/camera.svg" alt="camera icon" />
+              <span v-if="!previewUrl">點擊或拖曳上傳藥品照片</span>
             </label>
           </section>
 
@@ -69,7 +100,6 @@ const onKeydown = (event) => {
               <label for="notes">備註</label>
               <input id="notes" type="text" />
             </div>
-
 
             <div class="medicine-modal__schedule">
               <div class="schedule__head"></div>
@@ -200,18 +230,22 @@ const onKeydown = (event) => {
             text-align: center;
             color: $primaryDark;
             @include body3;
-          }
+            .input-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              border-radius: $radius_sm;
+            }
 
-          .medicine-modal__image-form {
-            display: grid;
-            gap: 16px;
+            .medicine-modal__image-form {
+              display: grid;
+              gap: 16px;
+            }
           }
         }
-
         .medicine-modal__form {
           display: grid;
           gap: 16px;
-
 
           .medicine-modal__schedule {
             display: grid;
@@ -247,7 +281,7 @@ const onKeydown = (event) => {
         justify-content: center;
 
         .btn-primary {
-          flex: .3;
+          flex: 0.3;
           background: $primaryDark;
           color: $white;
           padding: 8px;
