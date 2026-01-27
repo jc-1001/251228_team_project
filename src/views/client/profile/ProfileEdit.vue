@@ -112,7 +112,7 @@ const handleSave = () => {
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="save-btn">儲存修改</button>
+          <button type="submit" class="save-btn">儲存</button>
         </div>
       </form>
     </div>

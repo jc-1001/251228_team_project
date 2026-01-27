@@ -20,12 +20,14 @@ defineProps({
 import { useRouter } from 'vue-router'; 
 const router = useRouter();
 
-const handleUserLogout = () => {
-  if (confirm('確定要登出會員中心嗎？')) {
-    localStorage.removeItem('isUserLogin'); // 清除通行證
-    router.push({ name: 'Portal' });       // 導回
-  }
-}
+const handleLogout = () => {
+  // 清除
+  localStorage.removeItem('userProfile');
+  
+  // 不要移除 allUsers
+  alert('已登出');
+  router.push('/Login'); 
+};
 
 </script>
 <template>
