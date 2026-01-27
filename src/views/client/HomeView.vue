@@ -5,6 +5,7 @@ import TheHeader from '@/components/common/TheHeader.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
 
 // 引入燈箱元件
 // 快速紀錄
@@ -92,7 +93,7 @@ const openPopup = (item) => {
     isMetricsModalOpen.value = true
     return
   }
-  
+
   popupInfo.value = item
 }
 // 📄身體數值
@@ -114,7 +115,7 @@ const closeMetricsPopup = () => {
 
 const handleMetricSave = (payload) => {
   console.log('from MetricsInputForm:', payload)
-  // 之後可以呼叫 API / 寫入 json / 更新 todayLog 
+  // 之後可以呼叫 API / 寫入 json / 更新 todayLog
 }
 // 📄身體數值
 
@@ -125,7 +126,11 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
 </script>
 <template>
   <div class="home-container">
-    <TheHeader title="早安，陳小姐！" subtitle="今天感覺如何？別忘了量血壓喔～" :imageSrc= "HeaderImage" />
+    <TheHeader
+      title="早安，陳小姐！"
+      subtitle="今天感覺如何？別忘了量血壓喔～"
+      :imageSrc="HeaderImage"
+    />
 
     <router-view />
     <!-- 左欄 -->
@@ -137,14 +142,17 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
             <p>快速記錄</p>
           </div>
           <div class="buttonlist">
-            <button v-for="item in fastButton" :key="item.name" :class="['record-card', `is-${item.type}`]"
-              @click="openPopup(item)">
-              <span class="material-symbols-rounded">{{ item.icon }}</span>
+            <button
+              v-for="item in fastButton"
+              :key="item.name"
+              :class="['record-card', `is-${item.type}`]"
+              @click="openPopup(item)"
+            >
+              <AppIcon :name="item.icon" size="18" />
               <span class="button-text">{{ item.name }}</span>
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-
               <!-- <HomeCommonModal
 =======
               <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
@@ -156,9 +164,9 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
                 @update:modelValue="closePopup"
                 @close="closePopup"
               /> -->
-              <NewDietaryRecord 
+              <NewDietaryRecord
                 v-if="popupInfo.type === 'diet'"
-                :isOpen="true" 
+                :isOpen="true"
                 :date="todayDate"
                 @close="closePopup"
                 @submit="handleDietSubmit"
@@ -175,10 +183,11 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
                 @close="closePopup"
               /> -->
               <NewMedicineModals
-               v-if="popupInfo.type === 'medicine'"
-                :info="popupInfo" 
+                v-if="popupInfo.type === 'medicine'"
+                :info="popupInfo"
                 @close="closePopup"
-                :data = "todayDate" />
+                :data="todayDate"
+              />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -186,7 +195,11 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
               <!-- <Popup1 :info="popupInfo" @close="closePopup" /> -->
             </Teleport>
             <Teleport v-if="isMetricsModalOpen" to="body">
-              <MetricsInputForm :activeMetricKey="metricsKey" @close="closeMetricsPopup" @save="handleMetricSave" />
+              <MetricsInputForm
+                :activeMetricKey="metricsKey"
+                @close="closeMetricsPopup"
+                @save="handleMetricSave"
+              />
             </Teleport>
           </div>
         </div>
@@ -196,9 +209,13 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
             <p>今日狀態</p>
           </div>
           <div class="todayLog-cardlist">
-            <div :class="['todayLog-card', `status-${item2.statusType}`]" v-for="item2 in todayLog" :key="item2.name">
+            <div
+              :class="['todayLog-card', `status-${item2.statusType}`]"
+              v-for="item2 in todayLog"
+              :key="item2.name"
+            >
               <div class="card-icon">
-                <span class="material-symbols-rounded">{{ item2.icon }}</span>
+                <AppIcon :name="item2.icon" size="20" />
               </div>
 
               <div class="card-title">
@@ -212,10 +229,12 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
 
               <div class="state-footer">
                 <div class="state-badge">{{ item2.statusText }}</div>
-                <span v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
-                  class="material-symbols-rounded warning-icon">
-                  {{ item2.statusType === 'danger' ? 'trending_up' : 'trending_down' }}
-                </span>
+                <AppIcon
+                  v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
+                  :name="item2.statusType === 'danger' ? 'trending_up' : 'trending_down'"
+                  size="18"
+                  class="warning-icon"
+                />
               </div>
             </div>
           </div>
@@ -231,7 +250,7 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
         </div>
         <div class="med-stock">
           <div class="block-title">
-            <span class="material-symbols-rounded"></span>
+            <AppIcon name="warning" size="20" style="margin-right: 5px" />
             <p>藥物庫存警示</p>
           </div>
           <HomeReserveMedicine />
@@ -374,10 +393,10 @@ button {
     display: flex;
     justify-content: end;
 
-    .material-symbols-rounded {
-      @include subtitle2(true);
-      font-size: 16px; //card 要一起更動、大小字體一致
-    }
+    // .material-symbols-rounded {
+    //   @include subtitle2(true);
+    //   font-size: 16px; //card 要一起更動、大小字體一致
+    // }
   }
 
   .card-body {
@@ -399,9 +418,7 @@ button {
 
   // 狀態：正常 (good)
   &.status-good {
-    .material-symbols-rounded {
-      color: $primaryDark;
-    }
+    color: $primaryDark;
 
     // 讓右上角 icon 變色
     .state-badge {
@@ -417,10 +434,7 @@ button {
   &.status-danger {
     border: 1px solid #ff5252;
     background-color: $white;
-
-    .material-symbols-rounded {
-      color: $accent;
-    }
+    color: $accent;
 
     .state-badge {
       padding: 5px 12px;
@@ -440,9 +454,7 @@ button {
     border: 1px solid #518fe7;
     background-color: white;
 
-    .material-symbols-rounded {
-      color: #518fe7;
-    }
+    color: #518fe7;
 
     .state-badge {
       padding: 5px 12px;
@@ -459,14 +471,7 @@ button {
 
   // 狀態：尚未測量 (none)
   &.status-none {
-
-    // .log-num,
-    // .unit {
-    //   color: #9e9e9e;
-    // }
-    .material-symbols-rounded {
-      color: $accent;
-    }
+    color: $accent;
 
     .state-badge {
       padding: 5px 12px;
