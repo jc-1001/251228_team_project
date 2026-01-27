@@ -46,11 +46,11 @@ const saveEdit = (updatedMeal) => {
             <div class="meals-wrapper">
                 <span class="material-symbols-outlined arrow-btn prev" @click="scroll('prev')">arrow_back_ios</span>
                 <div class="meals-scroll-container" ref="scrollContainer">
-                    <div v-for="meal in meals" :key="meal.id" class="meal-card">
-                        <div class="meal-type">{{ meal.type }}</div>
+                    <div v-for="meal in meals" :key="meal.diet_log_id" class="meal-card">
+                        <div class="meal-type">{{ meal.meal_type }}</div>
                         <div class="image-wrapper">
-                            <div class="image-box" :class="{ 'is-empty': !meal.image }">
-                                <img v-if="meal.image" :src="meal.image" alt="meal" />
+                            <div class="image-box" :class="{ 'is-empty': !meal.food_image_url }">
+                                <img v-if="meal.food_image_url" :src="meal.food_image_url" alt="meal" />
                                 <span v-else class="empty-text">無記錄</span>
                                 <div class="hover-mask edit-trigger" @click.stop="$emit('open-edit', meal)">
                                     <div class="pencil-icon">
@@ -60,7 +60,7 @@ const saveEdit = (updatedMeal) => {
                             </div>
                         </div>
                         <div class="meal-note-box">
-                            <p class="meal-note">{{ meal.note }}</p>
+                            <p class="meal-note">{{ meal.description }}</p>
                         </div>
                     </div>
                 </div>

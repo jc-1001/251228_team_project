@@ -6,7 +6,6 @@ import EditDietaryRecord from '@/components/common/client/modals/EditDietaryReco
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs';
 import dietBanner from '@/assets/images/Banner_diary.svg'
-
 const currentViewDate = ref(dayjs());
 // 填寫卡片顯示綠底
 const filledDates = computed(() => {
@@ -89,41 +88,76 @@ const getImageUrl = (name) => {
 //燈箱內容
 const allDietRecords = ref({
     '2026-01-18': [
-    { id: 1, type: '早餐', note: '蘿蔔糕、無糖熱豆漿', image: getImageUrl('meal1.jpg'), time: null },
-    { id: 2, type: '午餐', note: null, image: getImageUrl('meal2.jpg'), time: null },
-    { id: 3, type: '14:30', note: '蛋糕、蘋果汁', image: getImageUrl('meal3.jpg'), time: '14:30' },
+    {
+    diet_log_id: 1,
+    meal_type: '早餐',
+    description: '蘿蔔糕、無糖熱豆漿',
+    food_image_url: getImageUrl('meal1.jpg'),
+    meal_time: '08:00:00'
+    },
+    {
+    diet_log_id: 2,
+    meal_type: '午餐',
+    description: null,
+    food_image_url: getImageUrl('meal2.jpg'),
+    meal_time: '12:00:00'
+    },
+    {
+    diet_log_id: 3,
+    meal_type: '14:30',
+    description: '蛋糕、蘋果汁',
+    food_image_url: getImageUrl('meal3.jpg'),
+    meal_time: '14:30:00'
+    },
     ]
 });
-const getTimeWeight = (type) => {
+const getTimeWeight = (meal_type) => {
         const typeMap = { '早餐': '08:00', '午餐': '12:00', '晚餐': '17:00' };
-        const timeStr = typeMap[type] || type;
-        return timeStr.replace(':', ''); 
+        const timeStr = typeMap[meal_type] || meal_type;
+        return timeStr.replace(':', '').padStart(4, '0');
     };
 const handleNewRecord = (formData) => {
+    const { type, note, preview, image_file, time } = formData;
     const dateKey = selectedDate.value;
     // 沒有任何記錄，先建立空陣列
     if (!allDietRecords.value[dateKey]) {
         allDietRecords.value[dateKey] = [];
     }
+    const datePrefix = dateKey.replace(/-/g, '');
+    const currentRecords = allDietRecords.value[dateKey];
+    let nextSerialNumber = 1;
+    if (currentRecords.length > 0) {
+        const lastNumbers = currentRecords.map(r => parseInt(String(r.diet_log_id).slice(-2)));
+        nextSerialNumber = Math.max(...lastNumbers) + 1;
+    }
+    const newId = parseInt(`${datePrefix}${String(nextSerialNumber).padStart(2, '0')}`);
     const newEntry = {
-        id: Date.now(),
-        type: formData.type,
-        note: formData.note,
-        image: formData.preview,
-        time: formData.type.includes(':') ? formData.type : null
+        diet_log_id: newId,
+        member_id: 1,
+        meal_date: dateKey,
+        meal_type: type,
+        description: note,
+        food_image_url: preview,
+        meal_time: time ? `${time}:00` : (type.includes(':') ? `${type}:00` : null),
+        image_file: image_file,
+        created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss')
     };
     // 將新資料加入
+    if (!allDietRecords.value[dateKey]) {
+        allDietRecords.value[dateKey] = [];
+    }
     allDietRecords.value[dateKey].push(newEntry);
     allDietRecords.value[dateKey].sort((a, b) => {
-        return getTimeWeight(a.type).localeCompare(getTimeWeight(b.type));
+        return getTimeWeight(a.meal_type).localeCompare(getTimeWeight(b.meal_type));
     });
     isAddModalOpen.value = false;
 };
 const currentDayMeals = computed(() => {
     const defaultTemplates = [
-        { type: '早餐', isDefault: true, timeWeight: 800 },
-        { type: '午餐', isDefault: true, timeWeight: 1200 },
-        { type: '晚餐', isDefault: true, timeWeight: 1700 }
+        { meal_type: '早餐', timeWeight: 800 },
+        { meal_type: '午餐', timeWeight: 1200 },
+        { meal_type: '晚餐', timeWeight: 1700 }
     ];
     // 獲取該日期紀錄
     const savedRecords = allDietRecords.value[selectedDate.value] || [];
@@ -131,24 +165,24 @@ const currentDayMeals = computed(() => {
     const displayList = [];
     // 預設三餐
     defaultTemplates.forEach(template => {
-        const found = savedRecords.find(r => r.type === template.type);
+        const found = savedRecords.find(r => r.meal_type === template.meal_type);
         if (found) {
             displayList.push({ ...found, timeWeight: template.timeWeight });
         } else {
             displayList.push({ 
-                id: `empty-${template.type}`, 
-                type: template.type, 
-                note: null, 
-                image: null, 
+                diet_log_id: `empty-${template.meal_type}`, 
+                meal_type: template.meal_type, 
+                description: null, 
+                food_image_url: null, 
                 timeWeight: template.timeWeight 
             });
         }
     });
     // 自訂時間項目
-    const extraMeals = savedRecords.filter(r => !['早餐', '午餐', '晚餐'].includes(r.type));
+    const extraMeals = savedRecords.filter(r => !['早餐', '午餐', '晚餐'].includes(r.meal_type));
     extraMeals.forEach(extra => {
         // 將時間轉為數字權重
-        const weight = parseInt(extra.type.replace(':', ''), 10);
+        const weight = parseInt(extra.meal_type.replace(':', ''), 10);
         displayList.push({ ...extra, timeWeight: weight });
     });
     // 根據時間排序
@@ -172,7 +206,7 @@ const isEditModalOpen = ref(false);
 const editingMeal = ref(null);
 const handleEditClick = (meal) => {
     console.log("接收到編輯請求:", meal);
-    if (!meal || String(meal.id).includes('empty-')) return;
+    if (!meal || String(meal.diet_log_id).includes('empty-')) return;
     editingMeal.value = meal;
     isEditModalOpen.value = true;
 };
@@ -181,25 +215,29 @@ const handleUpdateRecord = (updatedData) => {
     const dateKey = selectedDate.value;
     const records = allDietRecords.value[dateKey];
     // 找出舊資料替換
-    const index = records.findIndex(r => r.id === updatedData.id);
+    const index = records.findIndex(r => r.diet_log_id === updatedData.diet_log_id);
     if (index !== -1) {
         allDietRecords.value[dateKey][index] = {
-            ...updatedData,
-            image: updatedData.preview // 確保圖片更新
+            ...records[index],
+            meal_type: updatedData.meal_type || updatedData.type, // 增加相容性
+            meal_time: updatedData.meal_time || (updatedData.type?.includes(':') ? `${updatedData.type}:00` : records[index].meal_time),
+            description: updatedData.description || updatedData.note,
+            food_image_url: updatedData.preview || updatedData.food_image_url,
+            updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss') //更新時間
         };
         // 重新排序
         allDietRecords.value[dateKey].sort((a, b) => {
-            return getTimeWeight(a.type).localeCompare(getTimeWeight(b.type));
+            return getTimeWeight(a.meal_type).localeCompare(getTimeWeight(b.meal_type));
         });
     }
     isEditModalOpen.value = false;
 };
-const handleDeleteRecord = (id) => {
+const handleDeleteRecord = (diet_log_id) => {
     const dateKey = selectedDate.value;
     if (!allDietRecords.value[dateKey]) return;
     // 過濾該資料
     allDietRecords.value[dateKey] = allDietRecords.value[dateKey].filter(
-        record => record.id !== id
+        record => record.diet_log_id !== diet_log_id
     );
     // 如果該天沒紀錄，可選擇刪除或保留空陣列
     if (allDietRecords.value[dateKey].length === 0) {
@@ -268,7 +306,7 @@ const handleDeleteRecord = (id) => {
     @open-edit="handleEditClick"
     />
     <EditDietaryRecord 
-    v-if="isEditModalOpen" 
+    v-if="isEditModalOpen && editingMeal" 
     :is-open="isEditModalOpen"
     :date="selectedDate"
     :initial-data="editingMeal"
@@ -311,7 +349,7 @@ const handleDeleteRecord = (id) => {
 }
 .month-text {
     @include title3(true);
-    margin: 0 24px;
+    margin: 0 16px;
 }
 .year-text {
     cursor: pointer;
@@ -344,6 +382,7 @@ const handleDeleteRecord = (id) => {
     color: $white;
     cursor: pointer;
     @include title3(true);
+    margin-top: 4px;
 }
 .calendar-body {
     margin: 24px;

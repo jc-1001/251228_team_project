@@ -9,41 +9,56 @@ const emit = defineEmits(['close', 'submit', 'delete']);
 const confirmDelete = () => {
     // 彈窗
     if (confirm("確定要刪除這筆飲食記錄？")) {
-        emit('delete', formData.value.id);
+        emit('delete', formData.value.diet_log_id);
         close();
     }
 };
 // 初始狀態
 const formData = ref({
-    id: null,
-    type: '早餐',
-    note: '',
-    image: null,
+    diet_log_id: null,
+    meal_type: '早餐',
+    description: '',
+    image_file: null,
     preview: null,
-    time: ''
+    meal_time: ''
 });
 const mealTypes = ['早餐', '午餐', '晚餐'];
 // 監聽燈箱開啟，帶入資料
 watch(() => props.isOpen, (newVal) => {
     if (newVal && props.initialData) {
-        console.log("編輯的資料:", props.initialData);// Debug
-        const isCustomTime = !mealTypes.includes(props.initialData.type);
+        const rawType = props.initialData.meal_type;
+        const isCustomTime = !mealTypes.includes(rawType);
         formData.value = {
-            id: props.initialData.id,
-            type: isCustomTime ? 'custom' : props.initialData.type,
-            note: props.initialData.note || '',
-            image: null,
-            preview: props.initialData.image,// 顯示原本圖片
-            time: isCustomTime ? props.initialData.type : ''
+            diet_log_id: props.initialData.diet_log_id,
+            meal_type: isCustomTime ? 'custom' : rawType,
+            description: props.initialData.description || '',
+            image_file: null,
+            preview: props.initialData.food_image_url,// 顯示原本圖片
+            meal_time: isCustomTime ? rawType.substring(0, 5) : ''
         };
     }
 }, { immediate: true }); // 確保開啟時就執行
 const handleImageUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (file) {
-        formData.value.image = file;
-        formData.value.preview = URL.createObjectURL(file);
+    const file = event.target.files?.[0] || event.dataTransfer?.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+        alert("格式錯誤，請選擇圖片檔案。");
+        if (event.target) {
+            event.target.value = '';
+        }
+        return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+        alert("請上傳小於5MB的檔案。");
+        return;
+    }
+        if (formData.value.preview) {
+            if (formData.value.preview.startsWith('blob:')) {
+                URL.revokeObjectURL(formData.value.preview);
+            }
+        }
+        formData.value.image_file = file;
+        formData.value.preview = URL.createObjectURL(file);
 };
 const close = () => {
     emit('close');
@@ -53,18 +68,22 @@ const submitForm = () => {
         alert("照片不能為空！");
         return;
     }
-    const displayType = (formData.value.type === 'custom') 
-        ? (formData.value.time || '未定時') 
-        : formData.value.type;
+    const displayType = (formData.value.meal_type === 'custom') 
+        ? (formData.value.meal_time || '未定時') 
+        : formData.value.meal_type;
     emit('submit', { 
-        ...formData.value, 
-        type: displayType,
+        diet_log_id: formData.value.diet_log_id,
+        meal_type: displayType,
+        description: formData.value.description,
+        preview: formData.value.preview,
+        image_file: formData.value.image_file,
+        meal_time: formData.value.meal_type === 'custom' ? `${formData.value.meal_time}:00` : null
     });
     close();
 };
 const timeInput = ref(null);
 const handleTimeClick = () => {
-    formData.value.type = 'custom';
+    formData.value.meal_type = 'custom';
     if (timeInput.value?.showPicker) {
         timeInput.value.showPicker();
     }
@@ -79,13 +98,15 @@ const handleTimeClick = () => {
                 </button>
                 <div class="modal-header">
                     <h2 class="title">編輯飲食記錄</h2>
-                    <p class="date-text">今日日期：{{ date }}</p>
+                    <p class="date-text">紀錄日期：{{ date }}</p>
                 </div>
                 <div class="upload-section" @click="$refs.fileInput.click()">
                     <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload">
                     <img v-if="formData.preview" :src="formData.preview" class="preview-img">
                     <div v-else class="placeholder">
-                        <span class="material-symbols-outlined camera-icon"><img src="@/assets/images/camera.svg" alt="camera"></span>
+                        <span class="material-symbols-outlined camera-icon">
+                            <img src="@/assets/images/camera.svg" alt="camera">
+                        </span>
                         <p>點擊更換照片</p>
                     </div>
                 </div>
@@ -93,20 +114,26 @@ const handleTimeClick = () => {
                     <button 
                         v-for="t in mealTypes" :key="t"
                         class="type-btn"
-                        :class="{ active: formData.type === t }"
-                        @click="formData.type = t">
+                        :class="{ active: formData.meal_type === t }"
+                        @click="formData.meal_type = t">
                         {{ t }}
                     </button>
                     <div class="time-picker-wrapper" @click="handleTimeClick">
-                        <input type="time" v-model="formData.time" class="hidden-time-input" ref="timeInput" step="60">
-                        <label class="type-btn" :class="{ active:formData.type === 'custom' }">
-                            {{ formData.time || '自訂' }}
+                        <input 
+                            type="time" 
+                            v-model="formData.meal_time" 
+                            class="hidden-time-input" 
+                            ref="timeInput" 
+                            step="60"
+                        >
+                        <label class="type-btn" :class="{ active: formData.meal_type === 'custom' }">
+                            {{ formData.meal_time || '自訂' }}
                         </label>
                     </div>
                 </div>
                 <div class="note-section">
                     <label class="label">文字描述</label>
-                    <textarea v-model="formData.note" placeholder="修改描述..." rows="3"></textarea>
+                    <textarea v-model="formData.description" placeholder="修改描述..." rows="3"></textarea>
                 </div>
                 <div class="action-buttons">
                     <button class="btn-save" @click="submitForm">儲存</button>
@@ -116,7 +143,6 @@ const handleTimeClick = () => {
         </div>
     </Transition>
 </template>
-
 <style lang="scss" scoped>
 .diet-modal-overlay {
     position: fixed;
