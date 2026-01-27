@@ -194,9 +194,9 @@ router.beforeEach((to, from, next) => {
   const isUserAuthenticated = localStorage.getItem('isUserLogin') === 'true';
 
   // 前台會員
-  const userAuthRequired = ['home', 'shop', 'Medicine', 'Metrics', 'Home'];
+  const userAuthRequired = ['home', 'shop', 'Medicine', 'Metrics', 'Diet', 'support'];
   // 後台管理
-  const adminAuthRequired = ['Dashboard', 'UserList', 'ProductList', 'OrderList', 'NoticeList'];
+  const adminAuthRequired = ['Dashboard', 'UserList', 'UserDetail', 'ProductList', 'productAdd', 'ProductEdit','OrderList','OrderEdit','NoticeList', 'NoticeEdit'];
 
   if (adminAuthRequired.includes(to.name) && !isAdminAuthenticated) {
     next({ name: 'Adminlogin' });
