@@ -17,18 +17,12 @@ defineProps({
   }
 })
 
-import { useRouter } from 'vue-router'; 
-const router = useRouter();
-
-const handleLogout = () => {
-  // 清除
-  localStorage.removeItem('userProfile');
-  
-  // 不要移除 allUsers
-  alert('已登出');
-  router.push('/Login'); 
-};
-
+const handleUserLogout = () => {
+  if (confirm('確定要登出會員中心嗎？')) {
+    localStorage.removeItem('isUserLogin'); // 清除會員通行證
+    router.push({ name: 'Landing' });       // 導回登陸首頁或登入頁
+  }
+}
 </script>
 <template>
   <main class="profile-layout">

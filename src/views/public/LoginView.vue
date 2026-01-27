@@ -22,12 +22,18 @@ const VALID_ACCOUNT = 'Group1@unicare.com';
 const VALID_PASSWORD = '123456';
 
 const handleLogin = () => {
+    // 假設驗證成功
     if (email.value === VALID_ACCOUNT && password.value === VALID_PASSWORD) {
-        // 存入前台會員登入狀態
+        // 設定通行證
         localStorage.setItem('isUserLogin', 'true');
         
-        alert('登入成功！即將前往首頁');
-        router.push({ path: '/home' }); 
+        // 儲存使用者資訊
+        localStorage.setItem('userProfile', JSON.stringify({
+            full_name: '陳小姐',
+            email: email.value
+        }));
+
+        router.push({ name: 'Home' }); 
     } else {
         alert('帳號或密碼錯誤');
     }

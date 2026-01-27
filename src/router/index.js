@@ -189,33 +189,30 @@ router.beforeEach(async (to, from) => {
 })
 
 router.beforeEach((to, from, next) => {
-  // 取得登入狀態
-  const isAdminAuthenticated = localStorage.getItem('isAdminLogin') === 'true';
   const isUserAuthenticated = localStorage.getItem('isUserLogin') === 'true';
 
-  // 前台會員
-  const userAuthRequired = ['home', 'shop', 'Medicine', 'Metrics', 'Diet', 'support'];
-  // 後台管理
-  const adminAuthRequired = ['Dashboard', 'UserList', 'UserDetail', 'ProductList', 'productAdd', 'ProductEdit','OrderList','OrderEdit','NoticeList', 'NoticeEdit'];
+  // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中
+  // 假設您的 ProfileEdit 路由名稱是 'ProfileEdit'
+  const userAuthRequired = ['Home', 'support', 'ProfileEdit', 'Metrics', 'Medicine', 'shop', ];
 
-  if (adminAuthRequired.includes(to.name) && !isAdminAuthenticated) {
-    next({ name: 'Adminlogin' });
-  } else if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
+  if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
     alert('請先登入會員');
     next({ name: 'Login' });
   } else {
     next();
   }
 });
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('userProfile'); // 檢查是否有登入資料
 
-  // 如果要去個人頁 (Profile) 或後台，但沒登入
-  if ((to.name === 'Profile' || to.path.includes('/admin')) && !isAuthenticated) {
-    alert('請先登入或註冊！');
-    next('/register'); // 導向註冊頁
-  } else {
-    next(); // 允許通過
-  }
-});
+
+// router.beforeEach((to, from, next) => {
+//   const isAuthenticated = localStorage.getItem('userProfile'); // 檢查是否有登入資料
+
+//   // 如果要去個人頁 (Profile) 或後台，但沒登入
+//   if ((to.name === 'Profile' || to.path.includes('/admin')) && !isAuthenticated) {
+//     alert('請先登入或註冊！');
+//     next('/register'); // 導向註冊頁
+//   } else {
+//     next(); // 允許通過
+//   }
+// });
 export default router
