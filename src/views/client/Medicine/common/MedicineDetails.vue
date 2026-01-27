@@ -1,8 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import editMedicineCard from '@/views/client/Medicine/common/editMedicineCard.vue'
 
-const selectedUsage = ref('before')
-const selectedQty = ref(1)
+// const selectedUsage = ref('before')
+// const selectedQty = ref(1)
 const timeSlots = ['早上', '中午', '下午', '晚上']
 const usageOptions = [
   { label: '飯前', value: 'before' },
@@ -25,62 +26,67 @@ const closeCardDetail = () => {
 
 const onOverlayClick = () => {
   closeCardDetail()
-}
+  }
 
 const onKeydown = (event) => {
   if (event.key === 'Escape') {
     closeCardDetail()
   }
 }
+
+const showEditCard = ref(false)
+const openEditCard = () => {
+  showEditCard.value = true
+}
+
 </script>
 
 <template>
-  <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
+  <editMedicineCard v-if="showEditCard" @closeEditCard="showEditCard = false" />
+  <div
+    v-if="!showEditCard"
+    class="medicine-modal__overlay"
+    @click="onOverlayClick"
+    @keydown="onKeydown"
+    tabindex="0"
+  >
     <div class="medicine-modal__card" @click.stop>
-      <button
-        @click="closeCardDetail"
-        class="medicine-modal__close"
-        type="button"
-        aria-label="關閉"
-      >
+      <button @click="closeCardDetail" class="medicine-modal__close" type="button" aria-label="關閉">
         <span class="material-symbols-outlined">close</span>
       </button>
-      <h1 class="medicine-modal__title">藥品詳細</h1>
-      <button class="medicine-modal__edit" type="button">編輯</button>
+      <h1 class="medicine-modal__title">藥品詳情</h1>
       <form class="medicine-modal__content" action="#">
         <div class="medicine-modal__body">
           <section class="medicine-modal__image">
-            <input type="file" id="medicine-image" disabled class="medicine-modal__file" />
+            <div class="medicine-modal__image-form">
+              <div class="form-group">
+                <label for="medicine-name">藥品名</label>
+                <input id="medicine-name" type="text" placeholder="例如：阿斯匹靈" />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="expiration-date">有效期限</label>
+                  <input id="expiration-date" type="date" />
+                </div>
+                <div class="form-group">
+                  <label for="quantity">藥品數量</label>
+                  <input id="quantity" type="text" />
+                </div>
+              </div>
+            </div>
+            <input type="file" id="medicine-image" class="medicine-modal__file" />
             <label class="medicine-modal__image-drop" for="medicine-image">
-              <img src="@/assets/images/mdc1_1.jpg" alt="camera icon" />
+              <img src="@/assets/images/camera.svg" alt="camera icon" />
+              點擊或拖曳上傳藥品照片
             </label>
           </section>
 
           <section class="medicine-modal__form">
             <div class="form-group">
-              <label for="medicine-name">藥品名稱</label>
-              <input id="medicine-name" disabled="true" type="text" value="脈優" />
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="expiration-date">有效期限</label>
-                <input id="expiration-date" disabled="true" type="date" value="2026-12-31" />
-              </div>
-              <div class="form-group">
-                <label for="quantity">藥品數量</label>
-                <input id="quantity" disabled="true" type="text" value="40" />
-              </div>
-            </div>
-
-            <div class="form-group">
               <label for="notes">備註</label>
-              <input id="notes" disabled="true" type="text" value="" />
+              <input id="notes" type="text" />
             </div>
 
-            <p class="medicine-modal__hint">
-              當藥品數量低於七日用量或離有效期限小於 30 日會發出提醒
-            </p>
 
             <div class="medicine-modal__schedule">
               <div class="schedule__head"></div>
@@ -89,18 +95,17 @@ const onKeydown = (event) => {
 
               <template v-for="slot in timeSlots" :key="slot">
                 <div class="schedule__row-label">{{ slot }}</div>
-                <select class="schedule__select" v-model="selectedUsage">
+                <select class="schedule__select">
                   <option
                     v-for="opt in usageOptionsBySlot(slot)"
                     :key="opt.value"
                     :value="opt.value"
-                    disabled="true"
                   >
                     {{ opt.label }}
                   </option>
                 </select>
-                <select class="schedule__select" v-model="selectedQty">
-                  <option v-for="qty in quantityOptions" :key="qty" :value="qty" disabled="true">
+                <select class="schedule__select">
+                  <option v-for="qty in quantityOptions" :key="qty" :value="qty">
                     {{ qty }}
                   </option>
                 </select>
@@ -110,11 +115,12 @@ const onKeydown = (event) => {
         </div>
 
         <div class="medicine-modal__footer">
-          <button class="btn-primary" type="submit">關閉</button>
+          <button class="btn-primary" type="button" @click="openEditCard">修改</button>
         </div>
       </form>
     </div>
   </div>
+  
 </template>
 
 <style lang="scss" scoped>
@@ -127,35 +133,23 @@ const onKeydown = (event) => {
 .medicine-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.12);
   display: grid;
   place-items: center;
   z-index: 1000;
 
   .medicine-modal__card {
     position: relative;
-    width: 1200px;
+    width: 800px;
     max-width: 90vw;
-    min-height: 500px;
-    // max-height: 90vh;
+    max-height: 90vh;
     background-color: $white;
     border-radius: $radius_md;
     box-shadow: $shadowDark;
-    padding: 32px 40px;
+    padding: 16px 40px;
     gap: 16px;
     overflow: auto;
-    .medicine-modal__edit {
-      position: absolute;
-      top: 56px;
-      right: 80px;
-      padding: 8px 16px;
-      background-color: $primaryDark;
-      color: $white;
-      border: none;
-      border-radius: $radius_md;
-      cursor: pointer;
-      @include body3;
-    }
+
     .medicine-modal__title {
       @include title2;
       color: $primaryDark;
@@ -176,12 +170,36 @@ const onKeydown = (event) => {
       .medicine-modal__body {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 32px;
-        align-items: center;
+        gap: 16px;
+        align-items: self-start;
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+
+        .form-group {
+          display: grid;
+          gap: 8px;
+        }
+
+        label {
+          @include body2;
+          color: $primaryDark;
+        }
+
+        input,
+        select {
+          padding: 8px;
+          border: 1px solid $primaryDark;
+          border-radius: $radius_sm;
+          @include body3;
+        }
 
         .medicine-modal__image {
-          display: flex;
-          justify-content: center;
+          display: grid;
+          gap: 8px;
 
           .medicine-modal__file {
             display: none;
@@ -190,7 +208,7 @@ const onKeydown = (event) => {
           .medicine-modal__image-drop {
             width: 100%;
             max-width: 520px;
-            height: 520px;
+            height: 164px;
             border-radius: $radius_sm;
             border: 1px solid $primaryDark;
             background-color: $primaryLight;
@@ -200,11 +218,11 @@ const onKeydown = (event) => {
             text-align: center;
             color: $primaryDark;
             @include body3;
-            img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
+          }
+
+          .medicine-modal__image-form {
+            display: grid;
+            gap: 16px;
           }
         }
 
@@ -212,35 +230,6 @@ const onKeydown = (event) => {
           display: grid;
           gap: 16px;
 
-          .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-          }
-
-          .form-group {
-            display: grid;
-            gap: 8px;
-          }
-
-          label {
-            @include body2;
-            color: $primaryDark;
-          }
-
-          input,
-          select {
-            padding: 10px 12px;
-            border: 1px solid $primaryDark;
-            border-radius: $radius_sm;
-            @include body3;
-          }
-
-          .medicine-modal__hint {
-            margin: 0;
-            color: $primaryDark;
-            @include body3;
-          }
 
           .medicine-modal__schedule {
             display: grid;
@@ -347,15 +336,6 @@ const onKeydown = (event) => {
       .medicine-modal__content {
         .medicine-modal__body {
           .medicine-modal__form {
-            .form-row {
-              grid-template-columns: 1fr;
-            }
-
-            input,
-            select {
-              min-height: 44px;
-            }
-
             .medicine-modal__schedule {
               grid-template-columns: 64px 1fr;
               gap: 16px 20px;
@@ -368,6 +348,15 @@ const onKeydown = (event) => {
                 grid-column: 2;
               }
             }
+          }
+
+          .form-row {
+            grid-template-columns: 1fr;
+          }
+
+          input,
+          select {
+            min-height: 44px;
           }
         }
       }

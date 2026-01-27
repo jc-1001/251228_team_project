@@ -1,32 +1,35 @@
 <script setup>
-const timeSlots = ['早上', '中午', '晚上', '睡前']
+import { ref } from 'vue'
+
+// const selectedUsage = ref('before')
+// const selectedQty = ref(1)
+const timeSlots = ['早上', '中午', '下午', '晚上']
 const usageOptions = [
-  { label: '無', value: 'none' },
-  { label: '餐前', value: 'before' },
-  { label: '餐後', value: 'after' },
+  { label: '飯前', value: 'before' },
+  { label: '飯後', value: 'after' },
   { label: '睡前', value: 'bedtime' },
 ]
 const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
-  if (slot === '睡前') {
+  if (slot === '晚上') {
     return [{ label: '睡前', value: 'bedtime' }]
   }
   return usageOptions
 }
-const emit = defineEmits(['closeModal'])
+const emit = defineEmits(['closeEditCard'])
 
-const closeModal = () => {
-  emit('closeModal')
+const closeEditCard = () => {
+  emit('closeEditCard')
 }
 
 const onOverlayClick = () => {
-  closeModal()
+  closeEditCard()
 }
 
 const onKeydown = (event) => {
   if (event.key === 'Escape') {
-    closeModal()
+    closeEditCard()
   }
 }
 </script>
@@ -34,10 +37,10 @@ const onKeydown = (event) => {
 <template>
   <div class="medicine-modal__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
     <div class="medicine-modal__card" @click.stop>
-      <button @click="closeModal" class="medicine-modal__close" type="button" aria-label="關閉">
+      <button @click="closeEditCard" class="medicine-modal__close" type="button" aria-label="關閉">
         <span class="material-symbols-outlined">close</span>
       </button>
-      <h1 class="medicine-modal__title">新增藥品</h1>
+      <h1 class="medicine-modal__title">修改詳情</h1>
       <form class="medicine-modal__content" action="#">
         <div class="medicine-modal__body">
           <section class="medicine-modal__image">
@@ -53,13 +56,13 @@ const onKeydown = (event) => {
                 </div>
                 <div class="form-group">
                   <label for="quantity">藥品數量</label>
-                  <input id="quantity" type="number" min="1" />
+                  <input id="quantity" type="text" />
                 </div>
               </div>
             </div>
-            <input type="file" accept="image/*" id="medicine-image" class="medicine-modal__file" />
-            <label  class="medicine-modal__image-drop" for="medicine-image">
-              <img  src="@/assets/images/camera.svg" alt="camera icon" />
+            <input type="file" id="medicine-image" class="medicine-modal__file" />
+            <label class="medicine-modal__image-drop" for="medicine-image">
+              <img src="@/assets/images/camera.svg" alt="camera icon" />
               點擊或拖曳上傳藥品照片
             </label>
           </section>
@@ -98,7 +101,8 @@ const onKeydown = (event) => {
         </div>
 
         <div class="medicine-modal__footer">
-          <button class="btn-primary" type="submit">儲存</button>
+          <button class="btn-primary" type="submit" >儲存</button>
+          <button class="btn-delete" type="submit" @click="closeEditCard">刪除</button>
         </div>
       </form>
     </div>
@@ -245,6 +249,7 @@ const onKeydown = (event) => {
       .medicine-modal__footer {
         display: flex;
         justify-content: center;
+        gap: 24px;
 
         .btn-primary {
           flex: .3;
@@ -263,9 +268,25 @@ const onKeydown = (event) => {
           }
         }
       }
+      .btn-delete {
+          flex: .3;
+          background: $primaryDark;
+          color: $white;
+          padding: 8px;
+          border: none;
+          border-radius: $radius_sm;
+          @include subtitle2(true);
+          cursor: pointer;
+          transition: background 0.3s;
+          &:hover {
+            background-color: $white;
+            color: $primaryDark;
+            outline: 1px solid $primaryDark;
+          }
+        }
+      }
     }
   }
-}
 
 @media (max-width: 1024px) {
   .medicine-modal__overlay {
