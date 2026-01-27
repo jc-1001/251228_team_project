@@ -17,26 +17,25 @@ const rememberMe = ref(false)
 //   // 放 API 
 // }
 
-// 預設的帳密
-const VALID_ACCOUNT = 'Group1@unicare.com';
-const VALID_PASSWORD = '123456';
+// // 預設的帳密
+// const VALID_ACCOUNT = 'Group1@unicare.com';
+// const VALID_PASSWORD = '123456';
 
 const handleLogin = () => {
-    // 假設驗證成功
-    if (email.value === VALID_ACCOUNT && password.value === VALID_PASSWORD) {
-        // 設定通行證
-        localStorage.setItem('isUserLogin', 'true');
-        
-        // 儲存使用者資訊
-        localStorage.setItem('userProfile', JSON.stringify({
-            full_name: '陳小姐',
-            email: email.value
-        }));
+  // 1. 從 LocalStorage 抓取所有註冊過的帳號
+  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+  
+  // 2. 尋找是否有匹配的 Email 與 密碼
+  const user = allUsers.find(u => u.email === email.value && u.password === password.value);
 
-        router.push({ name: 'Home' }); 
-    } else {
-        alert('帳號或密碼錯誤');
-    }
+  if (user) {
+    // 登入成功：存入當前登入者資訊 (ProfileEdit 會用到這個鍵名)
+    localStorage.setItem('userProfile', JSON.stringify(user));
+    alert('登入成功！');
+    router.push('/profile'); // 跳轉到會員中心
+  } else {
+    alert('電子信箱或密碼錯誤！');
+  }
 }
 
 </script>
