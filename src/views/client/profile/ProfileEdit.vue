@@ -1,25 +1,57 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 
+// 預設資料（與註冊欄位一致）
 const profile = ref({
-  username: 'ingrid',
-  email: 'ingrid@example.com',
-  phone: '0912345678',
-  gender: 'female',
-  birthday: '1987-01-01',
-  height: '160',
-  weight: '45',
-  bloodType:'O',
-  phone_number:'0912345678',
-  contact_name:'Mom',
-  relationship:'母女',
+  full_name: '',
+  email: '',
+  phone_number: '',
+  gender: '',
+  birth_date: '',
+  blood_type: '',
+  height: '',
+  weight: '',
+  chronic_disease_description: '',
+  family_history: '',
+  allergy_history: '',
+  is_smoking: false,
+  is_drinking: false,
+  emergency_contact_name: '',
+  emergency_contact_relationship: '',
+  emergency_contact_phone: ''
 })
 
+// 頁面載入時讀取資料
+onMounted(() => {
+  const savedData = localStorage.getItem('userProfile')
+  if (savedData) {
+    profile.value = JSON.parse(savedData)
+  }
+})
 const handleSave = () => {
-  alert('資料已儲存！')
-}
+  // 1. 先更新「當前登入者」的資料 (供前台顯示用)
+  localStorage.setItem('userProfile', JSON.stringify(profile.value));
+
+  // 2. 更新「所有使用者陣列」 (供後端 UserList 顯示用)
+  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+  
+  // 尋找陣列中符合該 email 的使用者索引
+  const index = allUsers.findIndex(u => u.email === profile.value.email);
+
+  if (index !== -1) {
+    // 找到該使用者，用新的資料蓋掉舊的
+    allUsers[index] = { ...allUsers[index], ...profile.value };
+    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    alert('個人檔案與後台資料已同步更新！');
+  } else {
+    // 若找不到 (可能是直接從個人頁開始用而沒註冊過)，則新增一筆
+    allUsers.push({ ...profile.value, id: Date.now() });
+    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    alert('資料已儲存並建立新紀錄！');
+  }
+};
 </script>
 
 <template>
@@ -28,60 +60,59 @@ const handleSave = () => {
   <TheprofileSide title="個人資料編輯">
     <div class="profile-edit-container">
       <form @submit.prevent="handleSave">
-        <div class="form-group">
-          <label>使用者名稱</label>
-          <input type="text" v-model="profile.username" placeholder="請輸入名稱">
+        
+        <div class="form-section">
+          <div class="form-group">
+            <label>姓名</label>
+            <input type="text" v-model="profile.full_name">
+          </div>
+          <div class="form-group">
+            <label>電子郵件 (帳號)</label>
+            <input type="email" v-model="profile.email" disabled class="disabled-field">
+            <small>電子郵件為帳號唯一識別，不可修改</small>
+          </div>
+          <div class="form-group">
+            <label>手機號碼</label>
+            <input type="text" v-model="profile.phone_number">
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>電子郵件</label>
-          <input type="email" v-model="profile.email" disabled>
-          <small>電子郵件為登入帳號，不可修改</small>
+        <div class="form-section">
+          <div class="form-title">身體檔案</div>
+          <div class="row-group">
+            <div class="form-group">
+              <label>身高 (cm)</label>
+              <input type="number" v-model="profile.height">
+            </div>
+            <div class="form-group">
+              <label>體重 (kg)</label>
+              <input type="number" v-model="profile.weight">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>慢性病說明</label>
+            <input type="text" v-model="profile.chronic_disease_description">
+          </div>
+          <div class="form-group">
+            <label>家族病史</label>
+            <input type="text" v-model="profile.family_history">
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>手機號碼</label>
-          <input type="tel" v-model="profile.phone">
-        </div>
-
-        <div class="form-group">
-          <label>生日</label>
-          <input type="date" v-model="profile.birthday">
-        </div>
-
-        <div class="form-group">
-          <label>身高 cm</label>
-          <input type="number" v-model="profile.height">
-        </div>
-
-        <div class="form-group">
-          <label>體重 kg</label>
-          <input type="number" v-model="profile.weight">
-        </div>
-
-        <div class="form-group">
-          <label>血型</label>
-          <input type="text" v-model="profile.bloodType">
-        </div>
-
-        <div class="form-group">
-          <label>緊急聯絡人</label>
-          <input type="text" v-model="profile.contact_name" placeholder="請輸入姓名">
-        </div>
-
-        <div class="form-group">
-          <label>緊急聯絡人關係</label>
-          <input type="text" v-model="profile.relationship">
-        </div>
-
-        <div class="form-group">
-          <label>緊急聯絡人手機號碼</label>
-          <input type="tel" v-model="profile.phone_number">
+        <div class="form-section">
+          <div class="form-title">緊急聯絡資訊</div>
+          <div class="form-group">
+            <label>聯絡人姓名</label>
+            <input type="text" v-model="profile.emergency_contact_name">
+          </div>
+          <div class="form-group">
+            <label>聯絡人電話</label>
+            <input type="text" v-model="profile.emergency_contact_phone">
+          </div>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn-submit">儲存變更</button>
-          <button type="button" class="btn-cancel">取消</button>
+          <button type="submit" class="save-btn">儲存</button>
         </div>
       </form>
     </div>
@@ -90,77 +121,60 @@ const handleSave = () => {
 
 <style lang="scss" scoped>
 .profile-edit-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 20px;
 
-  .form-group {
-    margin-bottom: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    label {
-      font-weight: 600;
-      color: #2E6669;
-    }
-
-    input {
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-      &:focus { border-color: #2E6669; outline: none; }
-      &:disabled { background: #f5f5f5; color: #999; }
-    }
-
-    small { color: #888; margin-top: -4px; }
+  .form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
   }
 
-  .form-actions {
+  .form-title {
+    font-size: 18px;
+    color: #2E6669;
+    font-weight: bold;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
     display: flex;
-    gap: 15px;
-    margin-top: 30px;
-
-    button {
-      flex: 1;
-      padding: 12px;
+    flex-direction: column;
+    label { font-weight: 600; margin-bottom: 5px; color: #555; }
+    input { 
+      padding: 12px; 
+      border: 1px solid #ddd; 
       border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
+      &:focus { border-color: #2E6669; outline: none; }
     }
+    .disabled-field { background-color: #f9f9f9; color: #999; }
+  }
 
-    .btn-submit {
+  .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .form-actions {
+    margin-top: 30px;
+    .save-btn {
+      width: 100%;
       background: #2E6669;
-      color: white;
+      color: #fff;
+      padding: 14px;
       border: none;
-      &:hover { background: #3d868a; }
-    }
-
-    .btn-cancel {
-      background: white;
-      border: 1px solid #ccc;
-      &:hover { background: #f9f9f9; }
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      &:hover { background: darken(#2E6669, 5%); }
     }
   }
 }
 
-/* RWD 768px 斷點 */
-@media (max-width: 768px) {
-  .profile-edit-container {
-    padding: 10px;
-    
-    .form-actions {
-      flex-direction: column; // 手機版按鈕上下堆疊
-      gap: 10px;
-      button { width: 100%; }
-    }
-    
-    .form-group input {
-      font-size: 14px; // 稍微縮小字體以利輸入
-      padding: 10px;
-    }
-  }
+@media (max-width: 480px) {
+  .row-group { grid-template-columns: 1fr; }
 }
 </style>

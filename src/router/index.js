@@ -23,6 +23,15 @@ const routes = [
     name: 'Login',
     component: () => import('@/views/public/LoginView.vue'),
   },
+   {
+    path: '/Register',
+    name: 'Register',
+    component: () => import('@/views/public/RegisterView.vue'),
+    meta: {
+      title: '',
+    }
+
+  },
   {
     path: '/Landing',
     name: 'Landing',
@@ -179,4 +188,31 @@ router.beforeEach(async (to, from) => {
   }
 })
 
+router.beforeEach((to, from, next) => {
+  const isUserAuthenticated = localStorage.getItem('isUserLogin') === 'true';
+
+  // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中
+  // 假設您的 ProfileEdit 路由名稱是 'ProfileEdit'
+  const userAuthRequired = ['Home', 'support', 'Metrics', 'Medicine', 'shop','Profile', 'DietLog', 'Diet','Profile', 'mypoint', 'orderList' ];
+
+  if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
+    alert('請先登入會員');
+    next({ name: 'Login' });
+  } else {
+    next();
+  }
+});
+
+
+// router.beforeEach((to, from, next) => {
+//   const isAuthenticated = localStorage.getItem('userProfile'); // 檢查是否有登入資料
+
+//   // 如果要去個人頁 (Profile) 或後台，但沒登入
+//   if ((to.name === 'Profile' || to.path.includes('/admin')) && !isAuthenticated) {
+//     alert('請先登入或註冊！');
+//     next('/register'); // 導向註冊頁
+//   } else {
+//     next(); // 允許通過
+//   }
+// });
 export default router

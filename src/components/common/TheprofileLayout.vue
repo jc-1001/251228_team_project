@@ -17,6 +17,13 @@ defineProps({
     default: true,
   },
 })
+
+const handleUserLogout = () => {
+  if (confirm('確定要登出會員中心嗎？')) {
+    localStorage.removeItem('isUserLogin'); // 清除會員通行證
+    window.location.href = '/';       // 導回登陸首頁或登入頁
+  }
+}
 </script>
 <template>
   <main class="profile-layout">
@@ -35,7 +42,10 @@ defineProps({
         </RouterLink>
       </nav>
 
-      <button class="logout-btn">登出</button>
+      <button class="logout-btn" @click="handleUserLogout">
+        <span class="material-symbols-rounded">logout</span>
+        登出
+      </button>
     </aside>
 
     <section class="content-area">

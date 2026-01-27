@@ -93,22 +93,21 @@
       </div>
     </div>
 
-    <div class="partFive">
-      <div class="bridge" style="position: relative ; width: 100%;" id="aboutReward">
-        <h2>使用心得</h2>
-      </div>
-      <div class="arrow-container left" @click="scrollTestimonials(-100)">
-        <img src="" style="rotate: -90deg;">
-      </div>
-      <div class="contence" ref="testimonialContainer">
-        <img :src="LP_reward1">
-        <img :src="LP_reward2">
-        <img :src="LP_reward3">
-      </div>
-      <div class="arrow-container right" @click="scrollTestimonials(100)">
-        <img src="" style="rotate: 90deg;">
-      </div>
+    <div class="bridge" id="aboutReward">
+      <h2>使用心得</h2>
     </div>
+
+    <div class="partFive">
+    <div class="slick-btn slick-prev" @click="scrollSlider('left')"></div>
+    
+    <div class="slick-container" ref="slider">
+        <div class="slick-item"><img src="@/assets/images/public/LP_reward1.png"></div>
+        <div class="slick-item"><img src="@/assets/images/public/LP_reward2.png"></div>
+        <div class="slick-item"><img src="@/assets/images/public/LP_reward3.png"></div>
+    </div>
+    
+    <div class="slick-btn slick-next" @click="scrollSlider('right')"></div>
+</div>
 
     <a href="#gotop" class="pagetop">
       <br>TOP<br>
@@ -165,6 +164,20 @@ import LP_function4 from '/src/assets/images/public/LP_function4.jpg';
 
 const isMenuOpen = ref(false);
 const testimonialContainer = ref(null);
+// 如果您使用的是 Composition API (setup)
+
+const slider = ref(null);
+
+const scrollSlider = (direction) => {
+  const container = slider.value;
+  const scrollAmount = container.clientWidth; // 每次捲動一個螢幕寬度
+  
+  if (direction === 'left') {
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  } else {
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+};
 
 const features = [
   { img: LP_function1, title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！<br>醒目的「今日待辦事項」清單，幫助長輩養成健康好習慣。' },
@@ -536,34 +549,61 @@ body,html{
 /* partFive */
   
 .partFive {
-    height: fit-content;
-    width: 100%;
-    margin: auto;
-    display: flex;
-    flex-wrap: wrap;
-    position: relative;
-    background-color: #E0F2F1;
-    justify-content: center;
-    align-items: center;
-}
-.partFive .contence{
-  width: 80%;
-  height: 90%;
-  position: relative; 
-  padding: 10px auto;
-  display: flex; 
-  overflow: auto;
-  /* border: 1px solid red; */
-  margin: 0px;
-}
-.partFive .contence img{
-  scale: 80%;
+  position: relative; /* 讓按鈕可以絕對定位在兩側 */
+  display: flex;
+  align-items: center;
+  padding: 40px 0;
+  background-color: #E0F2F1;
 }
 
-.partFive .contence::-webkit-scrollbar {
-    display: none;
+.slick-container {
+  display: flex;
+  overflow-x: auto; /* 啟動橫向捲動 */
+  scroll-snap-type: x mandatory; /* 讓捲動自動對齊項目 */
+  scrollbar-width: none; /* 隱藏捲軸 (Firefox) */
+  gap: 20px;
 }
 
+.slick-container::-webkit-scrollbar {
+  display: none; /* 隱藏捲軸 (Chrome/Safari) */
+}
+
+.slick-item {
+  flex: 0 0 100%; /* 每次顯示一張，若要顯示三張可改為 33.3% */
+  scroll-snap-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.slick-item img {
+  width: 45%;
+  height: auto;
+}
+
+/* 左右按鈕共用樣式 */
+.slick-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;  /* 依圖片大小調整 */
+  height: 50px;
+  cursor: pointer;
+  z-index: 10;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 填入您的圖片路徑 */
+.slick-prev {
+  left: 10px;
+  background-image: url('@/assets/images/common/icon/angle-left.png');
+}
+
+.slick-next {
+  right: 10px;
+  background-image: url('@/assets/images/common/icon/angle-right.png');
+}
 
 /* footer */
 
@@ -853,6 +893,92 @@ div.footer_left{
   }
 }
 
+@media screen and (max-width: 480px) {
+  
+  /* 1. Header 調整：確保 Logo 與漢堡選單有足夠空間 */
+  .main-header {
+    padding: 10px 3%;
+  }
+
+  /* 2. Banner 文字調整 */
+  .banner-txt h1 {
+    font-size: 1.8rem !important; /* 縮小標題 */
+    line-height: 1.3;
+  }
+  .banner-txt h2 {
+    font-size: 1.2rem !important;
+  }
+
+  /* 3. PartOne 痛點區：從 2 欄改為 1 欄 */
+  .partOne {
+    margin: 0 5% !important; /* 增加可用寬度 */
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    gap: 15px !important;
+  }
+  
+  .partOne .item img {
+    width: 60%; /* 縮小圖片比例以免佔據整面 */
+  }
+
+  /* 4. PartTwo 介紹區：圖文垂直堆疊 */
+  .partTwo {
+    margin: 0 5% !important;
+    grid-template-columns: 1fr !important;
+  }
+  .partTwo .item ul {
+    padding-left: 0;
+  }
+
+  /* 5. PartThree 三大承諾：強制單欄且去除過大內距 */
+  .partThree {
+    /* 1. 強制從 3 欄改為 1 欄垂直排列 */
+    grid-template-columns: 1fr !important;
+    grid-auto-flow: row !important; /* 確保內容向下延伸 */
+    
+    /* 2. 調整間距，避免手機版左右太擠 */
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+    gap: 30px !important; /* 增加項目與項目間的垂直距離 */
+  }
+
+  .partThree .item {
+    /* 3. 調整單個項目的外距 */
+    margin: 20px auto !important;
+    width: 90%; /* 讓內容稍微縮減，更有呼吸感 */
+  }
+
+  .partThree img {
+    /* 4. 確保圖片在手機上不會過大或過小 */
+    width: 120px; 
+    height: auto;
+  }
+
+  .partThree li {
+    /* 5. 調整原本的虛線邊框，手機上可能顯得太粗 */
+    border-width: 2px !important;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  /* 6. PartFour 功能介紹：確保卡片內圖文垂直排列 */
+  .partFour .card {
+    width: 95% !important;
+    flex-direction: column !important; /* 確保 Flexbox 轉為垂直 */
+  }
+  .partFour .card .pic, 
+  .partFour .card .txt {
+    width: 100% !important;
+    padding: 10px 0 !important;
+    text-align: center;
+  }
+
+  /* 7. Bridge 橋接標題：微調字體 */
+  .bridge h2 {
+    font-size: 1.1rem !important;
+    margin: 20px 5% !important;
+  }
+}
 
 </style>
 

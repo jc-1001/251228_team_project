@@ -22,19 +22,20 @@ const VALID_ACCOUNT = 'Group1@unicare.com';
 const VALID_PASSWORD = '123456';
 
 const handleLogin = () => {
-    // 1. 驗證
+    // 假設驗證成功
     if (email.value === VALID_ACCOUNT && password.value === VALID_PASSWORD) {
+        // 設定通行證
+        localStorage.setItem('isUserLogin', 'true');
         
-        // 2. 呼叫 userId 
-        // login(email.value, password.value);
-        
-        alert('登入成功！即將前往首頁');
+        // 儲存使用者資訊
+        localStorage.setItem('userProfile', JSON.stringify({
+            full_name: '陳小姐',
+            email: email.value
+        }));
 
-        router.push({ path: '/home' }); 
-        
+        router.push({ name: 'Home' }); 
     } else {
-        // 驗證失敗提示
-        alert('帳號或密碼錯誤，請再試一次。\n(提示：Group1@unicare.com / 123456)');
+        alert('帳號或密碼錯誤');
     }
 }
 
@@ -84,7 +85,7 @@ const handleLogin = () => {
             <img src="\src\assets\images\fb.svg" alt="fb">
           </div>
           <div class="register-hint">
-            還不是會員? <router-link to="/register" class="link">註冊</router-link>
+            還不是會員? <router-link to="/Register" class="link">註冊</router-link>
           </div>
         </div>
       </div>
