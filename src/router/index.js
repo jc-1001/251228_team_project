@@ -193,7 +193,7 @@ router.beforeEach((to, from, next) => {
 
   // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中
   // 假設您的 ProfileEdit 路由名稱是 'ProfileEdit'
-  const userAuthRequired = ['Home', 'support', 'ProfileEdit', 'Metrics', 'Medicine', 'shop', ];
+  const userAuthRequired = ['Home', 'support', 'Metrics', 'Medicine', 'shop','Profile', 'DietLog', 'Diet','Profile', 'mypoint', 'orderList' ];
 
   if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
     alert('請先登入會員');

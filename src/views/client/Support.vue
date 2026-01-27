@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import TheHeader from '@/components/common/TheHeader.vue'
-import imageSrc from '/src/assets/images/HomeView-header.svg'
+import imageSrc from '/src/assets/images/Banner_help.svg'
 
 // 1. 所有的問題資料
 const allFaqs = ref([

@@ -26,7 +26,7 @@
     </header>
 
     <div class="container" id="gotop">
-      <div class="banner">
+      <div class="banner" :style="{ '--banner-url': `url(${banner})` }">
         <div class="banner-txt">
           <ul><li>
           <h1>UniCare</h1>
@@ -156,6 +156,11 @@ import LP_promise3 from '/src/assets/images/public/LP_promise3.svg';
 import LP_reward1 from '/src/assets/images/public/LP_reward1.png';
 import LP_reward2 from '/src/assets/images/public/LP_reward2.png';
 import LP_reward3 from '/src/assets/images/public/LP_reward3.png';  
+import banner from '/src/assets/images/public/LP_hero.jpg';
+import LP_function1 from '/src/assets/images/public/LP_function1.jpg';
+import LP_function2 from '/src/assets/images/public/LP_function2.jpg';
+import LP_function3 from '/src/assets/images/public/LP_function3.jpg';
+import LP_function4 from '/src/assets/images/public/LP_function4.jpg';
 
 const isMenuOpen = ref(false);
 const testimonialContainer = ref(null);
@@ -175,10 +180,10 @@ const scrollSlider = (direction) => {
 };
 
 const features = [
-  { img: '/src/assets/images/public/LP_function1.jpg', title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！<br>醒目的「今日待辦事項」清單，幫助長輩養成健康好習慣。' },
-  { img: '/src/assets/images/public/LP_function2.jpg', title: '數據同步，關懷零時差', desc: '無論子女身在何處，登入同一個帳號，即可看到父母的最新狀態。快速確認服藥情形，讓您不用再每天打電話詢問。' },
-  { img: '/src/assets/images/public/LP_function3.jpg', title: '貼心提醒，警示不忘記', desc: '當健康數值異常或藥品與保健品庫存過低時，系統會自動標示醒目顏色，提醒子女注意。' },
-  { img: '/src/assets/images/public/LP_function4.jpg', title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品，獲得的積分可用更優惠的價格購買營養品。' }
+  { img: LP_function1, title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！<br>醒目的「今日待辦事項」清單，幫助長輩養成健康好習慣。' },
+  { img: LP_function2, title: '數據同步，關懷零時差', desc: '無論子女身在何處，登入同一個帳號，即可看到父母的最新狀態。快速確認服藥情形，讓您不用再每天打電話詢問。' },
+  { img: LP_function3, title: '貼心提醒，警示不忘記', desc: '當健康數值異常或藥品與保健品庫存過低時，系統會自動標示醒目顏色，提醒子女注意。' },
+  { img: LP_function4, title: '隨時補貨，便捷又快速', desc: '子女可直接在網站內的「樂活商城」選購適合長輩的保健食品，獲得的積分可用更優惠的價格購買營養品。' }
 ];
 
 const scrollTestimonials = (amount) => {
@@ -189,7 +194,6 @@ const scrollTestimonials = (amount) => {
 </script>
 
 <style scoped>
-
 .landing-page {
   font-family: 'Noto Sans TC', sans-serif;
   color: #333;
@@ -342,7 +346,7 @@ body,html{
     .banner{
         width: 100%;
         height: calc(100vh - 64px);
-        background: url(src/assets/images/public/LP_hero.jpg);
+        background: var(--banner-url) no-repeat;
         background-size: cover;
         background-position: 70% 50%;
     }
