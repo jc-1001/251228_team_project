@@ -11,7 +11,7 @@ const usageOptions = [
   { label: '飯後', value: 'after' },
   { label: '睡前', value: 'bedtime' },
 ]
-const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const quantityOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
   if (slot === '晚上') {
