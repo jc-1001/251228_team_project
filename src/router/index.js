@@ -189,11 +189,11 @@ router.beforeEach(async (to, from) => {
 })
 
 router.beforeEach((to, from, next) => {
-  const isUserAuthenticated = localStorage.getItem('isUserLogin') === 'true';
+  const isUserAuthenticated = localStorage.getItem('userProfile')!== null;
 
   // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中
   // 假設您的 ProfileEdit 路由名稱是 'ProfileEdit'
-  const userAuthRequired = ['Home', 'support', 'Metrics', 'Medicine', 'shop','Profile', 'DietLog', 'Diet','Profile', 'mypoint', 'orderList' ];
+  const userAuthRequired = ['Home', 'support', 'Metrics', 'Medicine', 'shop', 'DietLog', 'Diet','Profile', 'mypoint', 'orderList' ];
 
   if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
     alert('請先登入會員');

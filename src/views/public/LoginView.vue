@@ -31,8 +31,10 @@ const handleLogin = () => {
   if (user) {
     // 登入成功：存入當前登入者資訊 (ProfileEdit 會用到這個鍵名)
     localStorage.setItem('userProfile', JSON.stringify(user));
+    // 選項：如果您想保留原有的 isUserLogin 判斷也可以加上
+    localStorage.setItem('isUserLogin', 'true');
     alert('登入成功！');
-    router.push('/profile'); // 跳轉到會員中心
+    window.location.href = '/Home'; // 跳轉到首頁
   } else {
     alert('電子信箱或密碼錯誤！');
   }
