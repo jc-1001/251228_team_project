@@ -44,7 +44,7 @@ const handleCheckoutSubmit = (summaryData)=>{
       shippingFee: summaryData.shippingFee,
       discount: summaryData.discount
     }
-
+b
     // 呼叫orderStore建立訂單
     orderStore.createOrder( orderPayLoad )
 
