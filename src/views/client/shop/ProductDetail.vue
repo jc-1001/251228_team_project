@@ -1,20 +1,35 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
 import { useRoute } from 'vue-router'
-import { allProducts } from '@/data/shop/productInfo'
+import { useProductStore } from '@/stores/product'
 import ProductGallery from '@/components/shop/ProductGallery.vue'
 import ProductIntro from '@/components/shop/ProductIntro.vue'
 import ProductInfoTabs from '@/components/shop/ProductInfoTabs.vue'
 
 const route = useRoute()
-// const product = ref(allProducts)
-// 筆記: find可以回傳找出的唯一值 / filter則是回傳"陣列"，即使只有一個也會回傳陣列
-const currentProduct = computed(() => {
-  return allProducts.find((product) => {
-    return product.id === parseInt(route.params.id)
-  })
+const productStore = useProductStore()
+
+const currentProduct = ref({})
+
+onMounted(async () => {
+  const id = route.params.id
+
+  const data = await productStore.fetchProductDetail(id)
+
+  if(data) {
+    currentProduct.value = data
+    console.log('詳情頁資料拿到囉：', currentProduct.value)
+  } else {
+    console.log('找不到商品')
+  }
 })
+
+
+const categoryIdMap = {
+  1: '骨骼關節保養',
+  2: '心血管循環',
+  3: '晶亮護眼'
+}
 
 </script>
 
@@ -22,7 +37,7 @@ const currentProduct = computed(() => {
   <div class="product_datail_page">
     <div class="breadcrumb">
       <router-link :to="'/shop'" class="breadcrumb_location">樂活商城</router-link>
-      <span class="breadcrumb_category">{{ currentProduct.category }}</span>
+      <span class="breadcrumb_category" v-if="currentProduct.category_id">{{ categoryIdMap[currentProduct.category_id] }}</span>
       <span class="breadcrumb_product">{{ currentProduct.title }}</span>
     </div>
     <section class="product_detail_card">

@@ -2,6 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 
+import personIcon from '@/assets/images/shop/icon/person.svg'
+import creditIcon from '@/assets/images/shop/icon/credit_card.svg'
+import receiptIcon from '@/assets/images/shop/icon/receipt_long.svg'
+
+
+
 const userStore = useUserStore()
 
 const form = ref({
@@ -192,7 +198,7 @@ defineExpose ({
   <div class="checkout_form">
     <section class="form_section">
       <h3 class="section_title">
-        <span class="material-symbols-rounded icon">person</span>
+        <span class="icon"><img :src="personIcon"></span>
         收件人資訊
       </h3>
       <div class="form_grid">
@@ -234,7 +240,7 @@ defineExpose ({
     </section>
     <section class="form_section">
       <h3 class="section_title">
-        <span class="material-symbols-rounded icon">credit_card</span>
+        <span class="icon"><img :src="creditIcon"></span>
         付款方式
       </h3>
       <div class="payment_options">
@@ -286,7 +292,9 @@ defineExpose ({
     </section>
     <section class="form_section">
       <h3 class="section_title">
-        <span class="material-symbols-rounded icon">receipt_long</span>
+        <span class="icon">
+          <img :src="receiptIcon" alt="">
+        </span>
         發票資訊
       </h3>
       <div class="form_grid">
@@ -328,6 +336,7 @@ defineExpose ({
 
 // 共用區塊樣式
 .form_section {
+  position: relative;
   padding: 24px;
   background-color: $white;
   border: 1px solid $gray;
@@ -341,10 +350,6 @@ defineExpose ({
     margin-bottom: 16px;
     @include body1(true);
     color: $primaryDark;
-
-    .icon {
-      @include subtitle2;
-    }
   }
 }
 

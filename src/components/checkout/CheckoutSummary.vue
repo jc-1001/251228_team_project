@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue';
 import { useCartStore } from '@/stores/cart';
 
+import shoppingIcon from '@/assets/images/shop/icon/shopping_cart.svg'
+
 const cartStore = useCartStore();
 
 // (因為按鈕按下去，是要通知父層去送出表單)
@@ -44,7 +46,9 @@ const handleSubmit = ()=>{
 <template>
   <div class="summary_card">
     <h3 class="summary_title">
-      <span class="material-symbols-rounded icon">shopping_cart</span>
+      <span class="material-symbols-rounded icon">
+        <img :src="shoppingIcon">
+      </span>
       訂單摘要
     </h3>
     <label class="points_section">

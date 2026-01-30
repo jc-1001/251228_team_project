@@ -1,9 +1,10 @@
 import Swal from 'sweetalert2'
+import checkCircle from '@/assets/images/shop/icon/check_circle.svg'
 
 export function useToast() {
   const showToast = (title = '已加入購物車!') => {
     Swal.fire({
-      iconHtml: '<span class="material-symbols-rounded point_remind_icon">check_circle</span>',
+      iconHtml: `<img src="${checkCircle}">`,
       iconColor: '#2E6669',
       title: title,
       toast: true,

@@ -6,6 +6,9 @@ import QuantitySelector from '@/components/shop/QuantitySelector.vue'
 import cartEmptyPic from '@/assets/images/shop/cart_empty_draw.svg'
 import ErrorMessageModal from '@/components/common/client/modals/ErrorMessageModal.vue';
 
+import deleteIcon from '@/assets/images/shop/icon/delete.svg'
+import deleteIconWarn from '@/assets/images/shop/icon/delete_warning.svg'
+
 const router = useRouter()
 const cartStore = useCartStore()
 
@@ -82,7 +85,10 @@ const goCheckout = () => {
           </div>
           <div class="col_action">
             <button type="button" class="btn_delete" @click="handleRemove(item.id)">
-              <span class="material-symbols-rounded">delete</span>
+              <span class="delete_icon">
+                <img :src="deleteIcon" class="delete_default">
+                <img :src="deleteIconWarn" class="delete_hover">
+              </span>
             </button>
           </div>
         </li>
@@ -195,9 +201,17 @@ const goCheckout = () => {
           background: none;
           border: none;
           cursor: pointer;
-
+          transition: all .3s;
+          .delete_hover {
+            display: none;
+          }
           &:hover {
-            color: $accent;
+            .delete_hover {
+              display: block;
+            }
+            .delete_default {
+              display: none;
+            }
           }
         }
       }
