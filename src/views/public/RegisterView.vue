@@ -1,12 +1,13 @@
 <script setup>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { API_ENDPOINTS } from '@/config/apiConfig'; 
 
 const router = useRouter();
 
-// 嚴格對應 ER MODEL 欄位名稱
+// 1. 嚴格對應您的資料結構，reactive 物件在 script 存取不需加 .value
 const memberProfile = reactive({
-  // 會員核心資料 (Members 表)
   full_name: '',
   email: '',
   password: '',
@@ -17,52 +18,52 @@ const memberProfile = reactive({
   role: 'member',
   account_status: 1,
   
-  // 健康檔案資料 (Members 表)
   height: null,
   weight: null,
   blood_type: 'A',
-  // 慢性病
   has_chronic_disease: false, 
   chronic_disease_description: '',
-  // 家族病史
   has_family_history: false,
   family_history_description: '',
-  // 過敏史
   has_allergies: false,
   allergy_description: '',
-  // 生活習慣
   is_smoking: false,
   is_drinking: false,
   
-  // 緊急聯絡人資料 (Emergency_Contacts 表)
   contact_name: '',
   relationship: '',
-  emergency_phone_number: '' // 避免與會員電話衝突
+  emergency_phone_number: ''
 });
 
-const handleRegister = () => {
+// 2. 註冊處理邏輯
+const handleRegister = async () => {
   if (memberProfile.password !== memberProfile.confirmPassword) {
-    alert('密碼與確認密碼不符！');
+    alert('兩次輸入的密碼不一致！');
     return;
   }
 
-  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-  if (allUsers.find(u => u.email === memberProfile.email)) {
-    alert('此 Email 已被註冊！');
-    return;
+  try {
+    // 發送到 MAMP 的 register_api.php
+    const response = await axios.post(API_ENDPOINTS.REGISTER, memberProfile);
+
+    if (response.data.success) {
+      // 寫入成功後才存入本地快取
+      localStorage.setItem('userProfile', JSON.stringify({
+        full_name: memberProfile.full_name,
+        email: memberProfile.email,
+        role: memberProfile.role
+      }));
+
+      alert('註冊成功！資料已同步至 MAMP 資料庫');
+      router.push('/Home');
+    } else {
+      alert('註冊失敗：' + response.data.message);
+    }
+  } catch (error) {
+    // 這裡報錯時，F12 Network 面板會出現紅色的請求
+    console.error('API 連線失敗，請檢查 MAMP 是否開啟', error);
+    alert('連線失敗，請確認 MAMP 伺服器運作中');
   }
-
-  const newUser = {
-    ...memberProfile,
-    member_id: `M${String(allUsers.length + 1).padStart(5, '0')}`,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-
-  allUsers.push(newUser);
-  localStorage.setItem('allUsers', JSON.stringify(allUsers));
-  alert('註冊成功！');
-  router.push('/login');
 };
 </script>
 
