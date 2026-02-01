@@ -1,28 +1,32 @@
-<script setup>
+﻿<script setup>
 const emit = defineEmits(['showCardDetail'])
-
-const { item } = defineProps({
+const { item, variant } = defineProps({
   item: {
     type: Object,
     required: true,
   },
+  variant: {
+    type: String,
+    default: 'medicine',
+  },
 })
 </script>
 <template>
-  <div class="card" @click="emit('showCardDetail', item)">
+  <div class="card" :class="`card--${variant}`" @click="emit('showCardDetail', item)">
     <div class="medicine-img">
       <img :src="item.image" alt="" />
     </div>
-    {{ item.name }}
+    <h3 class="title">{{ item.name }}</h3>
     <div class="label">
-      <span class="dayeat">每日{{ item.daily }}次</span>
-      <span class="onetime">每次{{ item.oneTime }}份</span>
+      <span class="stock_qty">剩餘：{{ item.stockQty }}</span>
+      <span class="expiry_date">有效期限：{{ item.expiryDate }}</span>
     </div>
   </div>
 </template>
 <style scoped lang="scss">
 .card {
-  min-width: 200px;
+  width: 220px;
+  height: 320px;
   display: grid;
   justify-items: center;
   align-items: center;
@@ -35,6 +39,7 @@ const { item } = defineProps({
     box-shadow: $shadowHover;
   }
   .medicine-img {
+    aspect-ratio: 4 / 3;
     border-top-left-radius: $radius_md;
     border-top-right-radius: $radius_md;
     overflow: hidden;
@@ -45,12 +50,17 @@ const { item } = defineProps({
       object-fit: cover;
     }
   }
+  .title {
+    @include subtitle2(true);
+    color: $primaryDark;
+  }
   .nexttime {
     @include body2;
     color: $primaryDark;
   }
   .label {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: 16px auto;
@@ -60,7 +70,7 @@ const { item } = defineProps({
       border: 1px solid $primaryDark;
       border-radius: 100px;
       padding: 2px 16px;
-      margin: auto 8px;
+      margin: 4px;
     }
   }
 }

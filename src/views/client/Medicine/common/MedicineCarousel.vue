@@ -20,6 +20,10 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  variant: {
+    type: String,
+    default: 'medicine',
+  },
   slidesPerView: {
     type: Number,
     default: 4,
@@ -80,7 +84,11 @@ const emit = defineEmits(['createClick', 'showCardDetail'])
       class="medicine-swiper"
     >
       <SwiperSlide v-for="item in items" :key="item.id">
-        <MedicineCard :item="item" @showCardDetail="emit('showCardDetail', item)" />
+        <MedicineCard
+          :item="item"
+          :variant="variant"
+          @showCardDetail="emit('showCardDetail', item)"
+        />
       </SwiperSlide>
     </Swiper>
   </section>

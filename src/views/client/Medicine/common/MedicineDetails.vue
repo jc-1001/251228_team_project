@@ -1,25 +1,59 @@
-<script setup>
-import { ref } from 'vue'
+﻿<script setup>
+import { computed, onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useMedicineStore } from '@/stores/medicine.js'
 import editMedicineCard from '@/views/client/Medicine/common/editMedicineCard.vue'
 
-// const selectedUsage = ref('before')
-// const selectedQty = ref(1)
-const timeSlots = ['早上', '中午', '下午', '晚上']
+const { medicationId } = defineProps({
+  medicationId: {
+    type: Number,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['closeCardDetail'])
+
+const timeSlots = ['早上', '中午', '晚上', '睡前']
+const slotKeyMap = {
+  早上: 'MORNING',
+  中午: 'NOON',
+  晚上: 'EVENING',
+  睡前: 'BEDTIME',
+}
 const usageOptions = [
-  { label: '無', value: 'none' },
-  { label: '飯前', value: 'before' },
-  { label: '飯後', value: 'after' },
-  { label: '睡前', value: 'bedtime' },
+  { label: '無', value: 'NONE' },
+  { label: '餐前', value: 'BEFORE_MEAL' },
+  { label: '餐後', value: 'AFTER_MEAL' },
+  { label: '不拘', value: 'ANY' },
+  { label: '睡前', value: 'BEDTIME' },
 ]
 const quantityOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
-  if (slot === '晚上') {
-    return [{ label: '無', value: 'none' }, { label: '睡前', value: 'bedtime' }]
+  if (slot === '睡前') {
+    return usageOptions.filter((opt) => ['NONE', 'BEDTIME'].includes(opt.value))
   }
-  return usageOptions
+  return usageOptions.filter((opt) => opt.value !== 'BEDTIME')
 }
-const emit = defineEmits(['closeCardDetail'])
+
+const medicineStore = useMedicineStore()
+const { detail } = storeToRefs(medicineStore)
+const { fetchDetail } = medicineStore
+
+const showEditCard = ref(false)
+const openEditCard = () => {
+  showEditCard.value = true
+}
+
+const handleEditSaved = () => {
+  showEditCard.value = false
+  closeCardDetail()
+}
+
+const handleEditDeleted = () => {
+  showEditCard.value = false
+  closeCardDetail()
+}
 
 const closeCardDetail = () => {
   emit('closeCardDetail')
@@ -27,7 +61,7 @@ const closeCardDetail = () => {
 
 const onOverlayClick = () => {
   closeCardDetail()
-  }
+}
 
 const onKeydown = (event) => {
   if (event.key === 'Escape') {
@@ -35,15 +69,41 @@ const onKeydown = (event) => {
   }
 }
 
-const showEditCard = ref(false)
-const openEditCard = () => {
-  showEditCard.value = true
-}
+const detailData = computed(() => detail.value || {})
 
+const scheduleBySlot = computed(() => {
+  const schedule = detailData.value.schedule || {}
+  return timeSlots.map((slot) => {
+    const key = slotKeyMap[slot]
+    const entry = schedule?.[key] || {}
+    return {
+      slot,
+      instruction: entry.instruction || 'NONE',
+      doseQty: entry.dose_qty ?? 0,
+    }
+  })
+})
+
+onMounted(() => {
+  fetchDetail(medicationId)
+})
+
+watch(
+  () => medicationId,
+  (nextId) => {
+    if (nextId) fetchDetail(nextId)
+  }
+)
 </script>
 
 <template>
-  <editMedicineCard v-if="showEditCard" @closeEditCard="showEditCard = false" />
+  <editMedicineCard
+    v-if="showEditCard"
+    :medicationId="medicationId"
+    @saved="handleEditSaved"
+    @deleted="handleEditDeleted"
+    @closeEditCard="showEditCard = false"
+  />
   <div
     v-if="!showEditCard"
     class="medicine-modal__overlay"
@@ -62,50 +122,49 @@ const openEditCard = () => {
             <div class="medicine-modal__image-form">
               <div class="form-group">
                 <label for="medicine-name">藥品名</label>
-                <input id="medicine-name" type="text" placeholder="例如：阿斯匹靈" />
+                <input id="medicine-name" type="text" :value="detailData.name || ''" readonly />
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label for="expiration-date">有效期限</label>
-                  <input id="expiration-date" type="date" />
+                  <input id="expiration-date" type="date" :value="detailData.expiryDate || ''" readonly />
                 </div>
                 <div class="form-group">
                   <label for="quantity">藥品數量</label>
-                  <input id="quantity" type="text" />
+                  <input id="quantity" type="text" :value="detailData.stockQty ?? ''" readonly />
                 </div>
               </div>
             </div>
-            <input type="file" id="medicine-image" class="medicine-modal__file" />
-            <label class="medicine-modal__image-drop" for="medicine-image">
-              <img src="@/assets/images/camera.svg" alt="camera icon" />
-              點擊或拖曳上傳藥品照片
+            <label class="medicine-modal__image-drop">
+              <img v-if="detailData.image" :src="detailData.image" alt="medicine" class="input-img" />
+              <img v-else src="@/assets/images/camera.svg" alt="camera icon" />
+              <span v-if="!detailData.image">尚未上傳藥品照片</span>
             </label>
           </section>
 
           <section class="medicine-modal__form">
             <div class="form-group">
               <label for="notes">備註</label>
-              <input id="notes" type="text" />
+              <input id="notes" type="text" :value="detailData.note || ''" readonly />
             </div>
-
 
             <div class="medicine-modal__schedule">
               <div class="schedule__head"></div>
               <div class="schedule__head">醫囑用法</div>
               <div class="schedule__head">服用數量</div>
 
-              <template v-for="slot in timeSlots" :key="slot">
-                <div class="schedule__row-label">{{ slot }}</div>
-                <select class="schedule__select">
+              <template v-for="row in scheduleBySlot" :key="row.slot">
+                <div class="schedule__row-label">{{ row.slot }}</div>
+                <select class="schedule__select" :value="row.instruction" disabled>
                   <option
-                    v-for="opt in usageOptionsBySlot(slot)"
+                    v-for="opt in usageOptionsBySlot(row.slot)"
                     :key="opt.value"
                     :value="opt.value"
                   >
                     {{ opt.label }}
                   </option>
                 </select>
-                <select class="schedule__select">
+                <select class="schedule__select" :value="row.doseQty" disabled>
                   <option v-for="qty in quantityOptions" :key="qty" :value="qty">
                     {{ qty }}
                   </option>
@@ -116,12 +175,11 @@ const openEditCard = () => {
         </div>
 
         <div class="medicine-modal__footer">
-          <button class="btn-primary" type="button" @click="openEditCard">修改</button>
+          <button class="btn-primary" type="button" @click="openEditCard">編輯</button>
         </div>
       </form>
     </div>
   </div>
-  
 </template>
 
 <style lang="scss" scoped>
@@ -202,10 +260,6 @@ const openEditCard = () => {
           display: grid;
           gap: 8px;
 
-          .medicine-modal__file {
-            display: none;
-          }
-
           .medicine-modal__image-drop {
             width: 100%;
             max-width: 520px;
@@ -214,11 +268,20 @@ const openEditCard = () => {
             border: 1px solid $primaryDark;
             background-color: $primaryLight;
             display: flex;
+            flex-direction: column;
+            gap: 8px;
             align-items: center;
             justify-content: center;
             text-align: center;
             color: $primaryDark;
             @include body3;
+
+            .input-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              border-radius: $radius_sm;
+            }
           }
 
           .medicine-modal__image-form {
@@ -230,7 +293,6 @@ const openEditCard = () => {
         .medicine-modal__form {
           display: grid;
           gap: 16px;
-
 
           .medicine-modal__schedule {
             display: grid;
@@ -266,7 +328,7 @@ const openEditCard = () => {
         justify-content: center;
 
         .btn-primary {
-          flex: .3;
+          flex: 0.3;
           background: $accent;
           color: $white;
           padding: 8px;

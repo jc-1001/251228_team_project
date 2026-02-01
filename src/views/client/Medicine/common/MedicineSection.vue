@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import MedicineCarousel from '@/views/client/Medicine/common/MedicineCarousel.vue'
 import MedicineCardModal from '@/views/client/Medicine/common/MedicineCardModal.vue'
 import MedicineDetails from '@/views/client/Medicine/common/MedicineDetails.vue'
@@ -7,30 +7,35 @@ import { ref, onMounted } from 'vue'
 import { useMedicineStore } from '@/stores/medicine.js'
 
 const medicineStore = useMedicineStore()
-const { items } = storeToRefs(medicineStore)
+const { medicines } = storeToRefs(medicineStore)
 const { fetchItems } = medicineStore
 
 onMounted(() => {
-  fetchItems()
+  fetchItems('藥品')
 })
 
 const showModal = ref(false)
 const showCardDetail = ref(false)
+const selectedId = ref(null)
+
+const handleShowDetail = (item) => {
+  selectedId.value = item?.id ?? null
+  showCardDetail.value = true
+}
 </script>
 
 <template>
-  <MedicineCardModal v-if="showModal" @closeModal="showModal = false" />
-  <MedicineDetails v-if="showCardDetail" @closeCardDetail="showCardDetail = false" />
-  <MedicineCarousel
-    title="我的藥品"
-    :items="items"
-    @createClick="showModal = true"
-    @showCardDetail="showCardDetail = true"
+  <MedicineCardModal v-if="showModal" category="藥品" @closeModal="showModal = false" />
+  <MedicineDetails
+    v-if="showCardDetail"
+    :medicationId="selectedId"
+    @closeCardDetail="showCardDetail = false"
   />
   <MedicineCarousel
-    title="我的保健品"
-    :items="items"
+    title="我的藥品"
+    :items="medicines"
+    variant="medicine"
     @createClick="showModal = true"
-    @showCardDetail="showCardDetail = true"
+    @showCardDetail="handleShowDetail"
   />
 </template>

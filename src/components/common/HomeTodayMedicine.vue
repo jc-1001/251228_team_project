@@ -1,29 +1,56 @@
-<script setup>
-
+﻿<script setup>
 import { computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMedicineStore } from '@/stores/medicine.js'
 
 const medicineStore = useMedicineStore()
-const { items } = storeToRefs(medicineStore)
-const { fetchItems } = medicineStore
+const { todaySchedule, isLoading } = storeToRefs(medicineStore)
+const { fetchTodaySchedule } = medicineStore
 
-onMounted(() => {
-  fetchItems()
-})
+const timeSlotLabel = (slot) => {
+  const map = {
+    MORNING: '早上',
+    NOON: '中午',
+    AFTERNOON: '下午',
+    EVENING: '晚上',
+    BEDTIME: '睡前',
+  }
+  return map[slot] || slot
+}
+
+const instructionLabel = (instruction) => {
+  const map = {
+    BEFORE_MEAL: '餐前',
+    AFTER_MEAL: '餐後',
+    ANY: '不拘',
+    BEDTIME: '睡前',
+  }
+  return map[instruction] || instruction
+}
+
+const timeOrder = {
+  MORNING: 1,
+  NOON: 2,
+  EVENING: 3,
+  BEDTIME: 4,
+}
 
 const viewItems = computed(() =>
-  items.value.map((item) => ({
-    id: item.id,
-    name: item.name,
-    image: item.image,
-    timeLabel: item.timeCourse[0],
-    tags: item.oneTime,
-    eatTime: [item.eatTimes],
-    
-  }))
+  [...todaySchedule.value]
+    .sort((a, b) => (timeOrder[a.time_slot] ?? 99) - (timeOrder[b.time_slot] ?? 99))
+    .map((item, index) => ({
+      id: `${item.medication_id}-${item.time_slot}-${index}`,
+      name: item.medication_name,
+      image: item.image,
+      timeLabel: timeSlotLabel(item.time_slot),
+      instruction: instructionLabel(item.instruction),
+      doseQty: item.dose_qty ?? '',
+    }))
 )
 
+onMounted(() => {
+  fetchTodaySchedule()
+})
 </script>
 
 <template>
@@ -31,22 +58,20 @@ const viewItems = computed(() =>
     <div class="today-medicine__list">
       <article v-for="item in viewItems" :key="item.id" class="today-medicine__card">
         <div class="today-medicine__thumb">
-          <img :src="item.image" alt="" />
+          <img v-if="item.image" :src="item.image" alt="" />
+          <div v-else class="today-medicine__thumb--empty">無圖片</div>
         </div>
         <div class="today-medicine__content">
           <div class="today-medicine__name">{{ item.name }}</div>
           <div class="today-medicine__tags">
-            <span v-for="time in item.eatTime" :key="time" class="today-medicine__tag">
-              {{ time }}
-            </span>
-            <span v-for="tag in item.tags" :key="tag" class="today-medicine__tag">
-              {{ tag }}份
-            </span>
-            
+            <span class="today-medicine__tag">{{ item.instruction }}</span>
+            <span class="today-medicine__tag">一次 {{ item.doseQty }} 份</span>
           </div>
         </div>
         <div class="today-medicine__time">{{ item.timeLabel }}</div>
       </article>
+      <p v-if="!isLoading && !viewItems.length" class="today-medicine__empty">目前沒有今日用藥</p>
+      <p v-else-if="isLoading" class="today-medicine__empty">讀取中...</p>
     </div>
   </section>
 </template>
@@ -56,7 +81,8 @@ const viewItems = computed(() =>
   background: $white;
   border-radius: $radius_md;
   box-shadow: $shadow;
-  padding: 0 32px;
+  padding: 0 32px 16px;
+  height: 100%;
 
   .today-medicine__list {
     display: grid;
@@ -71,6 +97,7 @@ const viewItems = computed(() =>
     border: 1px solid $gray;
     border-radius: $radius_md;
     background: $white;
+    padding: 12px 16px;
   }
 
   .today-medicine__thumb {
@@ -79,6 +106,8 @@ const viewItems = computed(() =>
     border-radius: $radius_sm;
     overflow: hidden;
     background: $grayLight;
+    display: grid;
+    place-items: center;
 
     img {
       width: 100%;
@@ -86,6 +115,11 @@ const viewItems = computed(() =>
       object-fit: cover;
       display: block;
     }
+  }
+
+  .today-medicine__thumb--empty {
+    @include body3;
+    color: $grayDark;
   }
 
   .today-medicine__content {
@@ -119,9 +153,14 @@ const viewItems = computed(() =>
     color: $primaryDark;
     border-radius: $radius_sm;
     padding: 8px;
-    margin: 8px 24px 0 0;
+    margin: 8px 0 0 0;
     @include body1(true);
     font-size: 12px;
+  }
+
+  .today-medicine__empty {
+    @include body3;
+    color: $grayDark;
   }
 }
 </style>
