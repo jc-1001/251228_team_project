@@ -1,26 +1,34 @@
 <script setup>
-import { ref, Teleport } from 'vue'
+import { ref, Teleport, onMounted, computed } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 // import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import ShowAnnouncement from '@/components/common/ShowAnnouncement.vue'
 
 // 引入燈箱元件
 // 快速紀錄
-import ConfirmActionModal from '@/components/common/client/modals/ConfirmActionModal.vue'
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
+import ErrorMessageModal from '@/components/common/client/modals/ErrorMessageModal.vue'
 import NewMedicineModals from '@/components/common/client/modals/NewMedicineModals.vue'
 import MetricsInputForm from '@/components/common/client/modals/MetricsInputForm.vue'
 import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
+// 引入API
+import { publicApi } from '@/utils/publicApi'
 
+// 共用燈箱初始化
+const successModal = ref(null)
+const errorModal = ref(null)
+// const errorApiMsg = ref('')
 // 六個燈箱初始化
 const isModalOpen = ref(false)
 const selectedData = ref({
   time: '2026-01-17',
   inputLabel: '使用者帳號',
 })
-
+const userHeight = ref(0)
 //飲食紀錄相關
 const todayDate = ref(dayjs().format('YYYY-MM-DD'))
 // 處理儲存後的動作
@@ -92,7 +100,7 @@ const openPopup = (item) => {
     isMetricsModalOpen.value = true
     return
   }
-  
+
   popupInfo.value = item
 }
 // 📄身體數值
@@ -112,24 +120,149 @@ const closeMetricsPopup = () => {
   isMetricsModalOpen.value = false
 }
 
-const handleMetricSave = (payload) => {
-  console.log('from MetricsInputForm:', payload)
-  // 之後可以呼叫 API / 寫入 json / 更新 todayLog 
+// 抓取最新身體數值串接API
+const fetchTodayStats = async () => {
+  try {
+    const res = await publicApi.get('home_modal/get_latest_metrics.php')
+    // if (!res.ok) throw new Error('網路回應不正確')
+    const data = res.data
+
+    // 如果 PHP 傳回的是包含錯誤訊息的 JSON
+    if (data.err) {
+      console.error('PHP 錯誤:', data.err)
+      return
+    }
+
+    updateHomeStats(data)
+  } catch (error) {
+    console.error('抓取資料失敗:', error)
+  }
 }
+
+const handleMetricSave = async (formData) => {
+  // 既然子組件已經 fetch 成功才會 emit('save')，
+  // 這裡我們只需要處理 UI 回饋即可
+
+  // 1. 關閉輸入彈窗
+  closeMetricsPopup()
+
+  // 2. 顯示成功燈箱
+  if (successModal.value) {
+    successModal.value.show()
+  }
+
+  // 3. 重新抓取首頁最新數值，讓卡片變色
+  await fetchTodayStats()
+}
+
 // 📄身體數值
 
 const closePopup = () => {
   popupInfo.value = null
 }
 import HeaderImage from '@/assets/images/HomeView-header.svg'
+// import { type } from 'node:os'
+// import { text } from 'node:stream/consumers'
+
+// 數值顏色判斷邏輯決定statusType樣式
+const getStatus = (name, value, userHeight) => {
+  if (value === '--' || value === null) return { type: 'none', text: '尚未量測' }
+
+  const num = parseFloat(value)
+  switch (name) {
+    case '體重':
+      if (!userHeight || userHeight <= 0) return { type: 'good', text: '已記錄' }
+
+      // 計算 BMI
+      const heightInMeters = userHeight / 100
+      const bmi = num / (heightInMeters * heightInMeters)
+
+      if (bmi >= 24) return { type: 'danger', text: `BMI: ${bmi.toFixed(1)} 偏重` }
+      if (bmi < 18.5) return { type: 'low', text: `BMI: ${bmi.toFixed(1)} 過輕` }
+      return { type: 'good', text: `BMI: ${bmi.toFixed(1)} 正常` }
+    case '血氧':
+      if (num < 90) return { type: 'danger', text: '含氧不足' }
+      if (num < 95) return { type: 'low', text: '含氧偏低' }
+      return { type: 'good', text: '含氧量佳' }
+    case '血壓':
+      const sys = parseInt(value.split('/')[0])
+      if (sys >= 140) return { type: 'danger', text: '血壓偏高' }
+      if (sys < 90) return { type: 'low', text: '血壓偏低' }
+      return { type: 'good', text: '血壓正常' }
+    case '心律':
+      if (num > 100) return { type: 'danger', text: '心律過快' }
+      if (num < 60) return { type: 'low', text: '心律偏低' }
+      return { type: 'good', text: '心律正常' }
+    case '血糖':
+      // 血糖簡易判斷（空腹）：>126 偏高
+      if (num >= 126) return { type: 'danger', text: '血糖偏高' }
+      if (num < 70) return { type: 'low', text: '血糖偏低' }
+      return { type: 'good', text: '血糖正常' }
+    // 其他情形都到這裡
+    default:
+      return { type: 'good', text: '已記錄' }
+  }
+}
+// 當API抓完一筆資料以後更新今日狀態
+const updateHomeStats = (newData) => {
+  if (newData['身高']) {
+    userHeight.value = parseFloat(newData['身高'])
+  }
+  todayLog.value = todayLog.value.map((item) => {
+    const latest = newData[item.name] //API 回傳格式對應時
+    const status = getStatus(item.name, latest || '--', userHeight.value)
+    return {
+      ...item,
+      num: latest || '--',
+      statusType: status.type,
+      statusText: status.text,
+    }
+  })
+}
+
+// 串接API(GET)抓會員的姓以及性別(header)
+const memberInfo = ref({ lastName: '...', title: '...' })
+// 早安/午安/晚安 判斷
+const greetingTitle = computed(() => {
+  const hour = new Date().getHours()
+  let greet = '早安'
+  if (hour >= 12 && hour < 18) greet = '午安'
+  else if (hour >= 18) greet = '晚安'
+
+  // 整句回傳
+  // 早安，陳小姐！
+  return `${greet} ， ${memberInfo.value.lastName}${memberInfo.value.title}！ `
+})
+
+const fetchMemberHeader = async () => {
+  try {
+    const res = await publicApi.get('home_modal/get_member_header.php')
+    memberInfo.value = res.data
+  } catch (error) {
+    console.log('抓取會員資料失敗', error)
+  }
+}
+
+// 生命週期
+onMounted(() => {
+  fetchTodayStats()
+  fetchMemberHeader()
+})
 </script>
 <template>
+  <SuccessMessageModal ref="successModal" title="儲存成功" />
+  <ErrorMessageModal ref="errorModal" title="儲存失敗" />
   <div class="home-container">
-    <TheHeader title="早安，陳小姐！" subtitle="今天感覺如何？別忘了量血壓喔～" :imageSrc= "HeaderImage" />
+    <TheHeader
+      :title="greetingTitle"
+      subtitle="今天感覺如何？別忘了量血壓喔～"
+      :imageSrc="HeaderImage"
+    />
 
     <router-view />
     <!-- 左欄 -->
     <main>
+      <ShowAnnouncement />
       <section class="left-block">
         <!-- 快速紀錄 -->
         <div class="today-button">
@@ -137,48 +270,30 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
             <p>快速記錄</p>
           </div>
           <div class="buttonlist">
-            <button v-for="item in fastButton" :key="item.name" :class="['record-card', `is-${item.type}`]"
-              @click="openPopup(item)">
-              <span class="material-symbols-rounded">{{ item.icon }}</span>
+            <button
+              v-for="item in fastButton"
+              :key="item.name"
+              :class="['record-card', `is-${item.type}`]"
+              @click="openPopup(item)"
+            >
+              <AppIcon :name="item.icon" size="18" />
               <span class="button-text">{{ item.name }}</span>
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-
-              <!-- <HomeCommonModal
-=======
-              <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
-                @update:modelValue="closePopup" @close="closePopup" />
-              <HomeCommonModal
-                :modelValue="true"
-                :title="`${popupInfo.name}`"
-                :data="popupInfo"
-                @update:modelValue="closePopup"
-                @close="closePopup"
-              /> -->
-              <NewDietaryRecord 
+              <NewDietaryRecord
                 v-if="popupInfo.type === 'diet'"
-                :isOpen="true" 
+                :isOpen="true"
                 :date="todayDate"
                 @close="closePopup"
                 @submit="handleDietSubmit"
               />
-              <!-- <SuccessMessageModal ref="productModal" title="儲存成功" /> -->
-              <!-- <ConfirmActionModal
-                ref="productModal"
-                title="確定要下架此商品嗎？"
-                confirmText="商品已成功下架"
-                denyText="商品維持上架狀態"
-                icon="warning"
-                @confirmed="handleProductLogic"
+              <NewMedicineModals
+                v-if="popupInfo.type === 'medicine'"
                 :info="popupInfo"
                 @close="closePopup"
-              /> -->
-              <NewMedicineModals
-               v-if="popupInfo.type === 'medicine'"
-                :info="popupInfo" 
-                @close="closePopup"
-                :data = "todayDate" />
+                :data="todayDate"
+              />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -186,7 +301,11 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
               <!-- <Popup1 :info="popupInfo" @close="closePopup" /> -->
             </Teleport>
             <Teleport v-if="isMetricsModalOpen" to="body">
-              <MetricsInputForm :activeMetricKey="metricsKey" @close="closeMetricsPopup" @save="handleMetricSave" />
+              <MetricsInputForm
+                :activeMetricKey="metricsKey"
+                @close="closeMetricsPopup"
+                @save="handleMetricSave"
+              />
             </Teleport>
           </div>
         </div>
@@ -196,9 +315,13 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
             <p>今日狀態</p>
           </div>
           <div class="todayLog-cardlist">
-            <div :class="['todayLog-card', `status-${item2.statusType}`]" v-for="item2 in todayLog" :key="item2.name">
+            <div
+              :class="['todayLog-card', `status-${item2.statusType}`]"
+              v-for="item2 in todayLog"
+              :key="item2.name"
+            >
               <div class="card-icon">
-                <span class="material-symbols-rounded">{{ item2.icon }}</span>
+                <AppIcon :name="item2.icon" size="20" />
               </div>
 
               <div class="card-title">
@@ -208,14 +331,22 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
               <div class="card-body">
                 <span class="log-num">{{ item2.num }}</span>
                 <span class="unit">{{ item2.unit }}</span>
+                <small
+                  v-if="item2.name === '體重' && userHeight > 0"
+                  style="font-size: 12px; color: #999; margin-left: 5px"
+                >
+                  ({{ userHeight }}cm)
+                </small>
               </div>
 
               <div class="state-footer">
                 <div class="state-badge">{{ item2.statusText }}</div>
-                <span v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
-                  class="material-symbols-rounded warning-icon">
-                  {{ item2.statusType === 'danger' ? 'trending_up' : 'trending_down' }}
-                </span>
+                <AppIcon
+                  v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
+                  :name="item2.statusType === 'danger' ? 'trending_up' : 'trending_down'"
+                  size="18"
+                  class="warning-icon"
+                />
               </div>
             </div>
           </div>
@@ -231,7 +362,7 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
         </div>
         <div class="med-stock">
           <div class="block-title">
-            <span class="material-symbols-rounded"></span>
+            <AppIcon name="warning" size="20" style="margin-right: 5px" />
             <p>藥物庫存警示</p>
           </div>
           <HomeReserveMedicine />
@@ -374,10 +505,10 @@ button {
     display: flex;
     justify-content: end;
 
-    .material-symbols-rounded {
-      @include subtitle2(true);
-      font-size: 16px; //card 要一起更動、大小字體一致
-    }
+    // .material-symbols-rounded {
+    //   @include subtitle2(true);
+    //   font-size: 16px; //card 要一起更動、大小字體一致
+    // }
   }
 
   .card-body {
@@ -399,9 +530,7 @@ button {
 
   // 狀態：正常 (good)
   &.status-good {
-    .material-symbols-rounded {
-      color: $primaryDark;
-    }
+    color: $primaryDark;
 
     // 讓右上角 icon 變色
     .state-badge {
@@ -417,10 +546,7 @@ button {
   &.status-danger {
     border: 1px solid #ff5252;
     background-color: $white;
-
-    .material-symbols-rounded {
-      color: $accent;
-    }
+    color: $accent;
 
     .state-badge {
       padding: 5px 12px;
@@ -440,9 +566,7 @@ button {
     border: 1px solid #518fe7;
     background-color: white;
 
-    .material-symbols-rounded {
-      color: #518fe7;
-    }
+    color: #518fe7;
 
     .state-badge {
       padding: 5px 12px;
@@ -459,14 +583,7 @@ button {
 
   // 狀態：尚未測量 (none)
   &.status-none {
-
-    // .log-num,
-    // .unit {
-    //   color: #9e9e9e;
-    // }
-    .material-symbols-rounded {
-      color: $accent;
-    }
+    color: $accent;
 
     .state-badge {
       padding: 5px 12px;

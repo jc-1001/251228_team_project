@@ -7,6 +7,15 @@ import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 import { useToast } from '@/composable/useCartToast'
 
+// icon
+import orderIcon from '@/assets/images/shop/icon/order.svg'
+import inventoryIcon from '@/assets/images/shop/icon/inventory.svg'
+import shipping from '@/assets/images/shop/icon/shipping.svg'
+import checkIcon from '@/assets/images/shop/icon/order_check.svg'
+import personIcon from '@/assets/images/shop/icon/person.svg'
+import creditIcon from '@/assets/images/shop/icon/credit_card.svg'
+import shoppingIcon from '@/assets/images/shop/icon/shopping_cart.svg'
+
 const route = useRoute()
 const router = useRouter()
 const orderStore = useOrderStore()
@@ -23,10 +32,10 @@ const order = computed(()=>{
 
 // 訂單進度
 const steps = [
-  { label: '訂單成立', icon: 'assignment' },      
-  { label: '備貨中',   icon: 'inventory_2' },     
-  { label: '配送中',   icon: 'local_shipping' },  
-  { label: '已完成',   icon: 'check_circle' }
+  { label: '訂單成立', icon: `${orderIcon}` },      
+  { label: '備貨中',   icon: `${inventoryIcon}` },     
+  { label: '配送中',   icon: `${shipping}` },  
+  { label: '已完成',   icon: `${checkIcon}` }
 ]
 const currentStep = computed(()=>{
   if(!order.value) return 0
@@ -107,27 +116,40 @@ onMounted(()=>{
         </div>
         <div v-for="(step, index) in steps" :key="step.label" class="step_item" :class="{ 'active' : (index + 1) <= currentStep }">
           <div class="circle">
-            <span class="material-symbols-rounded step_icon">{{ step.icon }}</span>
+            <span class="step_icon">
+              <img :src="step.icon">
+            </span>
           </div>
           <p class="label">{{ step.label }}</p>
         </div>
       </div>
       <div class="info_grid">
         <section class="info_card">
-          <h4 class="title"><span class="material-symbols-rounded">person</span>收件資訊</h4>
+          <h4 class="title">
+            <span class="icon">
+              <img :src="personIcon">
+            </span>收件資訊
+          </h4>
           <p><strong>收件人 </strong>{{ order.user.name }}</p>
           <p><strong>電話 </strong>{{ order.user.phone }}</p>
           <p><strong>地址 </strong>{{ order.user.address }}</p>
         </section>
         <section class="info_card">
-          <h4 class="title"><span class="material-symbols-rounded">credit_card</span>付款資訊</h4>
+          <h4 class="title">
+            <span class="icon">
+              <img :src="creditIcon">
+            </span>付款資訊</h4>
           <p><strong>方式 </strong>{{ order.paymentType === 'credit'? '信用卡付款':'ATM轉帳' }}</p>
           <p v-if="order.paymentType === 'credit'"><strong>卡號 </strong>{{ '*********'+(order.creditInfo.cardNumber).slice(-4) }}</p>
           <p><strong>發票 </strong>{{ invoiceMap[order.invoiceType] || '個人發票' }}</p>
         </section>
       </div>
       <section class="items_section">
-        <h4 class="title"><span class="material-symbols-rounded">shopping_bag</span>商品明細</h4>
+        <h4 class="title">
+          <span class="icon">
+            <img :src="shoppingIcon">
+          </span>商品明細
+        </h4>
         <ul class="item_list">
           <li class="item_row" v-for="item in order.items" :key="item.id">
             <img :src="item.image" alt="item.title">
@@ -297,9 +319,15 @@ onMounted(()=>{
       border: 1px solid $gray;
       border-radius: $radius_md;
       h4.title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
         margin-bottom: 6px;
         @include body2(true);
         color: $primaryDark;
+        .icon {
+          width: 20px;
+        }
       }
       strong {
         margin-right: 8px;
@@ -317,8 +345,14 @@ onMounted(()=>{
     border: 1px solid $gray;
     border-radius: $radius_md;
     h4.title {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       @include body2(true);
       color: $primaryDark;
+      .icon {
+        width: 20px;
+      }
     }
     .item_list {
       display: flex;

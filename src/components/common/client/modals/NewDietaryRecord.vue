@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 const props = defineProps({
     isOpen: Boolean,
     date: String
@@ -7,24 +7,42 @@ const props = defineProps({
 const emit = defineEmits(['close', 'submit']);
 // 初始狀態
 const formData = ref({
-    type: '早餐',
-    note: '',
-    image: null,
+    meal_type: '早餐',
+    description: '',
+    image_file: null,
     preview: null,
-    time: ''
+    meal_time: ''
 });
 // 選項
 const mealTypes = ['早餐', '午餐', '晚餐'];
 // 圖片上傳
 const handleImageUpload = (event) => {
     const file = event.target.files?.[0] || event.dataTransfer?.files?.[0];
-    if (file) {
-        formData.value.image = file;
-        formData.value.preview = URL.createObjectURL(file);
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+        alert("格式錯誤，請上傳圖片檔案。");
+        if (event.target.value) event.target.value = ''; 
+        return;
     }
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        alert("請上傳小於5MB的檔案。");
+        return;
+    }
+    if (formData.value.preview) {
+            URL.revokeObjectURL(formData.value.preview);
+    }
+    formData.value.image = file;
+    formData.value.preview = URL.createObjectURL(file);
 };
 const close = () => {
-    formData.value = { type: '早餐', note: '', image: null, preview: null, time: '' };
+    formData.value = {
+        meal_type: '早餐',
+        description: '',
+        image_file: null,
+        preview: null,
+        meal_time: ''
+    };
     emit('close');
 };
 const submitForm = () => {
@@ -33,12 +51,20 @@ const submitForm = () => {
         alert("請先上傳照片再儲存！");
         return;
     }
+    // 驗證是否自訂時間
+    if (formData.value.type === 'custom' && !formData.value.time) {
+    alert("請選擇自訂的時間點！");
+    return;
+}
     const displayType = (formData.value.type === 'custom') 
         ? (formData.value.time || '未定時') 
         : formData.value.type;
     emit('submit', { 
-        ...formData.value, 
-        type: displayType,
+        type: displayType, 
+        note: formData.value.note,
+        preview: formData.value.preview,
+        image_file: formData.value.image_file,
+        time: formData.value.meal_time
     });
     close();
 };

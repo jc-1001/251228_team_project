@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
 const profileItem = ref([
   { name: '個人資料', icon: 'person', path: '/profile' },
   { name: '我的積分', icon: 'stars', path: '/mypoint' },
@@ -13,10 +14,9 @@ defineProps({
   },
   showTitle: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 })
-
 </script>
 <template>
   <main class="profile-layout">
@@ -30,7 +30,7 @@ defineProps({
 
       <nav class="menu-list">
         <RouterLink v-for="item in profileItem" :key="item.name" :to="item.path" class="menu-item">
-          <span class="material-symbols-rounded">{{ item.icon }}</span>
+          <AppIcon :name="item.icon" size="20" class="menu-icon" />
           <span class="menu_name">{{ item.name }}</span>
         </RouterLink>
       </nav>
@@ -39,11 +39,11 @@ defineProps({
     </aside>
 
     <section class="content-area">
-      <template  v-if="showTitle">
+      <template v-if="showTitle">
         <h3 class="content-title">
           {{ title }}
         </h3>
-        <hr style="margin: 16px 0" class="line"/>
+        <hr style="margin: 16px 0" class="line" />
       </template>
 
       <slot></slot>
@@ -106,6 +106,10 @@ defineProps({
         color: $primaryDark;
         border-radius: 8px;
         transition: all 0.3s;
+        .menu-icon {
+          color: inherit;
+          transition: color 0.3s ease;
+        }
 
         &:hover,
         &.router-link-active {
@@ -175,7 +179,7 @@ defineProps({
           border-radius: 50px;
           white-space: nowrap;
 
-          .material-symbols-rounded {
+          .menu-icon {
             display: none;
           }
 

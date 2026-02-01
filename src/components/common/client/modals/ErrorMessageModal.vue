@@ -10,19 +10,23 @@ const props = defineProps({
 // 定義 emit，讓父層知道使用者最後選了什麼
 const emit = defineEmits(['confirmed'])
 
-Swal.fire({
-  title: props.title,
-  icon: error,
-  confirmButtonText: '確定',
-  showCloseButton: true,
-  buttonsStyling: false,
-  customClass: {
-    popup: 'my-custom-bg',
-    title: 'my-custom-title',
-    icon: 'my-custom-icon',
-    confirmButton: 'my-confirm-btn', // 確定按鈕
-  },
-})
+const show = () => {
+  Swal.fire({
+    title: props.title,
+    icon: 'error',
+    confirmButtonText: '確定',
+    showCloseButton: true,
+    buttonsStyling: false,
+    customClass: {
+      popup: 'my-custom-bg',
+      title: 'my-custom-title',
+      icon: 'my-custom-icon',
+      confirmButton: 'my-deny-btn', // 確定按鈕
+    },
+  })
+}
+// !!!暴露 show 方法給父層
+defineExpose({ show })
 </script>
 <template></template>
 <style lang="scss">

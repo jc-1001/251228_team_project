@@ -3,6 +3,12 @@ import { ref } from 'vue'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 
+// icon
+import coinIcon from '@/assets/images/shop/icon/coin.svg'
+import touchIcon from '@/assets/images/shop/icon/touch.svg'
+import touchIconWhite from '@/assets/images/shop/icon/touch_white.svg'
+import check from '@/assets/images/shop/icon/order_check.svg'
+
 // 積分資料設定
 const currentPoints = ref(1250)
 const isSigned = ref(false)
@@ -136,7 +142,9 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
           </div>
         </div>
         <div class="banner_icon" ref="coinTargetRef">
-          <span class="material-symbols-rounded icon">monetization_on</span>
+          <span class="icon">
+            <img :src="coinIcon">
+          </span>
         </div>
       </div>
 
@@ -148,8 +156,10 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
         </div>
 
         <button ref="checkInBtnRef" class="btn_checkin" :class="{ disabled: isSigned }" @click="handleCheckIn">
-          <span class="material-symbols-rounded">
-            {{ isSigned ? 'check_circle' : 'touch_app' }}
+          <span class="icon">
+            <img :src="touchIcon" v-if="!isSigned" class="icon_default">
+            <img :src="touchIconWhite" v-if="!isSigned" class="icon_hover">
+            <img :src="check" v-if="isSigned">
           </span>
           {{ isSigned ? '已完成簽到' : '立即簽到' }}
         </button>
@@ -203,6 +213,9 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
   background: $linear2;
   border-radius: $radius_md;
   box-shadow: $shadow;
+  @media screen and (max-width: 576px) {
+    padding: 24px 24px;
+  }
 
   .banner_content {
     .label {
@@ -227,8 +240,11 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
     }
   }
 
-  .banner_icon .icon {
-    font-size: 64px;
+  .banner_icon .icon img {
+    width: 80px;
+    @media screen and (max-width: 576px) {
+      width: 54px;
+    }
   }
 }
 
@@ -269,6 +285,20 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
     box-shadow: $shadow;
     cursor: pointer;
     transition: all .3s;
+    .icon {
+      display: flex;
+      .icon_hover {
+        display: none;
+      }
+    }
+    &:not(.disabled):hover {
+      .icon_hover {
+        display: block;
+      }
+      .icon_default {
+        display: none;
+      }
+    }
 
     &:active,
     &:hover {
