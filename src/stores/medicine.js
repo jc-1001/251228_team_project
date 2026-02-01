@@ -1,31 +1,31 @@
 ﻿import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || ''
-const API_URL = `${API_ORIGIN}/unicare_api/medicine/get_member_medications.php`
-const CREATE_URL = `${API_ORIGIN}/unicare_api/medicine/create_medication.php`
-const UPDATE_URL = `${API_ORIGIN}/unicare_api/medicine/update_medication.php`
-const DETAIL_URL = `${API_ORIGIN}/unicare_api/medicine/get_medication_detail.php`
-const DELETE_URL = `${API_ORIGIN}/unicare_api/medicine/delete_medication.php`
-const LOW_STOCK_URL = `${API_ORIGIN}/unicare_api/medicine/get_low_stock_medications.php`
-const TODAY_SCHEDULE_URL = `${API_ORIGIN}/unicare_api/medicine/get_today_schedule.php`
-const MED_SCHEDULE_URL = `${API_ORIGIN}/unicare_api/medicine/get_medication_schedule.php`
-const CREATE_RECORDS_URL = `${API_ORIGIN}/unicare_api/medicine/create_medication_records.php`
+const API_DOMAIN = (import.meta.env.VITE_API_DOMAIN || '').replace(/\/$/, '')
+const API_URL = `${API_DOMAIN}/medicine/get_member_medications.php`
+const CREATE_URL = `${API_DOMAIN}/medicine/create_medication.php`
+const UPDATE_URL = `${API_DOMAIN}/medicine/update_medication.php`
+const DETAIL_URL = `${API_DOMAIN}/medicine/get_medication_detail.php`
+const DELETE_URL = `${API_DOMAIN}/medicine/delete_medication.php`
+const LOW_STOCK_URL = `${API_DOMAIN}/medicine/get_low_stock_medications.php`
+const TODAY_SCHEDULE_URL = `${API_DOMAIN}/medicine/get_today_schedule.php`
+const MED_SCHEDULE_URL = `${API_DOMAIN}/medicine/get_medication_schedule.php`
+const CREATE_RECORDS_URL = `${API_DOMAIN}/medicine/create_medication_records.php`
 
 const fallbackMedicines = []
 const fallbackSupplements = []
 
 const resolveImageUrl = (url) => {
   if (!url) return ''
-  if (url.startsWith(`${API_ORIGIN}/images/`)) {
-    return `${API_ORIGIN}/unicare_api${url.slice(API_ORIGIN.length)}`
+  if (url.startsWith(`${API_DOMAIN}/images/`)) {
+    return url
   }
   if (/^https?:\/\//i.test(url)) return url
   if (url.startsWith('/images/')) {
-    return `${API_ORIGIN}/unicare_API${url}`
+    return `${API_DOMAIN}${url}`
   }
-  if (url.startsWith('/')) return `${API_ORIGIN}${url}`
-  return `${API_ORIGIN}/${url}`
+  if (url.startsWith('/')) return `${API_DOMAIN}${url}`
+  return `${API_DOMAIN}/${url}`
 }
 
 const normalizeItem = (raw = {}, index = 0) => {
