@@ -231,7 +231,7 @@ const greetingTitle = computed(() => {
 
   // 整句回傳
   // 早安，陳小姐！
-  return `${greet} ， ${memberInfo.value.lastName}${memberInfo.value.title}！ `
+  return `${greet}， \n${memberInfo.value.lastName}${memberInfo.value.title}！ `
 })
 
 const fetchMemberHeader = async () => {
@@ -255,7 +255,7 @@ onMounted(() => {
   <div class="home-container">
     <TheHeader
       :title="greetingTitle"
-      subtitle="今天感覺如何？別忘了量血壓喔～"
+      :subtitle="'今天感覺如何？\n別忘了記錄喔~'"
       :imageSrc="HeaderImage"
     />
 
@@ -372,6 +372,31 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
+// 首頁限定greeting subtext(小手機換行)
+@media (max-width: 425px) {
+  /* 穿透進去處理標題與副標題 */
+  :deep(.greeting),
+  :deep(.subtext) {
+    white-space: pre-line !important;
+    line-height: 1.45;
+  }
+}
+@media (max-width: 320px) {
+  :deep(.greeting) {
+    font-size: 12px;
+    white-space: pre-line !important;
+    line-height: 1.45;
+  }
+  :deep(.subtext) {
+    font-size: 8px;
+    white-space: pre-line !important;
+    line-height: 1.45;
+  }
+  :deep(.illustration) {
+    width: 120%;
+  }
+}
+
 main {
   display: grid;
   // justify-content: center;
