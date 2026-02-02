@@ -13,7 +13,7 @@ export const useOrderStore = defineStore('order',()=>{
   const createOrder = async (orderPayLoad) => {
     try {
       // .post固定要帶兩個參數 .post( 'php網址', 'Payload' )
-      const res = await publicApi.post('http://localhost:8888/unicare_api/shop/create_order.php', orderPayLoad)
+      const res = await publicApi.post('shop/create_order.php', orderPayLoad)
       if(res.data.success) {
         console.log('訂單建立成功!訂單號碼:', res.data.orderNumber);
 

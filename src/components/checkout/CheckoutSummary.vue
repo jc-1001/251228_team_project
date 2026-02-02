@@ -22,7 +22,7 @@ const maxDiscount = computed (() => {
 // 抓取資料
 const fetchPoint = async () => {
   try {
-    const res = await publicApi.get('http://localhost:8888/unicare_api/member/get_total_points.php')
+    const res = await publicApi.get('member/get_total_points.php')
 
     userPoint.value = res.data.total_points
   } catch (err) {

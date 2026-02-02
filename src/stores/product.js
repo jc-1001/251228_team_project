@@ -16,7 +16,7 @@ export const useProductStore = defineStore('product', () => {
     loading.value = true
 
     try {
-      const res = await publicApi.get('http://localhost:8888/unicare_api/shop/get_products.php')
+      const res = await publicApi.get('shop/get_products.php')
 
       products.value = res.data
       // console.log('進貨成功', products.value)
@@ -32,7 +32,7 @@ export const useProductStore = defineStore('product', () => {
   const fetchProductDetail = async (id) => {
     loading.value = true
     try {
-      const res = await publicApi.get(`http://localhost:8888/unicare_api/shop/get_product_detail.php?id=${id}`)
+      const res = await publicApi.get(`shop/get_product_detail.php?id=${id}`)
       return res.data
     } catch(err) {
       console.error(err)
