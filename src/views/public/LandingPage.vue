@@ -15,9 +15,9 @@
       
       <nav class="main-menu" :class="{ 'is-active': isMenuOpen }">
         <ul class="menu">
-          <li class="menu-item"><a href="#aboutUs">關於我們</a></li>
-          <li class="menu-item"><a href="#aboutFunction">功能介紹</a></li>
-          <li class="menu-item"><a href="#aboutReward">使用心得</a></li>
+          <li class="menu-item"><a @click="scrollToSection('aboutUs')">關於我們</a></li>
+          <li class="menu-item"><a @click="scrollToSection('aboutFunction')">功能介紹</a></li>
+          <li class="menu-item"><a @click="scrollToSection('aboutReward')">使用心得</a></li>
           <li class="menu-item"><router-link to="/support">聯絡我們</router-link></li>
           <li class="menu-item"><router-link to="/Shop">樂活商城</router-link></li>
           <li class="menu-item"><router-link to="/Login">登入</router-link></li>
@@ -128,7 +128,7 @@
         <ul class="menu" style="list-style-type: none; display: flex;">
           <li class="menu-item"><router-link to="/support">聯絡我們</router-link></li>
           <li class="menu-item"><router-link to="/support">常見問題</router-link></li>
-          <li class="menu-item"><a href="#aboutUs">關於我們</a></li>
+          <li class="menu-item"><a @click="scrollToSection('aboutUs')">關於我們</a></li>
           <li class="menu-item"><router-link to="/login">立即體驗</router-link></li>
         </ul>
       </nav>
@@ -168,16 +168,6 @@ const testimonialContainer = ref(null);
 
 const slider = ref(null);
 
-const scrollSlider = (direction) => {
-  const container = slider.value;
-  const scrollAmount = container.clientWidth; // 每次捲動一個螢幕寬度
-  
-  if (direction === 'left') {
-    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  } else {
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-};
 
 const features = [
   { img: LP_function1, title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！<br>醒目的「今日待辦事項」清單，幫助長輩養成健康好習慣。' },
@@ -191,6 +181,33 @@ const scrollTestimonials = (amount) => {
     testimonialContainer.value.scrollBy({ left: amount, behavior: 'smooth' });
   }
 };
+
+const scrollToSection = (elementId) => {
+  const element = document.querySelector(`#${elementId}`)
+  if (!element) return
+  const elementBounding = element.getBoundingClientRect()
+
+  console.log(elementBounding)
+  const parentEl = document.querySelectorAll('.main_content')
+
+  parentEl[0].scrollTo({
+    top: elementBounding.top - 150,
+    left: 0,
+    behavior: 'smooth'
+  })
+}
+
+const scrollSlider = (direction) => {
+  const container = slider.value;
+  const scrollAmount = container.clientWidth; // 每次捲動一個螢幕寬度
+  
+  if (direction === 'left') {
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  } else {
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+};
+
 </script>
 
 <style scoped>
