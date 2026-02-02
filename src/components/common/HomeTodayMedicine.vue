@@ -81,8 +81,7 @@ onMounted(() => {
   background: $white;
   border-radius: $radius_md;
   box-shadow: $shadow;
-  padding: 0 32px 16px;
-  height: 100%;
+  padding: 0 16px 16px;
 
   .today-medicine__list {
     display: grid;
@@ -91,7 +90,7 @@ onMounted(() => {
 
   .today-medicine__card {
     display: grid;
-    grid-template-columns: 92px 1fr auto;
+    grid-template-columns: 80px 1fr auto;
     gap: 16px;
     align-items: center;
     border: 1px solid $gray;
@@ -100,8 +99,8 @@ onMounted(() => {
   }
 
   .today-medicine__thumb {
-    width: 92px;
-    height: 92px;
+    width: 80px;
+    height: 80px;
     border-radius: $radius_sm;
     overflow: hidden;
     background: $grayLight;
