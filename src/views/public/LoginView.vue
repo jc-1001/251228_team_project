@@ -87,7 +87,7 @@ const handleLogin = async () => {
 </template>
 
 <style lang="scss" scoped>
-/* 此處維持你原本精美的 CSS 不動 */
+
 .login-page {
   min-height: 100vh;
   display: flex;
