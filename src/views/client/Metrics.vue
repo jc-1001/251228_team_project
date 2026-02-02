@@ -18,7 +18,8 @@ import { useCountUp } from '@/composable/useCountUp' //數字跳動
 
 
 // 🔥 修改：API 基礎路徑（根據你的 PHP 伺服器 port）
-const API_BASE_URL = 'http://localhost:8888/unicare_api/metrics'
+// const API_BASE_URL = 'http://localhost:8888/unicare_api/metrics'
+const API_BASE_URL = import.meta.env.VITE_API_DOMAIN + 'metrics'
 
 // 🔥 載入所有指標的數據
 const loadAllMetrics = async () => {
@@ -56,6 +57,7 @@ const metricsConfig = {
     valueField: "weight",
     timeField: "recorded_at",
     step: 0.1,  //允許小數點一位
+    decimals: 1,
   },
   bloodOxygen: {
     title: "血氧",
@@ -64,6 +66,7 @@ const metricsConfig = {
     valueField: "oxygen_saturation",
     timeField: "recorded_at",
     step: 0.1,
+    decimals: 0,
   },
   bloodSugar: {
     title: "血糖",
@@ -72,6 +75,7 @@ const metricsConfig = {
     valueField: "glucose_value",
     timeField: "recorded_at",
     step: 0.1,
+    decimals: 0,
   },
   heartRate: {
     title: "心律",
@@ -80,6 +84,7 @@ const metricsConfig = {
     valueField: "heart_rate",
     timeField: "recorded_at",
     step: 1,
+    decimals: 0,
   },
   bloodPressure: {
     title: "血壓",
@@ -88,6 +93,7 @@ const metricsConfig = {
     renderValue: (r) => `${r.systolic_pressure}/${r.diastolic_pressure}`,
     timeField: "recorded_at",
     step: 1,
+    decimals: 0,
   },
 }
 // 儲存所有指標的原始資料
@@ -155,23 +161,27 @@ const filterDataByPeriod = (data, timeField) => {
     return recordDate >= cutoffDate && recordDate <= now
   })
 }
-// 🔥 計算單一指標的平均值（單值欄位）
-const calculateAverage = (data, valueField) => {
+
+// 計算單一指標的平均值（單值欄位）
+const calculateAverage = (data, valueField, decimals = 0) => {
   if (!data || data.length === 0) return 0
 
   const sum = data.reduce((acc, record) => {
     return acc + (Number(record[valueField]) || 0)
   }, 0)
 
-  return Math.round(sum / data.length)
+  const average = sum / data.length
+
+  // 根據 decimals 參數決定小數位數
+  return Number(average.toFixed(decimals))
 }
 
-// 🔥 計算血壓的平均值（雙值欄位）
+// 計算血壓的平均值（雙值欄位）
 const calculateBPAverage = (data) => {
   if (!data || data.length === 0) return { systolic: 0, diastolic: 0 }
 
-  const sysSum = data.reduce((acc, r) => acc + (Number(r.systolic_pressure) || 0), 0)  // 🔥 改欄位名
-  const diaSum = data.reduce((acc, r) => acc + (Number(r.diastolic_pressure) || 0), 0)  // 🔥 改欄位名
+  const sysSum = data.reduce((acc, r) => acc + (Number(r.systolic_pressure) || 0), 0)
+  const diaSum = data.reduce((acc, r) => acc + (Number(r.diastolic_pressure) || 0), 0)
 
   return {
     systolic: Math.round(sysSum / data.length),
@@ -193,27 +203,28 @@ const bloodPressure = ref({
 
 // 🔥 更新所有卡片數值
 const updateCardValues = () => {
-  // 體重
+  // 體重 
   const weightFiltered = filterDataByPeriodForCard(allMetricsData.value.weight, "recorded_at")
-  weight.value = calculateAverage(weightFiltered, "weight")
+  weight.value = calculateAverage(weightFiltered, "weight", metricsConfig.weight.decimals)
 
   // 血氧 
   const oxygenFiltered = filterDataByPeriodForCard(allMetricsData.value.bloodOxygen, "recorded_at")
-  bloodOxygen.value = calculateAverage(oxygenFiltered, "oxygen_saturation")  // ✅ 改成 oxygen_saturation
+  bloodOxygen.value = calculateAverage(oxygenFiltered, "oxygen_saturation", metricsConfig.bloodOxygen.decimals)
 
   // 血糖 
   const sugarFiltered = filterDataByPeriodForCard(allMetricsData.value.bloodSugar, "recorded_at")
-  bloodSugar.value = calculateAverage(sugarFiltered, "glucose_value")  // ✅ 改成 glucose_value
+  bloodSugar.value = calculateAverage(sugarFiltered, "glucose_value", metricsConfig.bloodSugar.decimals)
 
-  // 心律
+  // 心律 
   const heartFiltered = filterDataByPeriodForCard(allMetricsData.value.heartRate, "recorded_at")
-  heartRate.value = calculateAverage(heartFiltered, "heart_rate")  // ✅ 改成 heart_rate
+  heartRate.value = calculateAverage(heartFiltered, "heart_rate", metricsConfig.heartRate.decimals)
 
   // 血壓
   const bpFiltered = filterDataByPeriodForCard(allMetricsData.value.bloodPressure, "recorded_at")
   bloodPressure.value = calculateBPAverage(bpFiltered)
 }
-// 🔥 切換時間段
+
+// 切換時間段
 const changePeriod = (period) => {
   activePeriod.value = period
   updateCardValues()
@@ -821,13 +832,16 @@ watch([activePeriod, activeTrendsBtn], () => {
                     src="/public/images/metrics/add_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
               </div>
               <!-- 單筆紀錄 -->
+              <!-- 單筆紀錄 -->
               <div class="records__data" v-for="(record, index) in records__data" :key="index"
                 :class="{ 'records__data--active': selectedIndex === index }">
                 <span class="records__value">
                   {{
                     metricsConfig[activeMetricKey].renderValue
                       ? metricsConfig[activeMetricKey].renderValue(record)
-                      : record[metricsConfig[activeMetricKey].valueField]
+                      :
+                      Number(record[metricsConfig[activeMetricKey].valueField]).toFixed(metricsConfig[activeMetricKey].decimals
+                  || 0)
                   }}
                 </span>
                 <span class="records__record_at">

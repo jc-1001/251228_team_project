@@ -281,9 +281,6 @@ onMounted(() => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-<<<<<<< HEAD
-              <NewDietaryRecord
-=======
               <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
                 @update:modelValue="closePopup" @close="closePopup" />
               <HomeCommonModal
@@ -294,7 +291,6 @@ onMounted(() => {
                 @close="closePopup"
               />
               <NewDietaryRecord 
->>>>>>> my_branch
                 v-if="popupInfo.type === 'diet'"
                 :isOpen="true"
                 :date="todayDate"
@@ -305,13 +301,8 @@ onMounted(() => {
                 v-if="popupInfo.type === 'medicine'"
                 :info="popupInfo"
                 @close="closePopup"
-<<<<<<< HEAD
-                :data="todayDate"
-              />
-=======
               /> -->
               <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
->>>>>>> my_branch
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
