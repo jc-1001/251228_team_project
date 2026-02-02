@@ -39,7 +39,9 @@ const handleLogin = () => {
     alert('電子信箱或密碼錯誤！');
   }
 }
-
+const checkLogin = () => {
+  alert("ttt");
+};
 </script>
 
 <template>
@@ -75,7 +77,7 @@ const handleLogin = () => {
               <router-link to="/forgot-password" class="link">忘記密碼？</router-link>
             </div>
 
-            <button type="submit" class="btn-login">登入</button>
+            <button type="button" class="btn-login" @click="checkLogin">登入</button>
           </form>
 
           <div class="register-way">
