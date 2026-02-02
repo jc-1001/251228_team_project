@@ -294,6 +294,7 @@ const systolicAnimated = useCountUp(computed(() => bloodPressure.value.systolic)
 const diastolicAnimated = useCountUp(computed(() => bloodPressure.value.diastolic), 800)
 
 //🌟數值總覽卡片V-for
+
 const valueCard = [
   {
     id: 'weight',
@@ -747,7 +748,8 @@ watch([activePeriod, activeTrendsBtn], () => {
           <div class="value-card__header">
             <div class="value-card__header-left">
               <span class="value-card__icon">
-                <img :src="card.icon" alt="">
+                <!-- <img :src="'http://localhost:5173' + card.icon" alt=""> -->
+                <img :src="'https://tibamef2e.com/cjd102/g1/front' + card.icon" alt="">
               </span>
               <span class="value-card__title">
                 {{ card.title }}
