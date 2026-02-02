@@ -80,6 +80,9 @@ const changeBg = computed(() => {
   background-color: $bgBody;
 }
 
+// route.params.id = '/Landing'
+// scroll-behavior: smooth
+
 .main_content {
   flex: 1;
   padding: 28px 54px 40px;
