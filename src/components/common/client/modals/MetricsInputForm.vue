@@ -279,7 +279,6 @@ const onSave = async () => {
 }
 
 .input__date {
-  font-size: 14px;
   @include body2;
   margin-top: 8px;
 }
