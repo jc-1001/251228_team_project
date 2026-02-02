@@ -1,7 +1,7 @@
 <script setup>
 import { ref, Teleport, onMounted, computed } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
-// import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
@@ -231,7 +231,7 @@ const greetingTitle = computed(() => {
 
   // 整句回傳
   // 早安，陳小姐！
-  return `${greet} ， ${memberInfo.value.lastName}${memberInfo.value.title}！ `
+  return `${greet}， \n${memberInfo.value.lastName}${memberInfo.value.title}！ `
 })
 
 const fetchMemberHeader = async () => {
@@ -255,7 +255,7 @@ onMounted(() => {
   <div class="home-container">
     <TheHeader
       :title="greetingTitle"
-      subtitle="今天感覺如何？別忘了量血壓喔～"
+      :subtitle="'今天感覺如何？\n別忘了記錄喔~'"
       :imageSrc="HeaderImage"
     />
 
@@ -281,7 +281,16 @@ onMounted(() => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <NewDietaryRecord
+              <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
+                @update:modelValue="closePopup" @close="closePopup" />
+              <HomeCommonModal
+                :modelValue="true"
+                :title="`${popupInfo.name}`"
+                :data="popupInfo"
+                @update:modelValue="closePopup"
+                @close="closePopup"
+              />
+              <NewDietaryRecord 
                 v-if="popupInfo.type === 'diet'"
                 :isOpen="true"
                 :date="todayDate"
@@ -292,8 +301,8 @@ onMounted(() => {
                 v-if="popupInfo.type === 'medicine'"
                 :info="popupInfo"
                 @close="closePopup"
-                :data="todayDate"
-              />
+              /> -->
+              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -372,17 +381,39 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
+// 首頁限定greeting subtext(小手機換行)
+@media (max-width: 425px) {
+  /* 穿透進去處理標題與副標題 */
+  :deep(.greeting),
+  :deep(.subtext) {
+    white-space: pre-line !important;
+    line-height: 1.45;
+  }
+}
+@media (max-width: 320px) {
+  :deep(.greeting) {
+    font-size: 12px;
+    white-space: pre-line !important;
+    line-height: 1.45;
+  }
+  :deep(.subtext) {
+    font-size: 8px;
+    white-space: pre-line !important;
+    line-height: 1.45;
+  }
+  :deep(.illustration) {
+    width: 120%;
+  }
+}
+
 main {
   display: grid;
   // justify-content: center;
   // 設定兩欄，左側較寬，右側較窄。當寬度不足時自動換行
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.5fr minmax(300px, 400px);
   gap: 30px;
 
   // padding: 20px;
-  @media (max-width: 1200px) {
-    grid-template-columns: 1.1fr 1fr;
-  }
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -409,7 +440,7 @@ main {
   }
 
   .block-title {
-    padding: 8px 0 0 20px;
+    padding: 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小
@@ -472,13 +503,7 @@ button {
   border-radius: $radius_md;
   color: $primaryDark;
   cursor: pointer;
-  transition: all 0.3s ease;
-  @media (hover: hover) {
-    &:hover {
-      background-color: $primaryDark;
-      color: $white;
-    }
-  }
+
   .material-symbols-rounded {
     @include subtitle2(true);
     font-size: 16px; //button 要一起更動、大小字體一致
@@ -490,7 +515,7 @@ button {
   box-sizing: border-box;
   background-color: $white;
   @include subtitle2(false);
-  font-size: 16px; //material-symbols-rounded 要一起更動、大小字體一致
+  font-size: 12px; //material-symbols-rounded 要一起更動、大小字體一致
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -534,7 +559,7 @@ button {
 
     // 讓右上角 icon 變色
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: $primaryLight;
       color: $primaryDark;
       border: none;
@@ -549,7 +574,7 @@ button {
     color: $accent;
 
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: $accent;
       color: white;
       border: none;
@@ -569,7 +594,7 @@ button {
     color: #518fe7;
 
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: #518fe7;
       color: white;
       border: none;
@@ -586,7 +611,7 @@ button {
     color: $accent;
 
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: $accentLight;
       color: $accent;
       border: 1px solid #e0e0e0;

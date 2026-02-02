@@ -31,6 +31,22 @@ const handleAddMeal = () => {
 const saveEdit = (updatedMeal) => {
     emit('update-diet', { date: props.date, meal: updatedMeal });
 };
+const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
+const getMealImage = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `${IMAGE_BASE_URL}${url}`;
+};
+const openEditModal = (log) => {
+    selectedData.value = {
+        type: log.meal_type,
+        note: log.description,
+        time: log.meal_time,
+        preview: IMAGE_BASE_URL + log.food_image_url, 
+        image_file: null
+    };
+    isModalOpen.value = true;
+};
 </script>
 <template>
 <Transition name="fade">
@@ -50,9 +66,11 @@ const saveEdit = (updatedMeal) => {
                         <div class="meal-type">{{ meal.meal_type }}</div>
                         <div class="image-wrapper">
                             <div class="image-box" :class="{ 'is-empty': !meal.food_image_url }">
-                                <img v-if="meal.food_image_url" :src="meal.food_image_url" alt="meal" />
+                                <img v-if="meal.food_image_url" :src="getMealImage(meal.food_image_url)" alt="meal"
+                                loading="lazy"
+                                @error="(e) => e.target.src = '@/assets/images/default-food.png'"/>
                                 <span v-else class="empty-text">無記錄</span>
-                                <div class="hover-mask edit-trigger" @click.stop="$emit('open-edit', meal)">
+                                <div class="hover-mask edit-trigger" @click.stop="handleEdit(meal)">
                                     <div class="pencil-icon">
                                         <img src="@/assets/images/pen.svg" alt="edit">
                                     </div>
@@ -185,6 +203,7 @@ const saveEdit = (updatedMeal) => {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
+                object-position: center;
             }
             .empty-text {
                 color: $black;

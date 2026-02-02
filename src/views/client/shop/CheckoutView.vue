@@ -20,7 +20,7 @@ const showSuccess = ref(false)
 const checkoutFormRef = ref(null)
 
 // 處理結帳送出
-const handleCheckoutSubmit = (summaryData)=>{
+const handleCheckoutSubmit = async (summaryData)=>{
   if(!checkoutFormRef.value) {
     return
   }
@@ -35,8 +35,16 @@ const handleCheckoutSubmit = (summaryData)=>{
     // JSON.stringify將物件轉成字串後，就會切斷與原本物件的連結(因為字串沒有連結功能)
     const formData = JSON.parse(JSON.stringify(checkoutFormRef.value.form))
     // orderPayLoad
+    // 修改成跟"資料庫欄位"一樣
     const orderPayLoad = {
-      ...formData,
+      recipient_name: formData.user.name,
+      recipient_phone: formData.user.phone,
+      recipient_email: formData.user.email,
+      recipient_address: formData.user.address,
+      note: formData.note,
+      payment_type: formData.paymentType,
+      invoice_type: formData.invoiceType,
+      invoice_info: formData.invoiceType === 'company' ? formData.invoiceTaxId : formData.invoiceMobile,
       // 購物車商品快照
       items: cartStore.checkoutList,
       // 金額資訊
@@ -44,12 +52,14 @@ const handleCheckoutSubmit = (summaryData)=>{
       shippingFee: summaryData.shippingFee,
       discount: summaryData.discount
     }
-b
+
     // 呼叫orderStore建立訂單
-    orderStore.createOrder( orderPayLoad )
+    const success = await orderStore.createOrder( orderPayLoad )
 
     // 訂單成立燈箱
-    showSuccess.value = true
+    if(success) {
+      showSuccess.value = true
+    }
   } else {
     alert('部分欄位有誤，請檢查紅字部分！')
   }
