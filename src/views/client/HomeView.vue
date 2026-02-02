@@ -1,7 +1,7 @@
 <script setup>
 import { ref, Teleport } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
-// import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
+import HomeCommonModal from '@/components/common/client/modals/HomeCommonModal.vue'
 import dayjs from 'dayjs'
 import HomeTodayMedicine from '@/components/common/HomeTodayMedicine.vue'
 import HomeReserveMedicine from '@/components/common/HomeReserveMedicine.vue'
@@ -143,9 +143,6 @@ const closePopup = () => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-
-              <!-- <HomeCommonModal
-=======
               <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
                 @update:modelValue="closePopup" @close="closePopup" />
               <HomeCommonModal
@@ -154,7 +151,7 @@ const closePopup = () => {
                 :data="popupInfo"
                 @update:modelValue="closePopup"
                 @close="closePopup"
-              /> -->
+              />
               <NewDietaryRecord 
                 v-if="popupInfo.type === 'diet'"
                 :isOpen="true" 
@@ -173,11 +170,7 @@ const closePopup = () => {
                 :info="popupInfo"
                 @close="closePopup"
               /> -->
-              <NewMedicineModals
-               v-if="popupInfo.type === 'medicine'"
-                :info="popupInfo" 
-                @close="closePopup"
-                :data = "todayDate" />
+              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -244,13 +237,10 @@ main {
   display: grid;
   // justify-content: center;
   // 設定兩欄，左側較寬，右側較窄。當寬度不足時自動換行
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.5fr minmax(300px, 400px);
   gap: 30px;
 
   // padding: 20px;
-  @media (max-width: 1200px) {
-    grid-template-columns: 1.1fr 1fr;
-  }
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -277,7 +267,7 @@ main {
   }
 
   .block-title {
-    padding: 8px 0 0 20px;
+    padding: 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小
@@ -340,13 +330,7 @@ button {
   border-radius: $radius_md;
   color: $primaryDark;
   cursor: pointer;
-  transition: all 0.3s ease;
-  @media (hover: hover) {
-    &:hover {
-      background-color: $primaryDark;
-      color: $white;
-    }
-  }
+
   .material-symbols-rounded {
     @include subtitle2(true);
     font-size: 16px; //button 要一起更動、大小字體一致
@@ -358,7 +342,7 @@ button {
   box-sizing: border-box;
   background-color: $white;
   @include subtitle2(false);
-  font-size: 16px; //material-symbols-rounded 要一起更動、大小字體一致
+  font-size: 12px; //material-symbols-rounded 要一起更動、大小字體一致
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -404,7 +388,7 @@ button {
 
     // 讓右上角 icon 變色
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: $primaryLight;
       color: $primaryDark;
       border: none;
@@ -422,7 +406,7 @@ button {
     }
 
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: $accent;
       color: white;
       border: none;
@@ -444,7 +428,7 @@ button {
     }
 
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: #518fe7;
       color: white;
       border: none;
@@ -468,7 +452,7 @@ button {
     }
 
     .state-badge {
-      padding: 5px 12px;
+      padding: 5px;
       background-color: $accentLight;
       color: $accent;
       border: 1px solid #e0e0e0;
