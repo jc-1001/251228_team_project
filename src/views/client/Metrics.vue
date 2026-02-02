@@ -1133,7 +1133,7 @@ watch([activePeriod, activeTrendsBtn], () => {
   position: sticky;
   top: 0;
   display: grid;
-  grid-template-columns: auto 170px 40px;
+  grid-template-columns: auto 150px 40px;
   align-items: center;
   height: 40px;
   padding-left: 10px;
@@ -1145,7 +1145,7 @@ watch([activePeriod, activeTrendsBtn], () => {
   position: sticky;
   top: 0;
   display: grid;
-  grid-template-columns: auto auto 170px 40px;
+  grid-template-columns: auto auto 150px 40px;
   align-items: center;
   height: 40px;
   padding-left: 10px;
@@ -1174,7 +1174,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 .records__data {
   display: grid;
-  grid-template-columns: auto 170px 40px;
+  grid-template-columns: auto 150px 40px;
   align-items: center;
   padding-left: 10px;
   height: 40px;
@@ -1185,7 +1185,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
 .records__data2 {
   display: grid;
-  grid-template-columns: 1fr 1fr 170px 40px;
+  grid-template-columns: 1fr 1fr 150px 40px;
   align-items: center;
   padding-left: 10px;
   height: 40px;

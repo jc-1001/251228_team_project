@@ -1,51 +1,43 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import { publicApi } from '@/utils/publicApi'
 
 export const useOrderStore = defineStore('order',()=>{
   // 1. State
-  const orderList = ref(JSON.parse(localStorage.getItem('myOrderList')) || [])
+  const orderList = ref([])
+  const currentOrder = ref(null) // 用來存剛結帳成功的那筆
 
   // 2. Action
-  // 新增訂單 (Create Order)
-  // @param {Object} orderPayLoad - 從結帳頁傳過來的整包資料
+  // 建立訂單 (送給php)
 
-  const createOrder = ( orderPayLoad )=>{
+  const createOrder = async (orderPayLoad) => {
+    try {
+      // .post固定要帶兩個參數 .post( 'php網址', 'Payload' )
+      const res = await publicApi.post('shop/create_order.php', orderPayLoad)
+      if(res.data.success) {
+        console.log('訂單建立成功!訂單號碼:', res.data.orderNumber);
 
-    // 訂單編號
-    const orderId = `ORD-${Date.now()}-${Math.floor(Math.random()*1000)}`
-    // 下單時間
-    const now = new Date()
+        // 儲存回傳的訂單號碼
+        currentOrder.value = res.data
 
-    const yyyy = now.getFullYear()
-    const mm = String(now.getMonth() + 1).padStart(2, '0')
-    const dd = String(now.getDate()).padStart(2, '0')
-    const hh = String(now.getHours()).padStart(2, '0')
-    const min = String(now.getMinutes()).padStart(2, '0')
+        return true
+      }
+    } catch(err) {
+      console.error('訂單建立失敗:', err)
+      // php回傳的錯誤訊息
+      if (err.response && err.response.data) {
+        alert('結帳失敗: ' + err.response.data.error)
+      } else {
+        alert('系統發生錯誤，請稍後再試')
+      }
 
-    const dateString = `${yyyy}-${mm}-${dd} ${hh}:${min}`
-    // 組合整個訂單
-    const newOrder = {
-      id: orderId,
-      date: dateString,
-      status: '備貨中',
-      // 把結帳頁傳來的資料 (商品、收件人、金額) 全部"展開"放進來
-      // ...展開運算子
-      ...orderPayLoad
+      return false
     }
-    // 將新訂單存入陣列中
-    orderList.value.unshift(newOrder)
-
-    console.log('訂單建立成功！編號:', orderId);
   }
-
-  // 3. Persistence (持久化保存)
-  watch(orderList,(newVal)=>{
-    localStorage.setItem('myOrderList',JSON.stringify(newVal))
-  },{ deep:true })
-
 
   return {
     orderList,
+    currentOrder,
     createOrder
   }
 })
