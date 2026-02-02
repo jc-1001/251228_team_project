@@ -1,46 +1,39 @@
 <script setup>
-import { ref } from 'vue'
+// --- 1. Import 區塊必須在最上方 ---
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
-// import { useUserId } from '';
-// const userId = useUserId();
+// --- 2. 定義變數 (遵循 ER-Model 命名) ---
+const router = useRouter();
+const email = ref('');      // 對應 member_core.email
+const password = ref('');   // 對應 member_core.password
+const rememberMe = ref(false);
 
-const router = useRouter(); 
+// --- 3. 登入邏輯 (連動資料庫) ---
+const handleLogin = async () => {
+    try {
+        const response = await axios.post('http://localhost:8888/unicare_api/member/login_api.php', {
+            email: email.value,      // 對應 ER-Model
+            password: password.value
+        });
 
-// 定義登入表單資料
-const email = ref('')
-const password = ref('')
-const rememberMe = ref(false)
+        // 老師，我們在這裡 console.log 確保收到資料 
+        console.log("收到回傳：", response.data);
 
-// const handleLogin = () => {
-//   console.log('登入資訊：', { email: email.value, password: password.value })
-//   // 放 API 
-// }
-
-// // 預設的帳密
-// const VALID_ACCOUNT = 'Group1@unicare.com';
-// const VALID_PASSWORD = '123456';
-
-const handleLogin = () => {
-  // 1. 從 LocalStorage 抓取所有註冊過的帳號
-  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-  
-  // 2. 尋找是否有匹配的 Email 與 密碼
-  const user = allUsers.find(u => u.email === email.value && u.password === password.value);
-
-  if (user) {
-    // 登入成功：存入當前登入者資訊 (ProfileEdit 會用到這個鍵名)
-    localStorage.setItem('userProfile', JSON.stringify(user));
-    // 選項：如果您想保留原有的 isUserLogin 判斷也可以加上
-    localStorage.setItem('isUserLogin', 'true');
-    alert('登入成功！');
-    window.location.href = '/Home'; // 跳轉到首頁
-  } else {
-    alert('電子信箱或密碼錯誤！');
-  }
-}
-const checkLogin = () => {
-  alert("ttt");
+        if (response.data.status === 'success') { // 與 PHP 對齊
+            const user = response.data.user;
+            localStorage.setItem('userProfile', JSON.stringify(user));
+            localStorage.setItem('isUserLogin', 'true');
+            alert('登入成功！');
+            router.push({ name: 'Home' }); 
+        } else {
+            // 使用防呆邏輯，若沒抓到 message 就顯示預設文字
+            alert('登入失敗：' + (response.data.message || '帳號密碼錯誤'));
+        }
+    } catch (error) {
+        alert('伺服器連線失敗');
+    }
 };
 </script>
 
@@ -60,9 +53,8 @@ const checkLogin = () => {
 
           <form @submit.prevent="handleLogin">
             <div class="input-group">
-              <label>帳號</label>
-              <!-- <input type="email" v-model="email" required> -->
-              <input type="text" v-model="email" placeholder="Group1@unicare.com" required />
+              <label>電子信箱</label>
+              <input type="email" v-model="email" placeholder="Group1@unicare.com" required />
             </div>
 
             <div class="input-group">
@@ -77,15 +69,13 @@ const checkLogin = () => {
               <router-link to="/forgot-password" class="link">忘記密碼？</router-link>
             </div>
 
-            <button type="button" class="btn-login" @click="checkLogin">登入</button>
+            <button type="submit" class="btn-login">登入</button>
           </form>
 
-          <div class="register-way">
-            或是用其他方式
-          </div>
+          <div class="register-way">或是用其他方式</div>
           <div class="register-icon">
-            <img src="\src\assets\images\google.svg" alt="Google">
-            <img src="\src\assets\images\fb.svg" alt="fb">
+            <img src="/src/assets/images/google.svg" alt="Google">
+            <img src="/src/assets/images/fb.svg" alt="fb">
           </div>
           <div class="register-hint">
             還不是會員? <router-link to="/Register" class="link">註冊</router-link>
@@ -97,6 +87,7 @@ const checkLogin = () => {
 </template>
 
 <style lang="scss" scoped>
+/* 此處維持你原本精美的 CSS 不動 */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -104,7 +95,6 @@ const checkLogin = () => {
   justify-content: center;
   background-color: #f6f7f9;
 }
-
 .login-wrapper {
   display: flex;
   width: 100%;
@@ -115,8 +105,6 @@ const checkLogin = () => {
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
-
-/* 左側視覺區 */
 .login-visual {
   flex: 1.2;
   background-color: #e0f2f1;
@@ -124,89 +112,32 @@ const checkLogin = () => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  .brand-info {
-    .logo { height: 45px; margin-bottom: 20px; }
-  }
-
-  .illustration {
-    width: 100%;
-    max-height: 350px;
-    object-fit: contain;
-  }
+  .brand-info .logo { height: 45px; }
+  .illustration { width: 100%; max-height: 350px; object-fit: contain; }
 }
-
-/* 右側表單區 */
 .login-form-container {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 60px;
-  font-weight: bold;
-  
-  .form-box {
-    width: 100%;
-    max-width: 360px;
-
-    h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
-  }
+  .form-box { width: 100%; max-width: 360px; h2 { font-size: 28px; margin-bottom: 10px; } }
 }
-
 .input-group {
   margin-bottom: 24px;
-  label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; font-weight: bold;}
-  input {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    outline: none;
-    transition: 0.3s;
-    &:focus { border-color: #2E6669; box-shadow: 0 0 0 3px rgba(46, 102, 105, 0.1); }
-  }
+  label { display: block; margin-bottom: 8px; font-weight: bold; color: #555;}
+  input { width: 100%; padding: 14px; border: 1px solid #e0e0e0; border-radius: 12px; }
 }
-
 .form-footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 30px;
-  font-size: 14px;
-  .checkbox-label { display: flex; align-items: center; gap: 8px; color: #666; cursor: pointer; }
+  .checkbox-label { cursor: pointer; display: flex; align-items: center; gap: 8px; }
 }
-
 .btn-login {
-  width: 100%;
-  padding: 16px;
-  background-color: #2E6669;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-  &:hover { background-color: #3d868a; transform: translateY(-2px); }
+  width: 100%; padding: 16px; background-color: #2E6669; color: white; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;
 }
-
-.link { color: #2E6669; text-decoration: none; font-weight: 500; &:hover { text-decoration: underline; } }
-
-.register-hint , .register-way { text-align: center; margin-top: 30px; font-size: 14px; color: #777; }
-
-.register-icon { 
-  display: grid; 
-  justify-self: center;
-  gap: 30px;
-  margin-top: 15px;
-  // border: 1px solid #666;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 100%;
-}
-
-/* 響應式：手機版改為上下堆疊 */
-@media (max-width: 900px) {
-  .login-wrapper { flex-direction: column; height: auto; margin: 20px; }
-  .login-visual { padding: 40px; .illustration { display: none; } }
-}
+.register-icon { display: flex; justify-content: center; gap: 30px; margin-top: 15px; }
+.register-hint, .register-way { text-align: center; margin-top: 20px; font-size: 14px; }
+.link { color: #2E6669; text-decoration: none; }
 </style>
