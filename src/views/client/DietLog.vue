@@ -1,15 +1,36 @@
 <script setup>
+const isProcessing = ref(false); 
+const yourSaveFunction = async (data) => {
+    if (isProcessing.value) return;
+    isProcessing.value = true;
+    try {
+        if (response.data.success) {
+            isAddModalOpen.value = false; 
+            isModalOpen.value = false;
+            await fetchDietRecords(); 
+        }
+    } finally {
+        isProcessing.value = false;
+    }
+};
+import { ref, computed, onMounted } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import DateRecord from '@/components/common/client/modals/DateRecord.vue'
 import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
 import EditDietaryRecord from '@/components/common/client/modals/EditDietaryRecord.vue'
-import { ref, computed } from 'vue'
 import dayjs from 'dayjs';
 import dietBanner from '@/assets/images/Banner_diary.svg'
+import axios from 'axios';
 const currentViewDate = ref(dayjs());
 // 填寫卡片顯示綠底
 const filledDates = computed(() => {
-    return Object.keys(allDietRecords.value); 
+    if (!allDietRecords.value) return [];
+    return Object.keys(allDietRecords.value).filter(key => {
+        const records = allDietRecords.value[key];
+        return Array.isArray(records) && 
+                records.length > 0 && 
+                records.some(r => r.diet_log_id && !String(r.diet_log_id).includes('empty-'));
+    });
 });
 const isYearPickerOpen = ref(false);
 // 產生後5年list
@@ -86,81 +107,72 @@ const getImageUrl = (name) => {
     return new URL(`../../assets/images/${name}`, import.meta.url).href;
 };
 //燈箱內容
-const allDietRecords = ref({
-    '2026-01-18': [
-    {
-    diet_log_id: 1,
-    meal_type: '早餐',
-    description: '蘿蔔糕、無糖熱豆漿',
-    food_image_url: getImageUrl('meal1.jpg'),
-    meal_time: '08:00:00'
-    },
-    {
-    diet_log_id: 2,
-    meal_type: '午餐',
-    description: null,
-    food_image_url: getImageUrl('meal2.jpg'),
-    meal_time: '12:00:00'
-    },
-    {
-    diet_log_id: 3,
-    meal_type: '14:30',
-    description: '蛋糕、蘋果汁',
-    food_image_url: getImageUrl('meal3.jpg'),
-    meal_time: '14:30:00'
-    },
-    ]
-});
+const allDietRecords = ref({});
 const getTimeWeight = (meal_type) => {
         const typeMap = { '早餐': '08:00', '午餐': '12:00', '晚餐': '17:00' };
         const timeStr = typeMap[meal_type] || meal_type;
         return timeStr.replace(':', '').padStart(4, '0');
     };
-const handleNewRecord = (formData) => {
+const fetchDietRecords = async () => {
+        try {
+            // 直接對準你的 PHP 讀取檔案
+            const response = await axios.get('http://localhost:8888/unicare_api/diet/get_diets.php', {
+                params: { member_id: 1 }
+            });
+            console.log("Vue 收到 PHP 資料了！", response.data);
+            if (response.data) {
+            allDietRecords.value = response.data; 
+            }
+        } catch (error) {
+            console.error("抓取資料失敗:", error);
+        }
+    };
+const handleNewRecord = async (formData) => {
     const { type, note, preview, image_file, time } = formData;
     const dateKey = selectedDate.value;
-    // 沒有任何記錄，先建立空陣列
-    if (!allDietRecords.value[dateKey]) {
-        allDietRecords.value[dateKey] = [];
+    const fd = new FormData();
+    fd.append('member_id', 1);
+    fd.append('meal_date', dateKey);
+    fd.append('meal_type', type);
+    fd.append('description', note);
+    const formattedTime = time ? `${time}:00` : (type.includes(':') ? `${type}:00` : '00:00:00');
+    fd.append('meal_time', formattedTime);
+    // 如果有圖片，則加入檔案
+    if (image_file) {
+        fd.append('food_image', image_file);
     }
-    const datePrefix = dateKey.replace(/-/g, '');
-    const currentRecords = allDietRecords.value[dateKey];
-    let nextSerialNumber = 1;
-    if (currentRecords.length > 0) {
-        const lastNumbers = currentRecords.map(r => parseInt(String(r.diet_log_id).slice(-2)));
-        nextSerialNumber = Math.max(...lastNumbers) + 1;
-    }
-    const newId = parseInt(`${datePrefix}${String(nextSerialNumber).padStart(2, '0')}`);
-    const newEntry = {
-        diet_log_id: newId,
-        member_id: 1,
-        meal_date: dateKey,
-        meal_type: type,
-        description: note,
-        food_image_url: preview,
-        meal_time: time ? `${time}:00` : (type.includes(':') ? `${type}:00` : null),
-        image_file: image_file,
-        created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss')
-    };
-    // 將新資料加入
-    if (!allDietRecords.value[dateKey]) {
-        allDietRecords.value[dateKey] = [];
-    }
-    allDietRecords.value[dateKey].push(newEntry);
-    allDietRecords.value[dateKey].sort((a, b) => {
-        return getTimeWeight(a.meal_type).localeCompare(getTimeWeight(b.meal_type));
-    });
-    isAddModalOpen.value = false;
+    try {
+        //將此網址改為你實際存放 PHP 的位置
+        const response = await axios.post('http://localhost:8888/unicare_api/diet/create_diet.php',fd);
+        //處理結果
+        if (response.data && response.data.success) {
+            // 讓日曆和紀錄自動更新
+            await fetchDietRecords(); 
+            // 關閉燈箱
+            isAddModalOpen.value = false;
+            alert('儲存成功！');
+            }
+        } catch (error) {
+            alert('連線伺服器失敗');
+        }
 };
+onMounted(() => {
+    fetchDietRecords();
+});
 const currentDayMeals = computed(() => {
+    const dateKey = selectedDate.value;
+    if (!allDietRecords.value) return [];
+    const savedRecords = allDietRecords.value[dateKey] || [];
+    const getFullImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `http://localhost:8888/unicare_api/images/diet/uploads/${path}`; // 根據後端存放圖片的目錄調整
+    };
     const defaultTemplates = [
         { meal_type: '早餐', timeWeight: 800 },
         { meal_type: '午餐', timeWeight: 1200 },
         { meal_type: '晚餐', timeWeight: 1700 }
     ];
-    // 獲取該日期紀錄
-    const savedRecords = allDietRecords.value[selectedDate.value] || [];
     // 建立空間存放要顯示的項目
     const displayList = [];
     // 預設三餐
@@ -181,9 +193,12 @@ const currentDayMeals = computed(() => {
     // 自訂時間項目
     const extraMeals = savedRecords.filter(r => !['早餐', '午餐', '晚餐'].includes(r.meal_type));
     extraMeals.forEach(extra => {
-        // 將時間轉為數字權重
-        const weight = parseInt(extra.meal_type.replace(':', ''), 10);
-        displayList.push({ ...extra, timeWeight: weight });
+        const weight = parseInt(extra.meal_time?.replace(/:/g, '').substring(0, 4), 10) || 9999;
+        displayList.push({ 
+            ...extra, 
+            timeWeight: weight,
+            food_image_url: getFullImageUrl(extra.food_image || extra.food_image_url)
+        });
     });
     // 根據時間排序
     return displayList.sort((a, b) => a.timeWeight - b.timeWeight);
@@ -204,46 +219,61 @@ const getDayClass = (item) => {
 };
 const isEditModalOpen = ref(false);
 const editingMeal = ref(null);
-const handleEditClick = (meal) => {
+const openEdit = (meal) => {
     console.log("接收到編輯請求:", meal);
-    if (!meal || String(meal.diet_log_id).includes('empty-')) return;
+    if (!meal || !meal.diet_log_id || String(meal.diet_log_id).includes('empty-')) {
+        return;
+    }
     editingMeal.value = meal;
     isEditModalOpen.value = true;
 };
 // 編輯後的儲存
-const handleUpdateRecord = (updatedData) => {
-    const dateKey = selectedDate.value;
-    const records = allDietRecords.value[dateKey];
-    // 找出舊資料替換
-    const index = records.findIndex(r => r.diet_log_id === updatedData.diet_log_id);
-    if (index !== -1) {
-        allDietRecords.value[dateKey][index] = {
-            ...records[index],
-            meal_type: updatedData.meal_type || updatedData.type, // 增加相容性
-            meal_time: updatedData.meal_time || (updatedData.type?.includes(':') ? `${updatedData.type}:00` : records[index].meal_time),
-            description: updatedData.description || updatedData.note,
-            food_image_url: updatedData.preview || updatedData.food_image_url,
-            updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss') //更新時間
-        };
-        // 重新排序
-        allDietRecords.value[dateKey].sort((a, b) => {
-            return getTimeWeight(a.meal_type).localeCompare(getTimeWeight(b.meal_type));
-        });
+const handleUpdateRecord = async (updatedData) => {
+    if (isEditModalOpen.value === false) return;
+    const fd = new FormData();
+    fd.append('diet_log_id', updatedData.diet_log_id);
+    fd.append('meal_type', updatedData.meal_type);
+    fd.append('description', updatedData.description);
+    fd.append('meal_time', updatedData.meal_time || '00:00:00');
+    if (updatedData.image_file) {
+        fd.append('food_image', updatedData.image_file);
     }
-    isEditModalOpen.value = false;
+    try {
+        const response = await axios.post('http://localhost:8888/unicare_api/diet/update_diet.php', fd);
+        if (response.data && response.data.success) {
+            isEditModalOpen.value = false;
+            // 從資料庫拉取排序正確的資料
+            await fetchDietRecords(); 
+            // 如果該日期無資料關閉外層燈箱，綠燈熄滅
+            const dateKey = selectedDate.value;
+            if (!allDietRecords.value[dateKey] || allDietRecords.value[dateKey].length === 0) {
+                isModalOpen.value = false;
+            }
+            alert('修改成功！');
+        } else {
+            alert('更新失敗:' + (response.data.message || '未知錯誤'));
+        }
+    } catch (error) {
+        console.error("更新失敗:", error);
+        alert('連線伺服器失敗');
+    }
 };
-const handleDeleteRecord = (diet_log_id) => {
-    const dateKey = selectedDate.value;
-    if (!allDietRecords.value[dateKey]) return;
-    // 過濾該資料
-    allDietRecords.value[dateKey] = allDietRecords.value[dateKey].filter(
-        record => record.diet_log_id !== diet_log_id
-    );
-    // 如果該天沒紀錄，可選擇刪除或保留空陣列
-    if (allDietRecords.value[dateKey].length === 0) {
-        delete allDietRecords.value[dateKey];
-    }
-    isEditModalOpen.value = false;
+const handleDelete = async (diet_log_id) => {
+    if (!diet_log_id) return;
+    if (!confirm('確定要刪除嗎？')) return;
+
+    try {
+        const formData = new FormData();
+        formData.append('diet_log_id', diet_log_id);
+        const res = await axios.post('http://localhost:8888/unicare_api/diet/delete_diet.php', formData);
+        
+        if (res.data.success) {
+            isEditModalOpen.value = false;
+            isModalOpen.value = false;
+            await fetchDietRecords();
+            alert('刪除成功');
+        }
+    } catch (e) { console.error(e); }
 };
 </script>
 <template>
@@ -252,7 +282,6 @@ const handleDeleteRecord = (diet_log_id) => {
     subtitle="拍照上傳，簡單步驟將每日飲食好好記錄。"
     :imageSrc="dietBanner"
     />
-    <router-view />
     <!-- 日曆 -->
     <main class="diet-calendar">
         <!-- 年、月 -->
@@ -288,7 +317,7 @@ const handleDeleteRecord = (diet_log_id) => {
             </div>
             <div class="days-grid">
                 <div v-for="item in calendarDays" 
-                    :key="item.date.format('YYYY-MM-DD')"
+                    :key="item.date.valueOf()"
                     class="day-cell"
                     :class="getDayClass(item)"
                     @click="handleDateClick(item.date)">
@@ -298,12 +327,13 @@ const handleDeleteRecord = (diet_log_id) => {
         </div>
     </main>
     <DateRecord
+    v-if="isModalOpen && selectedDate"
     :is-open="isModalOpen" 
     :date="selectedDate" 
     :meals="currentDayMeals" 
-    @close="closeModal" 
+    @close="isModalOpen = false" 
     @open-add="openAddModal"
-    @open-edit="handleEditClick"
+    @open-edit="openEdit"
     />
     <EditDietaryRecord 
     v-if="isEditModalOpen && editingMeal" 
@@ -312,7 +342,7 @@ const handleDeleteRecord = (diet_log_id) => {
     :initial-data="editingMeal"
     @close="isEditModalOpen = false"
     @submit="handleUpdateRecord"
-    @delete="handleDeleteRecord"
+    @delete="handleDelete"
     />
     <NewDietaryRecord 
     :is-open="isAddModalOpen" 
