@@ -30,11 +30,11 @@ const getTodayStr = () => {
 const initData = async () => {
   try {
     // 1. 抓總積分
-    const resTotal = await publicApi.get('member/get_total_points.php')
+    const resTotal = await publicApi.get('member_center/get_total_points.php')
     currentPoints.value = resTotal.data.total_points || 0
 
     // 2. 抓歷史紀錄
-    const resHistory = await publicApi.get('member/get_my_points.php')
+    const resHistory = await publicApi.get('member_center/get_my_points.php')
     historyList.value = resHistory.data.data
 
     // 3. 判斷今日有沒有簽到 (檢查歷史紀錄第一筆是不是今天且是簽到)
@@ -67,7 +67,7 @@ const handleCheckIn = async () => {
   if (isSigned.value === true) return
 
   try {
-    const res = await publicApi.get('member/check_in.php')
+    const res = await publicApi.get('member_center/check_in.php')
     
     if(res.data.success) {
       isSigned.value = true
