@@ -152,7 +152,7 @@ onMounted(() => {
     color: $primaryDark;
     border-radius: $radius_sm;
     padding: 8px;
-    margin: 8px 0 0 0;
+    margin: 8px;
     @include body1(true);
     font-size: 12px;
   }

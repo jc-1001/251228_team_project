@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 <template>
   <section class="home-reserve-medicine">
-    <p class="home-reserve-medicine__subtitle">藥品/保健食品庫存提醒（7 天內）</p>
+    
     <div class="home-reserve-medicine__content">
       <ul v-if="lowStock.length" class="home-reserve-medicine__list">
         <li v-for="item in lowStock" :key="item.medication_name" class="home-reserve-medicine__item">
@@ -39,7 +39,7 @@ onMounted(() => {
 .home-reserve-medicine {
   background-color: $white;
   border-radius: 8px;
-  padding: 24px;
+  padding: 0 24px 24px 24px;
 
   &__subtitle {
     @include body3;
