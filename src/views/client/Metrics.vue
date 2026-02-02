@@ -298,7 +298,7 @@ const valueCard = [
   {
     id: 'weight',
     title: '體重',
-    icon: '/public/images/metrics/monitor_weight_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
+    icon: '/images/metrics/monitor_weight_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
     unit: 'kg',
     getValue: () => weightAnimated.value,
     getStatus: () => weightStatus.value,
@@ -307,7 +307,7 @@ const valueCard = [
   {
     id: 'bloodOxygen',
     title: '血氧',
-    icon: '/public/images/metrics//spo2_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
+    icon: '/images/metrics//spo2_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
     unit: '%',
     getValue: () => bloodOxygenAnimated.value,
     getStatus: () => oxygenStatus.value,
@@ -316,7 +316,7 @@ const valueCard = [
   {
     id: 'bloodSugar',
     title: '血糖',
-    icon: '/public/images/metrics//bloodtype_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
+    icon: '/images/metrics//bloodtype_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
     unit: 'mg/dL',
     getValue: () => bloodSugarAnimated.value,
     getStatus: () => sugarStatus.value,
@@ -325,7 +325,7 @@ const valueCard = [
   {
     id: 'heartRate',
     title: '心律',
-    icon: '/public/images/metrics/ecg_heart_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
+    icon: '/images/metrics/ecg_heart_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
     unit: 'bpm',
     getValue: () => heartRateAnimated.value,
     getStatus: () => heartStatus.value,
@@ -334,7 +334,7 @@ const valueCard = [
   {
     id: 'bloodPressure',
     title: '血壓',
-    icon: '/public/images/metrics/blood_pressure_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
+    icon: '/images/metrics/blood_pressure_24dp_2E6669_FILL1_wght400_GRAD0_opsz24.svg',
     unit: 'mmHg',
     getValue: () => ({
       systolic: systolicAnimated.value,
