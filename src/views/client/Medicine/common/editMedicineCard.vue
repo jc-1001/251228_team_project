@@ -45,7 +45,8 @@ const scheduleFieldMap = {
 
 const medicineStore = useMedicineStore()
 const { detail } = storeToRefs(medicineStore)
-const { fetchDetail, updateMedication, patchItemFromDetail, deleteMedication, removeItemById } = medicineStore
+const { fetchDetail, updateMedication, patchItemFromDetail, deleteMedication, removeItemById } =
+  medicineStore
 
 const isActive = ref(true)
 const medicineName = ref('')
@@ -59,7 +60,7 @@ const schedule = ref(
     slot,
     usage: 'NONE',
     quantity: 0,
-  }))
+  })),
 )
 
 const detailData = computed(() => detail.value || {})
@@ -182,7 +183,7 @@ watch(
   () => medicationId,
   (nextId) => {
     if (nextId) fetchDetail(nextId)
-  }
+  },
 )
 
 watch(detailData, (next) => {
@@ -205,11 +206,11 @@ watch(detailData, (next) => {
       <button @click="closeEditCard" class="medicine-modal__close" type="button" aria-label="關閉">
         <span class="material-symbols-outlined">close</span>
       </button>
-         <div class="switch-container">
-      <input v-model="isActive" type="checkbox" class="checkbox" id="toggle" />
-      <label class="toggle-switch" for="toggle"></label>
-      <div class="switch-color"></div>
-    </div>
+      <div class="switch-container">
+        <input v-model="isActive" type="checkbox" class="checkbox" id="toggle" />
+        <label class="toggle-switch" for="toggle"></label>
+        <div class="switch-color"></div>
+      </div>
       <h1 class="medicine-modal__title">編輯藥品</h1>
       <form class="medicine-modal__content" action="#" @submit.prevent="handleSubmit">
         <div class="medicine-modal__body">
@@ -470,79 +471,79 @@ watch(detailData, (next) => {
   }
 }
 
-      .switch-container {
-        width: 80px;
-        height: 30px;
-        border-radius: 10em;
-        box-shadow: 2px 2px 10px 2px #cfd8dc;
-        position: relative;
-        left: 8px;
-        top: 20px;
-      }
-      .checkbox {
-        display: none;
-      }
-      .switch-color {
-        width: 74px;
-        height: 25px;
-        left: 3px;
-        top: 2.5px;
-        background:$gray;
-        border-radius: 10em;
-        z-index: 1;
-        position: absolute;
-        transition: all 500ms cubic-bezier(0.34, 1.36, 0.2, 1);
-      }
-      .toggle-switch {
-        width: 27px;
-        height: 27px;
-        border-radius: 4em;
-        background: white;
-        position: absolute;
-        top: 1.5px;
-        left: 1px;
-        box-shadow: 2px 2px 10px 2px #cfd8dc;
-        z-index: 2;
-        cursor: pointer;
-      }
-      #toggle:checked ~ .toggle-switch {
-        transform: translateX(50px) rotate(360deg);
-      }
-      #toggle:checked ~ .switch-color {
-        background: #00e676;
-      }
-      #toggle ~ .toggle-switch {
-        transition: all 1s cubic-bezier(0.34, 1.36, 0.2, 1);
-      }
+.switch-container {
+  width: 80px;
+  height: 30px;
+  border-radius: 10em;
+  box-shadow: 2px 2px 10px 2px #cfd8dc;
+  position: relative;
+  left: 8px;
+  top: 20px;
+}
+.checkbox {
+  display: none;
+}
+.switch-color {
+  width: 74px;
+  height: 25px;
+  left: 3px;
+  top: 2.5px;
+  background: $gray;
+  border-radius: 10em;
+  z-index: 1;
+  position: absolute;
+  transition: all 500ms cubic-bezier(0.34, 1.36, 0.2, 1);
+}
+.toggle-switch {
+  width: 27px;
+  height: 27px;
+  border-radius: 4em;
+  background: white;
+  position: absolute;
+  top: 1.5px;
+  left: 3px;
+  box-shadow: 2px 2px 10px 2px #cfd8dc;
+  z-index: 2;
+  cursor: pointer;
+}
+#toggle:checked ~ .toggle-switch {
+  transform: translateX(47px) rotate(360deg);
+}
+#toggle:checked ~ .switch-color {
+  background: #00e676;
+}
+#toggle ~ .toggle-switch {
+  transition: all 1s cubic-bezier(0.34, 1.36, 0.2, 1);
+}
 
-      .toggle-switch::before {
-        font-family: 'Material Symbols Outlined';
-        font-weight: 700;
-        font-size: 30px;
-        content: "close";
-        position: absolute;
-        left: -1.5px;
-        top: -10px;
-        color: #e9182a;
-      }
-      #toggle:checked ~ .toggle-switch::before {
-        opacity: 0;
-      }
+.toggle-switch::before {
+  font-family: 'Material Symbols Outlined';
+  font-weight: 700;
+  font-size: 30px;
+  content: 'close';
+  position: absolute;
+  left: -1.5px;
+  top: -10px;
+  color: #e9182a;
+}
+#toggle:checked ~ .toggle-switch::before {
+  opacity: 0;
+}
 
-      .toggle-switch::after {
-        font-family: 'Material Symbols Outlined';
-        font-weight: 700;
-        font-size: 30px;
-        content: "check";
-        position: absolute;
-        left: -1.5px;
-        top: -10px;
-        color: #00e676;
-        opacity: 0;
-      }
-      #toggle:checked ~ .toggle-switch::after {
-        opacity: 1;
-      }
+.toggle-switch::after {
+  font-family: 'Material Symbols Outlined';
+  font-weight: 700;
+  font-size: 30px;
+  content: 'check';
+  position: absolute;
+  left: -1.5px;
+  top: -10px;
+  color: #00e676;
+  opacity: 0;
+}
+#toggle:checked ~ .toggle-switch::after {
+  opacity: 1;
+}
 
 @media (max-width: 1024px) {
   .medicine-modal__overlay {

@@ -44,6 +44,9 @@ const normalizeItem = (raw = {}, index = 0) => {
     checked: Boolean(raw.checked),
     stockQty: raw.stock_qty ?? null,
     expiryDate: raw.expiry_date ?? '',
+    note: raw.note ?? '',
+    schedule: raw.schedule ?? {},
+    isActive: raw.is_active ?? null,
   }
 }
 
@@ -65,6 +68,9 @@ export const useMedicineStore = defineStore('medicine', () => {
       image: detail.value.image,
       stockQty: detail.value.stockQty,
       expiryDate: detail.value.expiryDate,
+      note: detail.value.note,
+      schedule: detail.value.schedule,
+      isActive: detail.value.isActive,
     }
     const updateList = (listRef) => {
       const idx = listRef.value.findIndex((item) => item.id === updated.id)
@@ -86,6 +92,19 @@ export const useMedicineStore = defineStore('medicine', () => {
       supplements.value = list
     } else {
       medicines.value = list
+    }
+  }
+
+  const normalizeDetail = (raw = {}, medicationId) => {
+    return {
+      id: Number(raw.medication_id ?? medicationId),
+      name: raw.medication_name ?? '',
+      note: raw.note ?? '',
+      expiryDate: raw.expiry_date ?? '',
+      stockQty: raw.stock_qty ?? null,
+      image: resolveImageUrl(raw.photo_url ?? ''),
+      isActive: raw.is_active ?? null,
+      schedule: raw.schedule ?? {},
     }
   }
 
@@ -183,16 +202,7 @@ export const useMedicineStore = defineStore('medicine', () => {
       if (!raw) {
         throw new Error('Invalid detail response')
       }
-      detail.value = {
-        id: Number(raw.medication_id ?? medicationId),
-        name: raw.medication_name ?? '',
-        note: raw.note ?? '',
-        expiryDate: raw.expiry_date ?? '',
-        stockQty: raw.stock_qty ?? null,
-        image: resolveImageUrl(raw.photo_url ?? ''),
-        isActive: raw.is_active ?? null,
-        schedule: raw.schedule ?? {},
-      }
+      detail.value = normalizeDetail(raw, medicationId)
     } catch (err) {
       console.error('fetchDetail failed', err)
       detail.value = null
@@ -201,6 +211,24 @@ export const useMedicineStore = defineStore('medicine', () => {
     } finally {
       isLoading.value = false
     }
+  }
+
+  async function fetchDetailRaw(medicationId) {
+    if (!medicationId) return null
+    const url = `${DETAIL_URL}?medication_id=${encodeURIComponent(medicationId)}`
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!res.ok) {
+      throw new Error(`Request failed: ${res.status}`)
+    }
+    const data = await res.json()
+    const raw = data?.data ?? null
+    if (!raw) {
+      throw new Error('Invalid detail response')
+    }
+    return normalizeDetail(raw, medicationId)
   }
 
   async function deleteMedication(medicationId, memberId = 1) {
@@ -333,6 +361,28 @@ export const useMedicineStore = defineStore('medicine', () => {
     }
   }
 
+  async function hydrateItemsWithDetails(category = '藥品') {
+    const listRef = category === '保健食品' ? supplements : medicines
+    if (!listRef.value.length) return
+    try {
+      const results = await Promise.allSettled(
+        listRef.value.map((item) => fetchDetailRaw(item.id))
+      )
+      const detailMap = new Map()
+      results.forEach((result) => {
+        if (result.status === 'fulfilled' && result.value) {
+          detailMap.set(result.value.id, result.value)
+        }
+      })
+      listRef.value = listRef.value.map((item) => {
+        const detailItem = detailMap.get(item.id)
+        return detailItem ? { ...item, ...detailItem } : item
+      })
+    } catch (err) {
+      console.error('hydrateItemsWithDetails failed', err)
+    }
+  }
+
   return {
     medicines,
     supplements,
@@ -340,6 +390,7 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading,
     error,
     fetchItems,
+    hydrateItemsWithDetails,
     createMedication,
     updateMedication,
     fetchDetail,

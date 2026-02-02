@@ -97,7 +97,6 @@ onMounted(() => {
     border: 1px solid $gray;
     border-radius: $radius_md;
     background: $white;
-    padding: 12px 16px;
   }
 
   .today-medicine__thumb {

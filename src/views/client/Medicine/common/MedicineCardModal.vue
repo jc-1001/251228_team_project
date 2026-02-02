@@ -57,7 +57,7 @@ const schedule = ref(
 const isSubmitting = ref(false)
 
 const medicineStore = useMedicineStore()
-const { createMedication, fetchItems } = medicineStore
+const { createMedication, fetchItems, hydrateItemsWithDetails } = medicineStore
 
 const closeModal = () => {
   emit('closeModal')
@@ -126,6 +126,7 @@ const handleSubmit = async () => {
   try {
     await createMedication(payload)
     await fetchItems(category)
+    await hydrateItemsWithDetails(category)
     closeModal()
   } catch (error) {
     console.error('Failed to create medication:', error)
