@@ -18,7 +18,6 @@ const handleLogin = async () => {
             password: password.value
         });
 
-        // 老師，我們在這裡 console.log 確保收到資料 
         console.log("收到回傳：", response.data);
 
         if (response.data.status === 'success') { // 與 PHP 對齊

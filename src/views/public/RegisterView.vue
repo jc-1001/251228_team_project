@@ -1,5 +1,6 @@
+
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/config/apiConfig'; 
@@ -36,35 +37,39 @@ const memberProfile = reactive({
 });
 
 // 2. 註冊處理邏輯
+
+const agreePolicy = ref(false);
+
 const handleRegister = async () => {
+  // 1. 檢查是否勾選同意條款
+  if (!agreePolicy.value) {
+    alert('請先閱讀並勾選同意服務條款與隱私權政策');
+    return;
+  }
+
+  // 2. 密碼二次確認
   if (memberProfile.password !== memberProfile.confirmPassword) {
     alert('兩次輸入的密碼不一致！');
     return;
   }
 
   try {
-    // 發送到 MAMP 的 register_api.php
-    const response = await axios.post(API_ENDPOINTS.REGISTER, memberProfile);
+    // 注意：這裡使用 API_ENDPOINTS.REGISTER (假設您在 apiConfig.js 有定義)
+    // 如果還沒定義，可以先保留原本的網址，但建議統一管理
+    const res = await axios.post('http://localhost:8888/unicare_api/member/register_api.php', memberProfile);
 
-    if (response.data.success) {
-      // 寫入成功後才存入本地快取
-      localStorage.setItem('userProfile', JSON.stringify({
-        full_name: memberProfile.full_name,
-        email: memberProfile.email,
-        role: memberProfile.role
-      }));
-
-      alert('註冊成功！資料已同步至 MAMP 資料庫');
-      router.push('/Home');
+    if (res.data.status === 'success') {
+      alert('註冊成功！歡迎加入 UniCare');
+      router.push({ name: 'Login' });
     } else {
-      alert('註冊失敗：' + response.data.message);
+      alert('註冊失敗：' + res.data.message);
     }
   } catch (error) {
-    // 這裡報錯時，F12 Network 面板會出現紅色的請求
-    console.error('API 連線失敗，請檢查 MAMP 是否開啟', error);
-    alert('連線失敗，請確認 MAMP 伺服器運作中');
+    console.error("API 連線錯誤：", error);
+    alert('無法連線到伺服器，請確認 MAMP 伺服器是否啟動（Port: 8888）。');
   }
 };
+
 </script>
 
 <template>
@@ -194,7 +199,10 @@ const handleRegister = async () => {
           </div>
         </div>
         <br>
-          <input type="checkbox"><span> 我已閱讀並同意UniCare服務條款與隱私權政策</span>
+          <div class="policy-check">
+            <input type="checkbox" id="policy" v-model="agreePolicy" required>
+            <label for="policy"> 我已閱讀並同意UniCare服務條款與隱私權政策</label>
+          </div>
         
           <button type="submit" class="primary-btn">註冊</button>
       </form>

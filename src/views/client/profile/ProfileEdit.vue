@@ -1,12 +1,13 @@
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
-
+import axios from 'axios' 
 const router = useRouter()
 
-// 嚴格對應 ER MODEL 欄位定義
+// 嚴格對應資料庫與註冊 API 的欄位名稱
 const profile = ref({
   full_name: '',
   email: '',
@@ -16,37 +17,52 @@ const profile = ref({
   blood_type: 'A',
   height: null,
   weight: null,
-  // 緊急聯絡人
+  
+  // // 健康檔案習慣
+  // has_chronic_disease: false,
+  // chronic_disease_description: '',
+  // has_family_history: false,
+  // family_history_description: '',
+  // has_allergies: false,
+  // allergy_description: '',
+  // is_smoking: false,
+  // is_drinking: false,
+
+  // 緊急聯絡人 (對齊 register_api.php 接收的名稱)
   contact_name: '',
   relationship: '',
-  emergency_contact_phone: '' 
-})
+  emergency_phone_number: '' // 原本可能是 emergency_contact_phone，請改為跟註冊一致
+});
 
 onMounted(() => {
-  // 從快取讀取當前使用者資訊
   const savedData = localStorage.getItem('userProfile')
   if (savedData) {
-    profile.value = JSON.parse(savedData)
+    const userData = JSON.parse(savedData)
+    // 使用解構賦值，把抓到的資料填入 profile
+    Object.assign(profile.value, userData)
   }
 })
 
-const handleSave = () => {
-  // 1. 更新目前使用者快取
-  localStorage.setItem('userProfile', JSON.stringify(profile.value));
+const handleSave = async () => {
+  try {
+    // 1. 呼叫後端 API 更新資料庫
+    const res = await axios.post('http://localhost:8888/unicare_api/member/update_api.php', profile.value);
 
-  // 2. 同步更新總資料庫中的資訊
-  const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-  const userIndex = allUsers.findIndex(u => u.email === profile.value.email);
-  
-  if (userIndex !== -1) {
-    allUsers[userIndex] = { 
-      ...allUsers[userIndex], 
-      ...profile.value,
-      updated_at: new Date().toISOString() 
-    };
-    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    if (res.data.status === 'success') {
+      // 2. 成功後，同步更新瀏覽器的快取 (localStorage)
+      localStorage.setItem('userProfile', JSON.stringify(profile.value));
+      
+      alert('個人資料已踏實同步至資料庫！');
+      
+      // 3. (選做) 跳轉回首頁或重新整理
+      // router.push({ name: 'Home' });
+    } else {
+      alert('更新失敗：' + res.data.message);
+    }
+  } catch (error) {
+    console.error("更新出錯：", error);
+    alert('無法連線到伺服器，更新失敗。');
   }
-  alert('個人資料已成功更新！');
 }
 </script>
 
@@ -113,15 +129,15 @@ const handleSave = () => {
           <div class="form-grid-single">
             <div class="form-group">
               <label>聯絡人姓名</label>
-              <input v-model="profile.contact_name" type="text">
+              <input v-model="profile.contact_name">
             </div>
             <div class="form-group">
               <label>關係</label>
-              <input v-model="profile.relationship" type="text" placeholder="例如：父子">
+              <input v-model="profile.relationship">
             </div>
             <div class="form-group">
-              <label>聯絡人電話</label>
-              <input v-model="profile.emergency_contact_phone" type="text">
+              <label>聯絡電話</label>
+              <input v-model="profile.emergency_phone_number">
             </div>
           </div>
         </div>
