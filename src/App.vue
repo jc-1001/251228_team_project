@@ -161,6 +161,7 @@ onMounted(() => {
 }
 
 // 主要版面
+
 .app_layout {
   display: flex;
   min-height: 100vh;
@@ -170,12 +171,17 @@ onMounted(() => {
 .main_content {
   flex: 1;
   padding: 28px 54px 40px;
-  height: 100vh;
-  overflow-y: auto;
+  // 首頁雙重卷軸解決
+  max-width: 100vw; // 🔴 限制最大寬度為螢幕寬
+  min-height: 100vh;
+  // overflow-y: auto;
   background-repeat: no-repeat;
+  // 背景圖固定
+  background-attachment: fixed;
 
   @media screen and (max-width: 1024px) {
     padding: 32px 24px;
+    background-attachment: scroll;
   }
   @media screen and (max-width: 576px) {
     height: auto;
