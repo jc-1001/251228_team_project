@@ -1,51 +1,51 @@
 <script setup>
 import { ref } from 'vue';
+import { fileBaseUrl } from '@/utils/publicApi';
+
 const props = defineProps({
     isOpen: Boolean,
     date: String,
     meals: Array
 });
+
 const emit = defineEmits(['close', 'open-add', 'open-edit']);
-// 左右切換
+
+// 1. 統一圖片基礎路徑 (與編輯頁面完全對齊)
+const IMAGE_BASE_URL = fileBaseUrl.endsWith('/') 
+    ? `${fileBaseUrl}diet/uploads/` 
+    : `${fileBaseUrl}/diet/uploads/`;
+
+
 const scrollContainer = ref(null);
 const scroll = (direction) => {
     if (scrollContainer.value){
-        const scrollAmount = 220; // 卡片尺寸+間距
+        const scrollAmount = 220;
         scrollContainer.value.scrollBy({
             left: direction === 'next' ? scrollAmount : -scrollAmount,
             behavior: 'smooth'
         });
     }
 }
-const closeModal = () => {
-    emit('close');
-};
-const handleEdit = (meal) => {
-    console.log('編輯:', meal);
-    emit('open-edit', meal);
-};
-const handleAddMeal = () => {
-    console.log('新增');
-    emit('open-add');
-};
-const saveEdit = (updatedMeal) => {
-    emit('update-diet', { date: props.date, meal: updatedMeal });
-};
-const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
+
+const closeModal = () => emit('close');
+const handleEdit = (meal) => emit('open-edit', meal);
+const handleAddMeal = () => emit('open-add');
+
+// 2. 修正圖片路徑轉換
 const getMealImage = (url) => {
     if (!url) return null;
-    if (url.startsWith('http')) return url;
-    return `${IMAGE_BASE_URL}${url}`;
+    // 如果已經是完整路徑則直接回傳
+    if (url.startsWith('http') || url.startsWith('blob:')) return url;
+    
+    // 清理路徑，確保拼接正確
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    return IMAGE_BASE_URL + cleanPath;
 };
-const openEditModal = (log) => {
-    selectedData.value = {
-        type: log.meal_type,
-        note: log.description,
-        time: log.meal_time,
-        preview: IMAGE_BASE_URL + log.food_image_url, 
-        image_file: null
-    };
-    isModalOpen.value = true;
+
+// 3. 處理圖片載入失敗
+const handleImageError = (e) => {
+    // 隱藏破圖，讓底下的「無記錄」字樣顯示
+    console.error("圖片載入失敗:", e.target.src);
 };
 </script>
 <template>
@@ -62,13 +62,17 @@ const openEditModal = (log) => {
             <div class="meals-wrapper">
                 <span class="material-symbols-outlined arrow-btn prev" @click="scroll('prev')">arrow_back_ios</span>
                 <div class="meals-scroll-container" ref="scrollContainer">
-                    <div v-for="meal in meals" :key="meal.diet_log_id" class="meal-card">
+                    <div v-for="meal in meals" :key="`${meal.diet_log_id}-${meal.food_image_url}`" class="meal-card">
                         <div class="meal-type">{{ meal.meal_type }}</div>
                         <div class="image-wrapper">
                             <div class="image-box" :class="{ 'is-empty': !meal.food_image_url }">
-                                <img v-if="meal.food_image_url" :src="getMealImage(meal.food_image_url)" alt="meal"
-                                loading="lazy"
-                                @error="(e) => e.target.src = '@/assets/images/default-food.png'"/>
+                                <img v-if="meal.food_image_url" 
+                                    :src="getMealImage(meal.food_image_url)" 
+                                    alt="meal"
+                                    class="meal-card-img"
+                                    @error="handleImageError"
+                                    @load="() => console.log('圖片加載成功')"
+/>
                                 <span v-else class="empty-text">無記錄</span>
                                 <div class="hover-mask edit-trigger" @click.stop="handleEdit(meal)">
                                     <div class="pencil-icon">

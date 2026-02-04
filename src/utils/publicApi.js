@@ -29,6 +29,8 @@ const setupInterceptors = (instance) => {
     );
 };
 
+export const fileBaseUrl = import.meta.env.VITE_FILE_URL;
+
 
 export const publicApi = axios.create({
     baseURL: import.meta.env.VITE_API_DOMAIN,

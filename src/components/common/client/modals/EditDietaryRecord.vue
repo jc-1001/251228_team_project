@@ -1,18 +1,15 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
+import { fileBaseUrl } from '@/utils/publicApi';
 const props = defineProps({
     isOpen: Boolean,
     date: String,
     initialData: Object // 接收點擊的那筆資料
 });
 const emit = defineEmits(['close', 'submit', 'delete']);
-const confirmDelete = () => {
-    // 彈窗
-    if (confirm("確定要刪除這筆飲食記錄？")) {
-        emit('delete', formData.value.diet_log_id);
-        close();
-    }
-};
+const IMAGE_BASE_URL = fileBaseUrl.endsWith('/') 
+    ? `${fileBaseUrl}diet/uploads/` 
+    : `${fileBaseUrl}/diet/uploads/`;
 // 初始狀態
 const formData = ref({
     diet_log_id: null,
@@ -23,7 +20,6 @@ const formData = ref({
     meal_time: ''
 });
 const mealTypes = ['早餐', '午餐', '晚餐'];
-const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
 const previewImage = ref(null);
 onMounted(() => {
     if (props.initialData && props.initialData.food_image_url) {
@@ -37,37 +33,34 @@ const updatePreview = (url) => {
         previewImage.value = null;
         return;
     }
-    previewImage.value = (url.startsWith('blob:') || url.startsWith('http')) 
-        ? url 
-        : IMAGE_BASE_URL + url;
+    // 3. 統一判斷邏輯
+    if (url.startsWith('blob:') || url.startsWith('http')) {
+        previewImage.value = url;
+    } else {
+        const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+        previewImage.value = IMAGE_BASE_URL + cleanPath;
+    }
 };
 watch(() => props.isOpen, (newVal) => {
     if (newVal && props.initialData) {
         const rawType = props.initialData.meal_type;
-        const isCustomTime = !mealTypes.includes(rawType);
-        const currentImageUrl = props.initialData.food_image_url ? (props.initialData.food_image_url.startsWith('http') 
-                ? props.initialData.food_image_url 
-                : IMAGE_BASE_URL + props.initialData.food_image_url)
-                : null;
+        const isCustomTime = !mealTypes.includes(rawType) && rawType !== 'custom';
         formData.value = {
             diet_log_id: props.initialData.diet_log_id,
             meal_type: isCustomTime ? 'custom' : rawType,
             description: props.initialData.description || '',
             image_file: null,
-            preview: currentImageUrl,
+            preview: null,
             meal_time: isCustomTime ? rawType.substring(0, 5) : ''
         };
         updatePreview(props.initialData.food_image_url);
     }
 }, { immediate: true }); // 確保開啟時就執行
 const handleImageUpload = (event) => {
-    const file = event.target.files?.[0] || event.dataTransfer?.files?.[0];
+    const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
         alert("格式錯誤，請選擇圖片檔案。");
-        if (event.target) {
-            event.target.value = '';
-        }
         return;
     }
     if (file.size > 5 * 1024 * 1024) {

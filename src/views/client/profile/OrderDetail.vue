@@ -1,11 +1,12 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useOrderStore } from '@/stores/order'
 import { useCartStore } from '@/stores/cart'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 import { useToast } from '@/composable/useCartToast'
+import { parsePublicFile } from '@/utils/parseFile';
+import { publicApi } from '@/utils/publicApi'
 
 // icon
 import orderIcon from '@/assets/images/shop/icon/order.svg'
@@ -18,17 +19,37 @@ import shoppingIcon from '@/assets/images/shop/icon/shopping_cart.svg'
 
 const route = useRoute()
 const router = useRouter()
-const orderStore = useOrderStore()
 const cartStore = useCartStore()
 const { showToast } = useToast()
 
 // 從網址抓訂單id
 const currentOrderId = route.params.id
 
-// 從store裡面找出該筆訂單
-const order = computed(()=>{
-  return orderStore.orderList.find(item => item.id === currentOrderId)  
-})
+// 定義一個響應式變數來接 API 資料
+const order = ref(null)
+
+const fetchOrderDetail = async () => {
+  try {
+    const res = await publicApi.get('member_center/get_my_order_detail.php', {params:{id: currentOrderId}})
+
+    if(!res.data) {
+      alert('找不到該筆訂單')
+      router.push('/orderlist')
+      return
+    }
+    order.value = res.data
+
+    // 資料載入後，讓配送進度條動起來
+    setTimeout(()=>{
+    displayWidth.value = targetWidth.value
+  },300)
+
+  } catch (err){
+    console.error(err)
+    alert('讀取失敗')
+  }
+}
+
 
 // 訂單進度
 const steps = [
@@ -78,16 +99,8 @@ const buyAgain = ()=>{
   router.push('/cart')
 }
 
-// 避免使用者輸入不存在的網址
 onMounted(()=>{
-  if(!order.value) {
-    alert('找不到該筆訂單')
-    router.push('/orderlist')
-  }
-  // 讓進度條動起來
-  setTimeout(()=>{
-    displayWidth.value = targetWidth.value
-  },300)
+  fetchOrderDetail()
 })
 
 </script>
@@ -96,7 +109,7 @@ onMounted(()=>{
   <TheProfileHeader/>
 
   <TheprofileSide  title="訂單詳情" :showTitle="false">
-    <div class="detail_container">
+    <div class="detail_container" v-if="order">
       <div class="detail_header">
         <router-link to="/orderlist" class="back_link">
           &lt 返回我的訂單
@@ -140,8 +153,8 @@ onMounted(()=>{
               <img :src="creditIcon">
             </span>付款資訊</h4>
           <p><strong>方式 </strong>{{ order.paymentType === 'credit'? '信用卡付款':'ATM轉帳' }}</p>
-          <p v-if="order.paymentType === 'credit'"><strong>卡號 </strong>{{ '*********'+(order.creditInfo.cardNumber).slice(-4) }}</p>
-          <p><strong>發票 </strong>{{ invoiceMap[order.invoiceType] || '個人發票' }}</p>
+          <p><strong>狀態 </strong>{{ order.isPaid == 0 ? '尚未付款' : '已付款' }}</p>
+          <p><strong>發票 </strong>{{ invoiceMap[order.invoiceType] }}</p>
         </section>
       </div>
       <section class="items_section">
@@ -152,7 +165,7 @@ onMounted(()=>{
         </h4>
         <ul class="item_list">
           <li class="item_row" v-for="item in order.items" :key="item.id">
-            <img :src="item.image" alt="item.title">
+            <img :src="parsePublicFile(item.image)" alt="item.title">
             <div class="item_detail">
               <p class="title">{{ item.title }}</p>
               <p class="price">${{ item.price }}</p>

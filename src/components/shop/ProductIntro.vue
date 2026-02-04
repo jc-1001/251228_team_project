@@ -63,14 +63,14 @@ const shareToLine = () => {
   const productName = props.product.title
   const productPrice = props.product.price
 
-  // 組合成文案
-  const text = `好物推薦：${productName}\n優惠價：$${productPrice}，快來看看吧！\n`
-
   // 拿到目前頁面的完整網址
   const currentUrl = window.location.href
   
+  // 組合成文案
+  const text = `好物推薦：${productName}\n優惠價：$${productPrice}，快來看看吧！\n ${currentUrl}`
+  
   // LINE官方規定的分享網址格式
-  const lineShareUrl = `https://social-plugins.line.me/lineit/share?text=${encodeURIComponent(text + currentUrl)}`
+  const lineShareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`
   
   // 開啟一個分享視窗 (寬500, 高500)
   window.open(lineShareUrl, '_blank', 'width=500,height=500')
