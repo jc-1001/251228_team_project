@@ -1,18 +1,5 @@
 <script setup>
 const isProcessing = ref(false); 
-// const yourSaveFunction = async (data) => {
-//     if (isProcessing.value) return;
-//     isProcessing.value = true;
-//     try {
-//         if (response.data.success) {
-//             isAddModalOpen.value = false; 
-//             isModalOpen.value = false;
-//             await fetchDietRecords(); 
-//         }
-//     } finally {
-//         isProcessing.value = false;
-//     }
-// };
 import { ref, computed, onMounted } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import DateRecord from '@/components/common/client/modals/DateRecord.vue'
@@ -167,12 +154,16 @@ const currentDayMeals = computed(() => {
     const getFullImageUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        return `${fileBaseUrl}/${path}`; // 根據後端存放圖片的目錄調整
+
+        console.log("yyyy");
+        console.log(fileBaseUrl);
+        console.log(path);
+        return `${fileBaseUrl}diet/uploads/${path}`; // 根據後端存放圖片的目錄調整
     };
     const defaultTemplates = [
         { meal_type: '早餐', timeWeight: 800 },
         { meal_type: '午餐', timeWeight: 1200 },
-        { meal_type: '晚餐', timeWeight: 1700 }
+        { meal_type: '晚餐', timeWeight: 1900 }
     ];
     // 建立空間存放要顯示的項目
     const displayList = [];
@@ -193,6 +184,8 @@ const currentDayMeals = computed(() => {
     });
     // 自訂時間項目
     const extraMeals = savedRecords.filter(r => !['早餐', '午餐', '晚餐'].includes(r.meal_type));
+    console.log("tttt");
+    console.log(extraMeals);
     extraMeals.forEach(extra => {
         const weight = parseInt(extra.meal_time?.replace(/:/g, '').substring(0, 4), 10) || 9999;
         displayList.push({ 
