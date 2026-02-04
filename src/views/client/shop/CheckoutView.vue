@@ -14,10 +14,12 @@ const router = useRouter()
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
 
-const showSuccess = ref(false)
+// const showSuccess = ref(false)
 
 // Template Refs - 樣板參考
 const checkoutFormRef = ref(null)
+
+const successModal = ref(null)
 
 // 處理結帳送出
 const handleCheckoutSubmit = async (summaryData)=>{
@@ -56,16 +58,15 @@ const handleCheckoutSubmit = async (summaryData)=>{
     // 呼叫orderStore建立訂單
     const success = await orderStore.createOrder( orderPayLoad )
 
-    // 訂單成立燈箱
     if(success) {
-      showSuccess.value = true
+      successModal.value.show();
     }
   } else {
     alert('部分欄位有誤，請檢查紅字部分！')
   }
 }
 const handleSuccessConfirm = ()=>{
-  showSuccess.value = false
+  // showSuccess.value = false
   cartStore.clearCart()
   // 導到訂單管理頁
   router.push('/orderlist')
@@ -73,7 +74,7 @@ const handleSuccessConfirm = ()=>{
 
 </script>
 <template>
-  <SuccessMessageModal v-if="showSuccess" :title="'已送出訂單!'" @confirmed="handleSuccessConfirm"/>
+  <SuccessMessageModal ref="successModal" :title="'已送出訂單!'" @confirmed="handleSuccessConfirm" />
   <div class="checkout_page">
     <div class="breadcrumb">
       <router-link :to="'/cart'" class="breadcrumb_location">&lt 返回購物車</router-link>
