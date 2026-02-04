@@ -204,15 +204,4 @@ router.beforeEach((to, from, next) => {
 });
 
 
-// router.beforeEach((to, from, next) => {
-//   const isAuthenticated = localStorage.getItem('userProfile'); // 檢查是否有登入資料
-
-//   // 如果要去個人頁 (Profile) 或後台，但沒登入
-//   if ((to.name === 'Profile' || to.path.includes('/admin')) && !isAuthenticated) {
-//     alert('請先登入或註冊！');
-//     next('/register'); // 導向註冊頁
-//   } else {
-//     next(); // 允許通過
-//   }
-// });
 export default router
