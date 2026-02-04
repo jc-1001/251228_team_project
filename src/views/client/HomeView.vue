@@ -301,8 +301,8 @@ onMounted(() => {
                 v-if="popupInfo.type === 'medicine'"
                 :info="popupInfo"
                 @close="closePopup"
-              /> -->
-              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
+              /> 
+              <!-- <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" /> -->
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
                 <button @click="closePopup"></button>
@@ -371,7 +371,6 @@ onMounted(() => {
         </div>
         <div class="med-stock">
           <div class="block-title">
-            <AppIcon name="warning" size="20" style="margin-right: 5px" />
             <p>藥物庫存警示</p>
           </div>
           <HomeReserveMedicine />
@@ -433,14 +432,14 @@ main {
   height: 300px;
   width: 100%;
   margin-top: 65px;
-  overflow: auto;
+
 
   @media (max-width: 1025px) {
     margin-top: 0px;
   }
 
   .block-title {
-    padding: 20px;
+    padding: 20px 20px 0 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小
@@ -455,7 +454,7 @@ main {
   margin-top: 20px;
 
   .block-title {
-    padding: 0 20px;
+    padding:  20px 20px 0 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小

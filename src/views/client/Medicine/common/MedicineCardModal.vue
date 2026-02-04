@@ -188,7 +188,7 @@ onBeforeUnmount(() => {
           <section class="medicine-modal__form">
             <div class="form-group">
               <label for="notes">備註</label>
-              <input id="notes" v-model.trim="notes" type="text" />
+              <input id="notes" v-model.trim="notes" type="text"  maxlength="20"/>
             </div>
 
             <div class="medicine-modal__schedule">

@@ -43,7 +43,7 @@ onMounted(() => {
   border-radius: 8px;
   padding: 0 24px 24px 24px;
   .home-reserve-medicine__content {
-    max-height: 150px;
+    max-height: 160px;
   overflow: auto;
   }
 

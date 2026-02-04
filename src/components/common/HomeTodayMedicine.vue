@@ -45,7 +45,7 @@ const viewItems = computed(() =>
       timeLabel: timeSlotLabel(item.time_slot),
       instruction: instructionLabel(item.instruction),
       doseQty: item.dose_qty ?? '',
-    }))
+    })),
 )
 
 onMounted(() => {
@@ -78,14 +78,15 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .today-medicine {
-  background: $white;
-  border-radius: $radius_md;
-  box-shadow: $shadow;
-  padding: 0 16px 16px;
+  background-color: $white;
+  border-radius: 8px;
+  padding: 0 24px 24px 24px;
 
   .today-medicine__list {
     display: grid;
     gap: 16px;
+    max-height: 220px;
+    overflow: auto;
   }
 
   .today-medicine__card {
