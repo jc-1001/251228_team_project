@@ -1,18 +1,18 @@
 <script setup>
 const isProcessing = ref(false); 
-const yourSaveFunction = async (data) => {
-    if (isProcessing.value) return;
-    isProcessing.value = true;
-    try {
-        if (response.data.success) {
-            isAddModalOpen.value = false; 
-            isModalOpen.value = false;
-            await fetchDietRecords(); 
-        }
-    } finally {
-        isProcessing.value = false;
-    }
-};
+// const yourSaveFunction = async (data) => {
+//     if (isProcessing.value) return;
+//     isProcessing.value = true;
+//     try {
+//         if (response.data.success) {
+//             isAddModalOpen.value = false; 
+//             isModalOpen.value = false;
+//             await fetchDietRecords(); 
+//         }
+//     } finally {
+//         isProcessing.value = false;
+//     }
+// };
 import { ref, computed, onMounted } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import DateRecord from '@/components/common/client/modals/DateRecord.vue'
@@ -21,6 +21,7 @@ import EditDietaryRecord from '@/components/common/client/modals/EditDietaryReco
 import dayjs from 'dayjs';
 import dietBanner from '@/assets/images/Banner_diary.svg'
 import axios from 'axios';
+import { publicApi, fileBaseUrl } from '@/utils/publicApi';
 const currentViewDate = ref(dayjs());
 // 填寫卡片顯示綠底
 const filledDates = computed(() => {
@@ -116,7 +117,7 @@ const getTimeWeight = (meal_type) => {
 const fetchDietRecords = async () => {
         try {
             // 直接對準你的 PHP 讀取檔案
-            const response = await axios.get('http://localhost:8888/unicare_api/diet/get_diets.php', {
+            const response = await publicApi.get('diet/get_diets.php', {
                 params: { member_id: 1 }
             });
             console.log("Vue 收到 PHP 資料了！", response.data);
@@ -143,7 +144,7 @@ const handleNewRecord = async (formData) => {
     }
     try {
         //將此網址改為你實際存放 PHP 的位置
-        const response = await axios.post('http://localhost:8888/unicare_api/diet/create_diet.php',fd);
+        const response = await publicApi.post('diet/create_diet.php',fd);
         //處理結果
         if (response.data && response.data.success) {
             // 讓日曆和紀錄自動更新
@@ -166,7 +167,7 @@ const currentDayMeals = computed(() => {
     const getFullImageUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        return `http://localhost:8888/unicare_api/images/diet/uploads/${path}`; // 根據後端存放圖片的目錄調整
+        return `${fileBaseUrl}/${path}`; // 根據後端存放圖片的目錄調整
     };
     const defaultTemplates = [
         { meal_type: '早餐', timeWeight: 800 },
@@ -239,7 +240,7 @@ const handleUpdateRecord = async (updatedData) => {
         fd.append('food_image', updatedData.image_file);
     }
     try {
-        const response = await axios.post('http://localhost:8888/unicare_api/diet/update_diet.php', fd);
+        const response = await publicApi.post('diet/update_diet.php', fd);
         if (response.data && response.data.success) {
             isEditModalOpen.value = false;
             // 從資料庫拉取排序正確的資料
@@ -265,7 +266,7 @@ const handleDelete = async (diet_log_id) => {
     try {
         const formData = new FormData();
         formData.append('diet_log_id', diet_log_id);
-        const res = await axios.post('http://localhost:8888/unicare_api/diet/delete_diet.php', formData);
+        const res = await publicApi.post('diet/delete_diet.php', formData);
         
         if (res.data.success) {
             isEditModalOpen.value = false;

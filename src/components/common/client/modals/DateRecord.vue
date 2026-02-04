@@ -5,6 +5,7 @@ const props = defineProps({
     date: String,
     meals: Array
 });
+const fileBaseUrl = import.meta.env.VITE_FILE_URL;
 const emit = defineEmits(['close', 'open-add', 'open-edit']);
 // 左右切換
 const scrollContainer = ref(null);
@@ -31,18 +32,23 @@ const handleAddMeal = () => {
 const saveEdit = (updatedMeal) => {
     emit('update-diet', { date: props.date, meal: updatedMeal });
 };
-const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
+// const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
+const getFullImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${fileBaseUrl}/${path}`; // 根據後端存放圖片的目錄調整
+    };
 const getMealImage = (url) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
-    return `${IMAGE_BASE_URL}${url}`;
+    return `${fileBaseUrl}/images/diet/uploads/${url}`;
 };
 const openEditModal = (log) => {
     selectedData.value = {
         type: log.meal_type,
         note: log.description,
         time: log.meal_time,
-        preview: IMAGE_BASE_URL + log.food_image_url, 
+        preview: getMealImage(log.food_image_url), 
         image_file: null
     };
     isModalOpen.value = true;

@@ -13,6 +13,7 @@ const confirmDelete = () => {
         close();
     }
 };
+const fileBaseUrl = import.meta.env.VITE_FILE_URL;
 // 初始狀態
 const formData = ref({
     diet_log_id: null,
@@ -23,7 +24,7 @@ const formData = ref({
     meal_time: ''
 });
 const mealTypes = ['早餐', '午餐', '晚餐'];
-const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
+// const IMAGE_BASE_URL = 'http://localhost:8888/unicare_api/images/diet/uploads/';
 const previewImage = ref(null);
 onMounted(() => {
     if (props.initialData && props.initialData.food_image_url) {
