@@ -7,7 +7,7 @@ import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 import axios from 'axios' 
 const router = useRouter()
 
-// 嚴格對應資料庫與註冊 API 的欄位名稱
+// 對應資料庫與註冊 API 
 const profile = ref({
   full_name: '',
   email: '',
@@ -31,14 +31,14 @@ const profile = ref({
   // 緊急聯絡人 (對齊 register_api.php 接收的名稱)
   contact_name: '',
   relationship: '',
-  emergency_phone_number: '' // 原本可能是 emergency_contact_phone，請改為跟註冊一致
+  emergency_phone_number: '' // 需跟註冊一致
 });
 
 onMounted(() => {
   const savedData = localStorage.getItem('userProfile')
   if (savedData) {
     const userData = JSON.parse(savedData)
-    // 使用解構賦值，把抓到的資料填入 profile
+    // 解構賦值，抓到的資料填入 profile
     Object.assign(profile.value, userData)
   }
 })
@@ -52,7 +52,7 @@ const handleSave = async () => {
       // 2. 成功後，同步更新瀏覽器的快取 (localStorage)
       localStorage.setItem('userProfile', JSON.stringify(profile.value));
       
-      alert('個人資料已踏實同步至資料庫！');
+      alert('個人資料已同步');
       
       // 3. (選做) 跳轉回首頁或重新整理
       // router.push({ name: 'Home' });

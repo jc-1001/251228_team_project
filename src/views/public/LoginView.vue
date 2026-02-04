@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-// --- 2. 定義變數 (遵循 ER-Model 命名) ---
+// --- 2. ER-Model定義變數 ---
 const router = useRouter();
 const email = ref('');      // 對應 member_core.email
 const password = ref('');   // 對應 member_core.password

@@ -37,9 +37,8 @@
             <p style="text-align: center;">
                 <br>
                 <!-- <strong></strong><br> -->
-                <small><b>Cjd105_Group1 UniCare 身體健康數據中控台</b><br>
-                    <b>組員</b>
-                    01 游佳純丨02 徐子益丨05 羅方敏丨12 劉岳霖丨13 李妮丨17 黃煜軒 (依座號排列)
+                <small><b>UniCare 身體健康數據中控台</b><br>
+                    【Cjd105_第一組】<b>01 游佳純</b>丨02 徐子益丨05 羅方敏丨12 劉岳霖丨13 李妮丨17 黃煜軒 (依座號排列)
                 </small>
             </p>
     </main>

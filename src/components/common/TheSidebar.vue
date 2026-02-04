@@ -13,7 +13,7 @@ const menuItems = ref([
   { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
   { name: '樂活商城', icon: 'storefront', path: '/shop' },
   { name: '幫助中心', icon: 'help', path: '/support' },
-  { name: '登入', icon: 'login', path: '/login' },
+  // { name: '登入', icon: 'login', path: '/login' },
 ])
 </script>
 

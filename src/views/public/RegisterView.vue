@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from '@/config/apiConfig';
 
 const router = useRouter();
 
-// 1. 嚴格對應您的資料結構，reactive 物件在 script 存取不需加 .value
+// 1. 對應資料結構，reactive 物件在 script 存取不需加 .value
 const memberProfile = reactive({
   full_name: '',
   email: '',
@@ -41,21 +41,20 @@ const memberProfile = reactive({
 const agreePolicy = ref(false);
 
 const handleRegister = async () => {
-  // 1. 檢查是否勾選同意條款
+  // 1. 檢查
   if (!agreePolicy.value) {
     alert('請先閱讀並勾選同意服務條款與隱私權政策');
     return;
   }
 
-  // 2. 密碼二次確認
+  // 2. 密碼確認
   if (memberProfile.password !== memberProfile.confirmPassword) {
     alert('兩次輸入的密碼不一致！');
     return;
   }
 
   try {
-    // 注意：這裡使用 API_ENDPOINTS.REGISTER (假設您在 apiConfig.js 有定義)
-    // 如果還沒定義，可以先保留原本的網址，但建議統一管理
+    // 在 apiConfig.js還沒定義，API_ENDPOINTS.REGISTER可以先保留原本的網址，但建議統一
     const res = await axios.post('http://localhost:8888/unicare_api/member/register_api.php', memberProfile);
 
     if (res.data.status === 'success') {
@@ -66,7 +65,7 @@ const handleRegister = async () => {
     }
   } catch (error) {
     console.error("API 連線錯誤：", error);
-    alert('無法連線到伺服器，請確認 MAMP 伺服器是否啟動（Port: 8888）。');
+    alert('無法連線到伺服器，（Port: 8888）。');
   }
 };
 
