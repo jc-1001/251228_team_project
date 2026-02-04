@@ -494,8 +494,8 @@ const onSave = async () => {
 
     // 根據不同指標加入對應的數值
     if (activeMetricKey.value === "bloodPressure" || activeMetricKey.value === "heartRate") {
-      if (!formSYS.value || !formDIA.value || !formHeartRate.value || formSYS.value < 0 || formDIA.value < 0 || formHeartRate.value < 0) {
-        alert('請填寫有效的血壓和心律數值')
+      if (!formSYS.value || !formDIA.value || !formHeartRate.value || formSYS.value > 0 || formDIA.value > 0 || formHeartRate > 0) {
+        alert('請填寫有效的血壓和心律數值（需大於0）')
         return
       }
       postData.systolic_pressure = Number(formSYS.value)
@@ -503,7 +503,7 @@ const onSave = async () => {
       postData.heart_rate = Number(formHeartRate.value)
     } else {
       if (!formValue.value || formValue.value < 0) {
-        alert('請填寫有效數值')
+        alert('請填寫有效的數值（需大於0）')
         return
       }
       postData[config.valueField] = Number(formValue.value)
@@ -762,7 +762,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
           <!-- 🌟單值顯示 -->
           <div class="value-card__content" v-if="!card.isDoubleValue">
-            <span class="value-card__value">
+            <span class="value-card__value"> 
               {{ card.getValue() }}
             </span>
             <span class="value-card__unit">
