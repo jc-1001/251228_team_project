@@ -69,6 +69,7 @@ const changeBg = computed(() => {
   return {}
 })
 
+
 // loading邏輯
 const loadingStore = useLoadingStore()
 // 監控數量
@@ -88,6 +89,7 @@ onMounted(() => {
     window.addEventListener('load', completeLoading)
   }
 })
+
 </script>
 
 <template>
