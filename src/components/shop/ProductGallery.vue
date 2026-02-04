@@ -60,6 +60,8 @@ watch(()=> props.gallery,(newVal)=>{
 
     .thumbnail {
       width: 80px;
+      height: 80px;
+      object-fit: cover;
       border: 2px solid $grayLight;
       border-radius: $radius-sm;
       cursor: pointer;

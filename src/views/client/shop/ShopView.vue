@@ -46,7 +46,7 @@ const filteredProducts = computed(() => {
     } else {
       // 把選到的"分類名稱"轉成數字，與資料庫對接
       const targetId = categoryMap[currentCategory.value]
-      matchCategory = item.category_id === targetId
+      matchCategory = Number(item.category_id) === targetId
     }
 
     // 2.處理搜尋過濾
@@ -145,9 +145,8 @@ const filteredProducts = computed(() => {
   gap: 16px;
   margin-bottom: 40px;
   .search_wrapper {
-    // flex: 1;
     position: relative;
-    width: 400px;
+    width: 320px;
     @media screen and (max-width: 768px) {
       width: 100%;
     }
