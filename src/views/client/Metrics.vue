@@ -494,16 +494,16 @@ const onSave = async () => {
 
     // 根據不同指標加入對應的數值
     if (activeMetricKey.value === "bloodPressure" || activeMetricKey.value === "heartRate") {
-      if (!formSYS.value || !formDIA.value || !formHeartRate.value) {
-        alert('請填寫完整的血壓和心律數值')
+      if (!formSYS.value || !formDIA.value || !formHeartRate.value || formSYS.value < 0 || formDIA.value < 0 || formHeartRate.value < 0) {
+        alert('請填寫有效的血壓和心律數值')
         return
       }
       postData.systolic_pressure = Number(formSYS.value)
       postData.diastolic_pressure = Number(formDIA.value)
       postData.heart_rate = Number(formHeartRate.value)
     } else {
-      if (!formValue.value) {
-        alert('請填寫數值')
+      if (!formValue.value || formValue.value < 0) {
+        alert('請填寫有效數值')
         return
       }
       postData[config.valueField] = Number(formValue.value)
