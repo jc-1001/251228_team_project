@@ -1,21 +1,16 @@
 <script setup>
 import { ref } from 'vue';
 import { fileBaseUrl } from '@/utils/publicApi';
-
 const props = defineProps({
     isOpen: Boolean,
     date: String,
     meals: Array
 });
-
 const emit = defineEmits(['close', 'open-add', 'open-edit']);
-
 // 1. 統一圖片基礎路徑 (與編輯頁面完全對齊)
 const IMAGE_BASE_URL = fileBaseUrl.endsWith('/') 
     ? `${fileBaseUrl}diet/uploads/` 
     : `${fileBaseUrl}/diet/uploads/`;
-
-
 const scrollContainer = ref(null);
 const scroll = (direction) => {
     if (scrollContainer.value){
@@ -26,22 +21,24 @@ const scroll = (direction) => {
         });
     }
 }
-
 const closeModal = () => emit('close');
 const handleEdit = (meal) => emit('open-edit', meal);
 const handleAddMeal = () => emit('open-add');
-
 // 2. 修正圖片路徑轉換
 const getMealImage = (url) => {
+    
+    //console.log("aaaaaa" + url);
     if (!url) return null;
     // 如果已經是完整路徑則直接回傳
     if (url.startsWith('http') || url.startsWith('blob:')) return url;
     
     // 清理路徑，確保拼接正確
     const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    //console.log("hihi");
+    //console.log(IMAGE_BASE_URL);
+    //console.log(cleanPath);
     return IMAGE_BASE_URL + cleanPath;
 };
-
 // 3. 處理圖片載入失敗
 const handleImageError = (e) => {
     // 隱藏破圖，讓底下的「無記錄」字樣顯示
@@ -71,8 +68,7 @@ const handleImageError = (e) => {
                                     alt="meal"
                                     class="meal-card-img"
                                     @error="handleImageError"
-                                    @load="() => console.log('圖片加載成功')"
-/>
+                                    @load="() => console.log('圖片加載成功')"/>
                                 <span v-else class="empty-text">無記錄</span>
                                 <div class="hover-mask edit-trigger" @click.stop="handleEdit(meal)">
                                     <div class="pencil-icon">
