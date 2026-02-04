@@ -13,8 +13,6 @@ const menuItems = ref([
   { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
   { name: '樂活商城', icon: 'storefront', path: '/shop' },
   { name: '幫助中心', icon: 'help', path: '/support' },
-  //測試 之後要刪
-  { name: '前後台登入', icon: '', path: '/Portal' },
   { name: '登入', icon: 'login', path: '/login' },
 ])
 </script>

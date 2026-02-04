@@ -65,6 +65,27 @@ const showBadge = (item) => {
   const badgeValue = typeof item.badge === 'object' ? item.badge.value : item.badge
   return typeof badgeValue === 'number' && badgeValue > 0
 }
+
+import { useRouter } from 'vue-router'; // 確保有引入
+const router = useRouter();
+
+// 建立權限檢查跳轉函式
+const handleIconClick = (item) => {
+  // 如果是通知鈴鐺 (沒有 path)，就不執行跳轉
+  if (!item.path) return;
+
+  // 檢查登入狀態
+  const isLogin = localStorage.getItem('userProfile') !== null;
+
+  if (!isLogin) {
+    alert('請先登入');
+    router.push({ name: 'Login' });
+  } else {
+    // 已登入，正常跳轉
+    router.push(item.path);
+  }
+};
+
 </script>
 <template>
   <!-- 頂部icon -->
@@ -73,7 +94,7 @@ const showBadge = (item) => {
       v-for="item in topIcons"
       :key="item.name"
       class="icon-circle"
-      @click="item.path ? $router.push(item.path) : null"
+      @click="handleIconClick(item)"
       @mouseenter="item.id === 'notice' ? (isDropdownOpen = true) : null"
       @mouseleave="isDropdownOpen = false"
     >

@@ -191,11 +191,11 @@ router.beforeEach(async (to, from) => {
 router.beforeEach((to, from, next) => {
   const isUserAuthenticated = localStorage.getItem('userProfile')!== null;
 
-  // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中
-  // 假設您的 ProfileEdit 路由名稱是 'ProfileEdit'
-  const userAuthRequired = ['Home', 'support', 'Metrics', 'Medicine', 'shop', 'DietLog', 'Diet','Profile', 'mypoint', 'orderList' ];
+  // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中 增加「訪客白名單」：登入、註冊與商城
+  const publicPages = ['Login', 'Register', 'shop', 'Landing', 'support'];
 
-  if (userAuthRequired.includes(to.name) && !isUserAuthenticated) {
+  // 邏輯改為：如果要去的地方不在白名單中，且使用者未登入
+  if (!publicPages.includes(to.name) && !isUserAuthenticated) {
     alert('請先登入會員');
     next({ name: 'Login' });
   } else {
@@ -204,4 +204,15 @@ router.beforeEach((to, from, next) => {
 });
 
 
+// router.beforeEach((to, from, next) => {
+//   const isAuthenticated = localStorage.getItem('userProfile'); // 檢查是否有登入資料
+
+//   // 如果要去個人頁 (Profile) 或後台，但沒登入
+//   if ((to.name === 'Profile' || to.path.includes('/admin')) && !isAuthenticated) {
+//     alert('請先登入或註冊！');
+//     next('/register'); // 導向註冊頁
+//   } else {
+//     next(); // 允許通過
+//   }
+// });
 export default router

@@ -30,7 +30,14 @@ const handleDietSubmit = (data) => {
   // 串接API儲存資料
   closePopup() // 儲存後關閉
 }
+// 增加讀取使用者資料
+const userName = ref('訪客')
 
+const savedData = localStorage.getItem('userProfile')
+if (savedData) {
+  const userData = JSON.parse(savedData)
+  userName.value = userData.full_name || '會員'
+}
 const fastButton = ref([
   { name: '吃藥', icon: 'medication', type: 'medicine' },
   { name: '飲食日記', icon: 'restaurant', type: 'diet' },
@@ -127,7 +134,7 @@ import HeaderImage from '@/assets/images/HomeView-header.svg'
 <template>
   <div class="home-container">
     <TheHeader
-      title="早安，陳小姐！"
+      :title="`早安，${userName}！`"
       subtitle="今天感覺如何？別忘了量血壓喔～"
       :imageSrc="HeaderImage"
     />

@@ -7,6 +7,21 @@ const profileItem = ref([
   { name: '我的積分', icon: 'stars', path: '/mypoint' },
   { name: '我的訂單', icon: 'article', path: '/orderlist' },
 ])
+
+import { onMounted } from 'vue' // 確保有引入 onMounted
+
+const userName = ref('訪客') // 預設值
+
+onMounted(() => {
+  // 從快取讀取登入時存入的資料
+  const savedData = localStorage.getItem('userProfile')
+  if (savedData) {
+    const userData = JSON.parse(savedData)
+    // 讀取資料庫對應的姓名欄位 full_name
+    userName.value = userData.full_name || '會員'
+  }
+})
+
 defineProps({
   title: {
     type: String,
@@ -33,7 +48,7 @@ const handleUserLogout = () => {
         <div class="pf-img">
           <img src="@/assets/images/user-pic.svg" alt="頭像" />
         </div>
-        <p class="user-name">陳小姐</p>
+        <p class="user-name">{{ userName }}</p>
       </div>
 
       <nav class="menu-list">
