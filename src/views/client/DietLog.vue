@@ -1,5 +1,4 @@
 <script setup>
-const isProcessing = ref(false); 
 import { ref, computed, onMounted } from 'vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import DateRecord from '@/components/common/client/modals/DateRecord.vue'
@@ -7,7 +6,6 @@ import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord
 import EditDietaryRecord from '@/components/common/client/modals/EditDietaryRecord.vue'
 import dayjs from 'dayjs';
 import dietBanner from '@/assets/images/Banner_diary.svg'
-import axios from 'axios';
 import { publicApi, fileBaseUrl } from '@/utils/publicApi';
 const currentViewDate = ref(dayjs());
 // 填寫卡片顯示綠底
@@ -74,9 +72,16 @@ const prevMonth = () => {
 };
 const nextMonth = () => { currentViewDate.value = currentViewDate.value.add(1, 'month'); };
 const isModalOpen = ref(false); // 控制燈箱是否顯示
+const selectedMealType = ref('');
 const isAddModalOpen = ref(false);  // 新增資料燈箱
+// const autoSelectedType = ref('');
 // 開啟新增燈箱
-const openAddModal = () => {
+const openAddModal = (data = null) => {
+    if (data && data.meal_type) {
+        selectedMealType.value = data.meal_type; 
+    } else {
+        selectedMealType.value = ''; 
+    }
     isAddModalOpen.value = true;
 };
 const selectedDate = ref('');   // 儲存目前點擊的是哪一天
@@ -88,19 +93,8 @@ const handleDateClick = (date) => {
     // 開啟燈箱邏輯
     console.log("開啟燈箱:", date.format('YYYY-MM-DD'));
 };
-const closeModal = () => {
-    isModalOpen.value = false;
-};
-const getImageUrl = (name) => {
-    return new URL(`../../assets/images/${name}`, import.meta.url).href;
-};
 //燈箱內容
 const allDietRecords = ref({});
-const getTimeWeight = (meal_type) => {
-        const typeMap = { '早餐': '08:00', '午餐': '12:00', '晚餐': '17:00' };
-        const timeStr = typeMap[meal_type] || meal_type;
-        return timeStr.replace(':', '').padStart(4, '0');
-    };
 const fetchDietRecords = async () => {
         try {
             // 直接對準你的 PHP 讀取檔案
@@ -154,10 +148,6 @@ const currentDayMeals = computed(() => {
     const getFullImageUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-
-        console.log("yyyy");
-        console.log(fileBaseUrl);
-        console.log(path);
         return `${fileBaseUrl}diet/uploads/${path}`; // 根據後端存放圖片的目錄調整
     };
     const defaultTemplates = [
@@ -184,8 +174,6 @@ const currentDayMeals = computed(() => {
     });
     // 自訂時間項目
     const extraMeals = savedRecords.filter(r => !['早餐', '午餐', '晚餐'].includes(r.meal_type));
-    console.log("tttt");
-    console.log(extraMeals);
     extraMeals.forEach(extra => {
         const weight = parseInt(extra.meal_time?.replace(/:/g, '').substring(0, 4), 10) || 9999;
         displayList.push({ 
@@ -341,6 +329,7 @@ const handleDelete = async (diet_log_id) => {
     <NewDietaryRecord 
     :is-open="isAddModalOpen" 
     :date="selectedDate"
+    :initial-meal-type="selectedMealType"
     @close="isAddModalOpen = false"
     @submit="handleNewRecord"
     />
