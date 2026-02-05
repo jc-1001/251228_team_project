@@ -15,18 +15,18 @@ const CREATE_RECORDS_URL = `${API_DOMAIN}/medicine/create_medication_records.php
 const fallbackMedicines = []
 const fallbackSupplements = []
 
+const IMAGE_BASE = 'http://localhost:8888/unicare_api'
+
 const resolveImageUrl = (url) => {
   if (!url) return ''
-  if (url.startsWith(`${API_DOMAIN}/images/`)) {
-    return url
-  }
   if (/^https?:\/\//i.test(url)) return url
   if (url.startsWith('/images/')) {
-    return `${API_DOMAIN}${url}`
+    return `${IMAGE_BASE}${url}`
   }
-  if (url.startsWith('/')) return `${API_DOMAIN}${url}`
-  return `${API_DOMAIN}/${url}`
+  if (url.startsWith('/')) return `${IMAGE_BASE}${url}`
+  return `${IMAGE_BASE}/${url}`
 }
+
 
 const normalizeItem = (raw = {}, index = 0) => {
   return {
