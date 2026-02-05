@@ -281,7 +281,7 @@ onMounted(() => {
             </button>
             <!-- 六個燈箱區 -->
             <Teleport v-if="popupInfo" to="body">
-              <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
+              <!-- <HomeCommonModal :modelValue="true" :title="`${popupInfo.name}`" :data="popupInfo"
                 @update:modelValue="closePopup" @close="closePopup" />
               <HomeCommonModal
                 :modelValue="true"
@@ -289,7 +289,7 @@ onMounted(() => {
                 :data="popupInfo"
                 @update:modelValue="closePopup"
                 @close="closePopup"
-              />
+              /> -->
               <NewDietaryRecord 
                 v-if="popupInfo.type === 'diet'"
                 :isOpen="true"

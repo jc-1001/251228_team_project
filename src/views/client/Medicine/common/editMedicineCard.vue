@@ -338,7 +338,7 @@ watch(detailData, (next) => {
 .medicine-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.5);
   display: grid;
   place-items: center;
   z-index: 1000;

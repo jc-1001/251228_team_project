@@ -62,7 +62,7 @@ const errors = ref({
 })
 
 const medicineStore = useMedicineStore()
-const { createMedication, fetchItems, hydrateItemsWithDetails } = medicineStore
+const { createMedication, fetchItems } = medicineStore
 
 const closeModal = () => {
   emit('closeModal')
@@ -159,7 +159,6 @@ const handleSubmit = async () => {
   try {
     await createMedication(payload)
     await fetchItems(category)
-    await hydrateItemsWithDetails(category)
     closeModal()
   } catch (error) {
     console.error('Failed to create medication:', error)

@@ -8,11 +8,10 @@ import { useMedicineStore } from '@/stores/medicine.js'
 
 const medicineStore = useMedicineStore()
 const { medicines } = storeToRefs(medicineStore)
-const { fetchItems, hydrateItemsWithDetails } = medicineStore
+const { fetchItems } = medicineStore
 
 onMounted(async () => {
   await fetchItems('藥品')
-  await hydrateItemsWithDetails('藥品')
 })
 
 const showModal = ref(false)
