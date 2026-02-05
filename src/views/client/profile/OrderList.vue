@@ -20,7 +20,7 @@ onMounted(()=>{
 // status 訂單狀態設定
 const statusStyle = {
   '訂單成立': {
-    class: 'status_pending',
+    class: 'status_create',
     text: '訂單成立'
   },
   '備貨中': {
@@ -28,7 +28,7 @@ const statusStyle = {
     text: '備貨中'
   },
   '配送中': {
-    class: 'status_pending',
+    class: 'status_delivery',
     text: '配送中'
   },
   '已完成': {
@@ -164,10 +164,14 @@ console.log(orderStore.orderList);
         border: 1px solid $accent;
         border-radius: $radius_sm;
       }
+      span.status_create { 
+        color: #488EDE;
+        border-color: #488EDE;
+      }
       span.status_pending { 
         color: $accent;
       }
-      span.status_completed {
+      span.status_delivery {
         color: $primary;
         border-color: $primary;
       }
