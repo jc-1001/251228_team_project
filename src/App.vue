@@ -61,7 +61,12 @@ const changeBg = computed(() => {
 <template>
   <div class="app_layout">
     <TheSidebar v-if="$route.meta.showSidebar" />
-    <main class="main_content" :style="changeBg" ref="mainContainer">
+    <main 
+      class="main_content" 
+      :class="{ 'is-landing': $route.path === '/Landing' || $route.path === '/' }"
+      :style="changeBg" 
+      ref="mainContainer"
+    >
       <TheHeader
         v-if="$route.meta.showHeader"
         :title="$route.meta.title"
@@ -90,8 +95,15 @@ const changeBg = computed(() => {
   overflow-y: auto;
   background-repeat: no-repeat;
 
+  &.is-landing {
+    padding: 0 !important;
+  }
   @media screen and (max-width: 1024px) {
     padding: 32px 24px;
+    // 平板/手機版
+    &.is-landing {
+      padding: 0 !important;
+    }
   }
   @media screen and (max-width: 576px) {
     height: auto;

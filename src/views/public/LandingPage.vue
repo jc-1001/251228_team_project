@@ -92,7 +92,7 @@
         </div>
       </div>
     </div>
-
+ <!-- style="border: 2px solid blue;" -->
     <div class="bridge" id="aboutReward">
       <h2>使用心得</h2>
     </div>
@@ -108,8 +108,8 @@
     
     <div class="slick-btn slick-next" @click="scrollSlider('right')"></div>
 </div>
-
-    <a href="#gotop" class="pagetop">
+  
+    <a @click="scrollToSection('gotop')" class="pagetop">
       <br>TOP<br>
     </a>
 
@@ -133,7 +133,7 @@
         </ul>
       </nav>
     </footer>
-      <p><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
+      <p style="margin: 0px 3% 3% 3%;"><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
             本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
             均由學員負法律上責任,緯育公司概不負責。若有侵權疑慮,您可以私訊
             <a href="https://www.facebook.com/TibaMe" style="color: #00BDD3;">緯育TibaMe</a>,
@@ -184,6 +184,13 @@ const scrollTestimonials = (amount) => {
 
 const scrollToSection = (elementId) => {
   const element = document.querySelector(`#${elementId}`)
+  //console.log( element.offsetTop );
+  const parentEl = document.querySelectorAll('.main_content')
+  parentEl[0].scrollTo({
+    top: element.offsetTop - 120,
+    behavior: "smooth"
+  });
+  /*
   if (!element) return
   const elementBounding = element.getBoundingClientRect()
 
@@ -195,6 +202,7 @@ const scrollToSection = (elementId) => {
     left: 0,
     behavior: 'smooth'
   })
+  */
 }
 
 const scrollSlider = (direction) => {

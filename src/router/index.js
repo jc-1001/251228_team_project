@@ -191,8 +191,8 @@ router.beforeEach(async (to, from) => {
 router.beforeEach((to, from, next) => {
   const isUserAuthenticated = localStorage.getItem('userProfile')!== null;
 
-  // 確保您的 ProfileEdit 路由名稱（name）有在下面這個清單中 增加「訪客白名單」：登入、註冊與商城
-  const publicPages = ['Login', 'Register', 'shop', 'Landing', 'support'];
+  // 確保 ProfileEdit 路由名稱（name）有在下面這個清單中 增加「訪客白名單」：登入、註冊與商城
+  const publicPages = ['Login', 'Register', 'shop', 'Landing', 'support', 'Portal'];
 
   // 邏輯改為：如果要去的地方不在白名單中，且使用者未登入
   if (!publicPages.includes(to.name) && !isUserAuthenticated) {

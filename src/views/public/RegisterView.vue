@@ -38,14 +38,71 @@ const memberProfile = reactive({
 
 // 2. 註冊處理邏輯
 
+// 建立錯誤訊息物件
+const errors = reactive({
+  full_name: '',
+  email: '',
+  phone_number: '',
+  contact_name: '',
+  emergency_phone_number: ''
+});
+
 const agreePolicy = ref(false);
 
 const handleRegister = async () => {
-  // 1. 檢查
+  // 錯誤訊息
+  Object.keys(errors).forEach(key => errors[key] = '');
+
+  let isValid = true;
+
+  // 1. 驗證姓名
+  if (!memberProfile.full_name.trim()) {
+    errors.full_name = '請填寫真實姓名';
+    isValid = false;
+  }
+
+  // 2. 驗證電子信箱 (正規表示式檢查)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!memberProfile.email) {
+    errors.email = '請填寫電子信箱';
+    isValid = false;
+  } else if (!emailRegex.test(memberProfile.email)) {
+    errors.email = '信箱格式不正確';
+    isValid = false;
+  }
+
+  // 3. 驗證聯絡電話 (至少8-10位數字)
+  const phoneRegex = /^09\d{8}$/; // 假設為台灣手機格式
+  if (!memberProfile.phone_number) {
+    errors.phone_number = '請填寫聯絡電話';
+    isValid = false;
+  } else if (!phoneRegex.test(memberProfile.phone_number)) {
+    errors.phone_number = '手機格式需為 09 開頭的 10 位數字';
+    isValid = false;
+  }
+
+  // 4. 驗證聯絡人姓名
+  if (!memberProfile.contact_name.trim()) {
+    errors.contact_name = '請填寫緊急聯絡人姓名';
+    isValid = false;
+  }
+
+  // 5. 驗證聯絡人電話
+  if (!memberProfile.emergency_phone_number) {
+    errors.emergency_phone_number = '請填寫緊急聯絡人電話';
+    isValid = false;
+  } else if (!phoneRegex.test(memberProfile.emergency_phone_number)) {
+    errors.emergency_phone_number = '電話格式不正確';
+    isValid = false;
+  }
+
+  if (!isValid) return; // 如果驗證不通過，停止執行註冊
+
   if (!agreePolicy.value) {
     alert('請先閱讀並勾選同意服務條款與隱私權政策');
     return;
   }
+ 
 
   // 2. 密碼確認
   if (memberProfile.password !== memberProfile.confirmPassword) {
@@ -81,7 +138,13 @@ const handleRegister = async () => {
         <div class="input-grid">
           <div class="form-group">
             <label>姓名</label>
-            <input v-model="memberProfile.full_name" placeholder="請輸入全名" required>
+            <input 
+              v-model="memberProfile.full_name" 
+              type="text" 
+              placeholder="請輸入真實姓名"
+              :class="{ 'error-input': errors.full_name }"
+            />
+            <span v-if="errors.full_name" class="error-msg">{{ errors.full_name }}</span>
           </div>
           <div class="form-group">
             <label>性別</label>
@@ -93,11 +156,23 @@ const handleRegister = async () => {
           </div>
           <div class="form-group">
             <label>電子信箱</label>
-            <input type="email" v-model="memberProfile.email" placeholder="example@mail.com" required>
+            <input
+             v-model="memberProfile.email"
+             type="email"
+             placeholder="example@mail.com"
+             :class="{ 'error-input': errors.email }"
+            />
+            <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
           </div>
           <div class="form-group">
             <label>聯絡電話</label>
-            <input v-model="memberProfile.phone_number" placeholder="09xxxxxxxx">
+            <input
+             v-model="memberProfile.phone_number"
+             type="tel"
+             placeholder="09xxxxxxxx"
+             :class="{ 'error-input': errors.phone_number }"
+            />
+            <span v-if="errors.phone_number" class="error-msg">{{ errors.phone_number }}</span>
           </div>
           <div class="form-group">
             <label>密碼</label>
@@ -186,7 +261,13 @@ const handleRegister = async () => {
         <div class="input-grid">
           <div class="form-group">
             <label>聯絡人姓名</label>
-            <input v-model="memberProfile.contact_name">
+            <input
+             v-model="memberProfile.contact_name"
+             type="text" 
+             placeholder="緊急聯絡人姓名"
+             :class="{ 'error-input': errors.contact_name }"
+          />
+          <span v-if="errors.contact_name" class="error-msg">{{ errors.contact_name }}</span>
           </div>
           <div class="form-group">
             <label>關係</label>
@@ -194,7 +275,13 @@ const handleRegister = async () => {
           </div>
           <div class="form-group full-width">
             <label>聯絡人電話</label>
-            <input v-model="memberProfile.emergency_phone_number" placeholder="09xxxxxxxx">
+            <input
+              v-model="memberProfile.emergency_phone_number"
+              type="tel"
+              placeholder="09xxxxxxxx"
+              :class="{ 'error-input': errors.emergency_phone_number }"
+            />
+            <span v-if="errors.emergency_phone_number" class="error-msg">{{ errors.emergency_phone_number }}</span>
           </div>
         </div>
         <br>
@@ -300,6 +387,19 @@ const handleRegister = async () => {
   cursor: pointer;
   margin-top: 35px;
   &:hover { background: #245254; }
+}
+
+// 錯誤提示樣式
+.error-input {
+  border-color: #ff5252 !important;
+  background-color: #fff5f5;
+}
+
+.error-msg {
+  color: #ff5252;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: block;
 }
 
 /* 響應式設計 */
