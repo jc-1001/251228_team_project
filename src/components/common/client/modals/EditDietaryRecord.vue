@@ -33,7 +33,7 @@ const updatePreview = (url) => {
         previewImage.value = null;
         return;
     }
-    // 3. 統一判斷邏輯
+    // 統一判斷邏輯
     if (url.startsWith('blob:') || url.startsWith('http')) {
         previewImage.value = url;
     } else {

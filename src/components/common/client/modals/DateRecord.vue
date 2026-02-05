@@ -7,7 +7,7 @@ const props = defineProps({
     meals: Array
 });
 const emit = defineEmits(['close', 'open-add', 'open-edit']);
-// 1. 統一圖片基礎路徑 (與編輯頁面完全對齊)
+// 統一圖片路徑與編輯頁面完全對齊
 const IMAGE_BASE_URL = fileBaseUrl.endsWith('/') 
     ? `${fileBaseUrl}diet/uploads/` 
     : `${fileBaseUrl}/diet/uploads/`;
@@ -22,26 +22,32 @@ const scroll = (direction) => {
     }
 }
 const closeModal = () => emit('close');
-const handleEdit = (meal) => emit('open-edit', meal);
+const handleEdit = (meal) => {
+    // 檢查是否有ID (排除 null, undefined 或包含 'empty' 的字串)
+    const isRealRecord = meal.diet_log_id && !String(meal.diet_log_id).includes('empty');
+    if (isRealRecord) {
+        // 有紀錄，觸發編輯
+        emit('open-edit', meal);
+    } else {
+        // 無紀錄，觸發新增
+        emit('open-add', {
+            meal_type: meal.meal_type,
+            date: props.date
+        });
+    }
+};
 const handleAddMeal = () => emit('open-add');
-// 2. 修正圖片路徑轉換
+// 修正圖片路徑轉換
 const getMealImage = (url) => {
-    
-    //console.log("aaaaaa" + url);
     if (!url) return null;
-    // 如果已經是完整路徑則直接回傳
     if (url.startsWith('http') || url.startsWith('blob:')) return url;
-    
-    // 清理路徑，確保拼接正確
+    // 清理路徑確保拼接正確
     const cleanPath = url.startsWith('/') ? url.substring(1) : url;
-    //console.log("hihi");
-    //console.log(IMAGE_BASE_URL);
-    //console.log(cleanPath);
     return IMAGE_BASE_URL + cleanPath;
 };
-// 3. 處理圖片載入失敗
+// 處理圖片載入失敗
 const handleImageError = (e) => {
-    // 隱藏破圖，讓底下的「無記錄」字樣顯示
+    // 隱藏破圖
     console.error("圖片載入失敗:", e.target.src);
 };
 </script>

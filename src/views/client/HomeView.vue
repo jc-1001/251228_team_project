@@ -34,36 +34,29 @@ const todayDate = ref(dayjs().format('YYYY-MM-DD'))
 // 處理儲存後的動作
 const handleDietSubmit = async (formData) => {
   const { type, note, image_file, time } = formData;
-  
   const fd = new FormData();
-  fd.append('member_id', 1); // 這裡配合你目前日記頁面的寫法
-  fd.append('meal_date', todayDate.value); // 這裡使用你 script 裡定義好的 todayDate
+  fd.append('member_id', 1); // 這裡配合你目前日記頁面寫法
+  fd.append('meal_date', todayDate.value);
   fd.append('meal_type', type);
   fd.append('description', note);
-  
-  // 時間處理：如果是自定義時間就用 time，否則根據類型或預設
+  // 時間處理
   const formattedTime = time ? `${time}:00` : (type.includes(':') ? `${type}:00` : '00:00:00');
   fd.append('meal_time', formattedTime);
-
   // 處理圖片
   if (image_file) {
     fd.append('food_image', image_file);
   }
-
   try {
     const response = await publicApi.post('diet/create_diet.php', fd);
-    
     if (response.data && response.data.success) {
       closePopup(); // 儲存成功後關閉燈箱
-      
-      // 呼叫首頁已有的成功提示燈箱
+      // 成功提示燈箱
       if (successModal.value) {
         successModal.value.show();
       }
-      
       console.log('飲食紀錄儲存成功');
     } else {
-      // 呼叫首頁已有的失敗提示燈箱
+      // 失敗提示燈箱
       if (errorModal.value) {
         errorModal.value.show();
       }

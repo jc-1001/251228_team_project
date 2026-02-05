@@ -1,9 +1,9 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
-import axios from 'axios';
+import { ref, defineProps, defineEmits, watch, reactive } from 'vue';
 const props = defineProps({
     isOpen: Boolean,
-    date: String
+    date: String,
+    initialMealType: String
 });
 const emit = defineEmits(['close','refresh','submit']);
 // 初始狀態
@@ -71,6 +71,14 @@ const handleTimeClick = () => {
         timeInput.value?.focus();
     }
 };
+watch(() => props.isOpen, (newVal) => {
+    if (newVal) {
+        console.log('收到初始餐別:', props.initialMealType);
+        if (props.initialMealType) {
+            formData.value.type = props.initialMealType;
+        }
+    }
+});
 </script>
 <template>
     <Transition name="fade">
