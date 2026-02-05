@@ -29,17 +29,23 @@ onMounted(() => {
       </ul>
       <p v-else-if="!isLoading" class="home-reserve-medicine__empty">目前沒有需要補貨的項目</p>
       <p v-else class="home-reserve-medicine__empty">讀取中...</p>
-      <button class="home-reserve-medicine__button" type="button" @click="goToRestock">
+     
+    </div>
+     <button class="home-reserve-medicine__button" type="button" @click="goToRestock">
         前往補貨
       </button>
-    </div>
   </section>
 </template>
 <style scoped lang="scss">
 .home-reserve-medicine {
+  
   background-color: $white;
   border-radius: 8px;
   padding: 0 24px 24px 24px;
+  .home-reserve-medicine__content {
+    max-height: 160px;
+  overflow: auto;
+  }
 
   &__subtitle {
     @include body3;
@@ -86,8 +92,10 @@ onMounted(() => {
     @include body3;
     color: $grayDark;
   }
-
-  &__button {
+}
+ .home-reserve-medicine__button {
+  margin-top: 16px;
+    width: 100%;
     background: $primaryDark;
     color: $white;
     padding: 8px;
@@ -102,5 +110,4 @@ onMounted(() => {
       outline: 1px solid $primaryDark;
     }
   }
-}
 </style>

@@ -119,7 +119,7 @@ onMounted(()=>{
           <p class="order_date">下單時間: {{ order.date }}</p>
         </div>
       </div>
-      <div v-if="order.status === '取消'" class="status_cancel_bar">
+      <div v-if="order.status === '已取消'" class="status_cancel_bar">
         訂單已取消
       </div>
       <div v-else class="stepper">

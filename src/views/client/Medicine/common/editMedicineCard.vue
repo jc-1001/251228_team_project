@@ -62,6 +62,11 @@ const schedule = ref(
     quantity: 0,
   })),
 )
+const errors = ref({
+  name: '',
+  quantity: '',
+  expiryDate: '',
+})
 
 const detailData = computed(() => detail.value || {})
 
@@ -98,7 +103,35 @@ const handleFileChange = (event) => {
   imageFile.value = file
 }
 
+const getTodayString = () => {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+const validate = () => {
+  errors.value = { name: '', quantity: '', expiryDate: '' }
+  const name = medicineName.value.trim()
+  if (!name) {
+    errors.value.name = '藥品名必填'
+  }
+  const qty = Number(quantity.value)
+  if (!Number.isFinite(qty) || qty <= 0) {
+    errors.value.quantity = '藥品數量必填且需大於 0'
+  }
+  if (expirationDate.value) {
+    const today = getTodayString()
+    if (expirationDate.value < today) {
+      errors.value.expiryDate = '有效期限不可小於今天'
+    }
+  }
+  return !errors.value.name && !errors.value.quantity && !errors.value.expiryDate
+}
+
 const handleSubmit = async () => {
+  if (!validate()) return
   const payload = new FormData()
   payload.append('medication_id', String(medicationId))
   payload.append('medication_name', medicineName.value.trim())
@@ -217,16 +250,25 @@ watch(detailData, (next) => {
           <section class="medicine-modal__image">
             <div class="medicine-modal__image-form">
               <div class="form-group">
-                <label for="medicine-name">藥品名</label>
+                <div class="form-label">
+                  <label for="medicine-name">藥品名</label>
+                  <span v-if="errors.name" class="field-error">{{ errors.name }}</span>
+                </div>
                 <input id="medicine-name" v-model.trim="medicineName" type="text" />
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="expiration-date">有效期限</label>
+                  <div class="form-label">
+                    <label for="expiration-date">有效期限</label>
+                    <span v-if="errors.expiryDate" class="field-error">{{ errors.expiryDate }}</span>
+                  </div>
                   <input id="expiration-date" v-model="expirationDate" type="date" />
                 </div>
                 <div class="form-group">
-                  <label for="quantity">藥品數量</label>
+                  <div class="form-label">
+                    <label for="quantity">藥品數量</label>
+                    <span v-if="errors.quantity" class="field-error">{{ errors.quantity }}</span>
+                  </div>
                   <input id="quantity" v-model.number="quantity" type="number" />
                 </div>
               </div>
@@ -248,7 +290,7 @@ watch(detailData, (next) => {
           <section class="medicine-modal__form">
             <div class="form-group">
               <label for="notes">備註</label>
-              <input id="notes" v-model.trim="notes" type="text" />
+              <input id="notes" v-model.trim="notes" type="text" maxlength="20" />
             </div>
 
             <div class="medicine-modal__schedule">
@@ -345,6 +387,19 @@ watch(detailData, (next) => {
         .form-group {
           display: grid;
           gap: 8px;
+        }
+
+        .form-label {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .field-error {
+          font-size: 11px;
+          color: $accent;
+          line-height: 1.2;
         }
 
         label {

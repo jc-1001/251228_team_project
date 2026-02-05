@@ -494,7 +494,7 @@ const onSave = async () => {
 
     // 根據不同指標加入對應的數值
     if (activeMetricKey.value === "bloodPressure" || activeMetricKey.value === "heartRate") {
-      if (!formSYS.value || !formDIA.value || !formHeartRate.value || formSYS.value > 0 || formDIA.value > 0 || formHeartRate > 0) {
+      if (!formSYS.value || !formDIA.value || !formHeartRate.value || formSYS.value < 0 || formDIA.value < 0 || formHeartRate.value < 0) {
         alert('請填寫有效的血壓和心律數值（需大於0）')
         return
       }
