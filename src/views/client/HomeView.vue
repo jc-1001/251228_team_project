@@ -32,12 +32,50 @@ const userHeight = ref(0)
 //飲食紀錄相關
 const todayDate = ref(dayjs().format('YYYY-MM-DD'))
 // 處理儲存後的動作
-const handleDietSubmit = (data) => {
-  console.log('收到飲食紀錄資料：', data)
-  // 串接API儲存資料
-  closePopup() // 儲存後關閉
-}
+const handleDietSubmit = async (formData) => {
+  const { type, note, image_file, time } = formData;
+  
+  const fd = new FormData();
+  fd.append('member_id', 1); // 這裡配合你目前日記頁面的寫法
+  fd.append('meal_date', todayDate.value); // 這裡使用你 script 裡定義好的 todayDate
+  fd.append('meal_type', type);
+  fd.append('description', note);
+  
+  // 時間處理：如果是自定義時間就用 time，否則根據類型或預設
+  const formattedTime = time ? `${time}:00` : (type.includes(':') ? `${type}:00` : '00:00:00');
+  fd.append('meal_time', formattedTime);
 
+  // 處理圖片
+  if (image_file) {
+    fd.append('food_image', image_file);
+  }
+
+  try {
+    const response = await publicApi.post('diet/create_diet.php', fd);
+    
+    if (response.data && response.data.success) {
+      closePopup(); // 儲存成功後關閉燈箱
+      
+      // 呼叫首頁已有的成功提示燈箱
+      if (successModal.value) {
+        successModal.value.show();
+      }
+      
+      console.log('飲食紀錄儲存成功');
+    } else {
+      // 呼叫首頁已有的失敗提示燈箱
+      if (errorModal.value) {
+        errorModal.value.show();
+      }
+      console.error('儲存失敗：', response.data.message);
+    }
+  } catch (error) {
+    console.error("提交失敗:", error);
+    if (errorModal.value) {
+      errorModal.value.show();
+    }
+  }
+};
 const fastButton = ref([
   { name: '吃藥', icon: 'medication', type: 'medicine' },
   { name: '飲食日記', icon: 'restaurant', type: 'diet' },
@@ -291,7 +329,7 @@ onMounted(() => {
                 @close="closePopup"
               /> -->
               <NewDietaryRecord 
-                v-if="popupInfo.type === 'diet'"
+                v-if="popupInfo && popupInfo.type === 'diet'"
                 :isOpen="true"
                 :date="todayDate"
                 @close="closePopup"
