@@ -3,6 +3,7 @@
 import { computed } from 'vue'
 import { useCartStore } from '@/stores/cart';
 import { useToast } from '@/composable/useCartToast';
+import { parsePublicFile } from '@/utils/parseFile'
 
 // sweetalert2
 const { showToast } = useToast()
@@ -69,7 +70,7 @@ const addToCart = () => {
 <template>
   <router-link :to="`/product/${id}`" class="product_card">
     <div class="card_img">
-      <img v-if="image" :src="image" :alt="title">
+      <img v-if="image" :src="parsePublicFile(image)" :alt="title">
       <div v-else class="no_img">尚無圖片</div>
       <div v-if="tag" class="product_tag">{{ tag }}</div>
     </div>

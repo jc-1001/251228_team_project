@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import AppIcon from '@/components/common/AppIcon.vue'
+import { publicApi } from '@/utils/publicApi'
 
 const cartStore = useCartStore()
 
@@ -13,7 +14,7 @@ const cartQty = computed(() => {
 const topIcons = computed(() => [
   {
     // 鈴鐺標記有選單
-    id: 'notice',
+    notification_id: 'notice',
     name: '提醒',
     icon: 'notifications',
     path: null,
@@ -23,42 +24,63 @@ const topIcons = computed(() => [
   { name: '購物車', icon: 'shopping_cart', path: '/cart', badge: cartQty.value },
   { name: '頭像', icon: 'person', path: '/profile', badge: false },
 ])
-// 個人通知假資料(正式要刪)
-const notifications = ref([
-  {
-    id: 1,
-    type: 'order',
-    title: '訂單出貨通知',
-    content: '您的訂單 #20260106 已由物流配送中。',
-    time: '10 分鐘前',
-    isRead: false, // 預設為未讀
-  },
-  {
-    id: 2,
-    type: 'health',
-    title: '服藥提醒',
-    content: '該吃降血壓藥囉！請記得搭配溫開水服用。',
-    time: '1 小時前',
-    isRead: false, // 預設為未讀
-  },
-])
+// 個人通知初始值
+const notifications = ref([])
 const isDropdownOpen = ref(false) // 控制選單顯示
 
-// 鈴鐺紅點消失及訊息已讀後消失
+// 串接API(個人通知訊息)
+const fetchNotification = async () => {
+  try {
+    //http://localhost:8888/unicare_api/notifications/get_notification.php
 
+    const response = await publicApi.get('notifications/get_notification.php')
+    const data = response.data
+
+    // 判斷 data 是否為陣列，若不是則包成陣列
+    notifications.value = Array.isArray(data) ? data : data ? [data] : []
+
+    console.log('成功抓到個人通知資料：', notifications.value)
+  } catch (error) {
+    console.error('抓取通知失敗：', error)
+  }
+}
+
+// 元件生命週期(加載完立即執行)
+onMounted(() => {
+  fetchNotification()
+})
+
+// 鈴鐺紅點消失及訊息已讀後消失
 // 計算未讀訊息
 const unreadCount = computed(() => {
-  return notifications.value.filter((n) => !n.isRead).length
+  return notifications.value.filter((n) => !n.is_read).length
 })
 // 點擊訊息後、標記為已讀
-const markAsRead = (note) => {
-  note.isRead = true
-  // 已讀後訊息消失邏輯應是「保留 id 不等於當前點擊 id 的訊息」
-  notifications.value = notifications.value.filter((n) => n.id !== note.id)
+// 串接API已讀之後動態更新(PATCH)
+const markAsRead = async (note) => {
+  try {
+    // http://localhost:8888/unicare_api/notifications/mark_as_read.php
+    const response = await publicApi.patch('notifications/mark_as_read.php', {
+      notification_id: note.notification_id,
+      is_read: true, // 點擊要修改成已讀
+    })
+
+    // 已讀之後進入if並變更樣式移除之
+    if (response.status === 200 || response.data.success) {
+      // 先等後端成功，才移除前端畫面
+      note.is_read = true
+      notifications.value = notifications.value.filter(
+        (n) => n.notification_id !== note.notification_id,
+      )
+    }
+  } catch (error) {
+    console.log('個人通知更新失敗', error)
+  }
 }
+
 // 判斷顯示紅點與否
 const showBadge = (item) => {
-  if (item.id === 'notice') {
+  if (item.notification_id === 'notice') {
     return unreadCount.value > 0 //未讀顯示紅點
   }
   // 確保拿到的是純數字
@@ -66,26 +88,30 @@ const showBadge = (item) => {
   return typeof badgeValue === 'number' && badgeValue > 0
 }
 
-import { useRouter } from 'vue-router'; // 確保有引入
-const router = useRouter();
+// 計算訊息時間差的函式
+const formatTime = (timeStr) => {
+  if (!timeStr) return ''
+  // 資料庫字串轉 Date 物件
+  const now = new Date()
+  const past = new Date(timeStr.replace(/-/g, '/')) // 處理 Safari 的相容性
+  const diffInSeconds = Math.floor((now - past) / 1000)
 
-// 建立權限檢查跳轉函式
-const handleIconClick = (item) => {
-  // 如果是通知鈴鐺 (沒有 path)，就不執行跳轉
-  if (!item.path) return;
+  // 定義時間級距
+  const min = 60
+  const hour = min * 60
+  const day = hour * 24
+  const month = day * 30
+  const year = day * 365
 
-  // 檢查登入狀態
-  const isLogin = localStorage.getItem('userProfile') !== null;
+  // 顯示文字設定
+  if (diffInSeconds < min) return '剛剛'
+  if (diffInSeconds < hour) return Math.floor(diffInSeconds / min) + ' 分鐘前'
+  if (diffInSeconds < day) return Math.floor(diffInSeconds / hour) + ' 小時前'
+  if (diffInSeconds < month) return Math.floor(diffInSeconds / day) + ' 天前'
+  if (diffInSeconds < year) return Math.floor(diffInSeconds / month) + ' 個月前'
 
-  if (!isLogin) {
-    alert('請先登入');
-    router.push({ name: 'Login' });
-  } else {
-    // 已登入，正常跳轉
-    router.push(item.path);
-  }
-};
-
+  return Math.floor(diffInSeconds / year) + ' 年前'
+}
 </script>
 <template>
   <!-- 頂部icon -->
@@ -94,8 +120,8 @@ const handleIconClick = (item) => {
       v-for="item in topIcons"
       :key="item.name"
       class="icon-circle"
-      @click="handleIconClick(item)"
-      @mouseenter="item.id === 'notice' ? (isDropdownOpen = true) : null"
+      @click="item.path ? $router.push(item.path) : null"
+      @mouseenter="item.notification_id === 'notice' ? (isDropdownOpen = true) : null"
       @mouseleave="isDropdownOpen = false"
     >
       <AppIcon :name="item.icon" size="24" />
@@ -113,7 +139,7 @@ const handleIconClick = (item) => {
       <!-- 個人通知清單 -->
       <Transition name="fade">
         <div
-          v-if="item.id === 'notice' && isDropdownOpen"
+          v-if="item.notification_id === 'notice' && isDropdownOpen"
           class="notification-dropdown"
           @click.stop
         >
@@ -121,13 +147,13 @@ const handleIconClick = (item) => {
           <ul class="dropdown-list">
             <li
               v-for="note in notifications"
-              :key="note.id"
-              :class="{ 'is-read': note.isRead }"
+              :key="note.notification_id"
+              :class="{ 'is-read': note.is_read }"
               @click="markAsRead(note)"
             >
               <div class="note-title">{{ note.title }}</div>
               <div class="note-content">{{ note.content }}</div>
-              <div class="note-time">{{ note.time }}</div>
+              <div class="note-created_at">{{ formatTime(note.created_at) }}</div>
             </li>
           </ul>
           <div v-if="notifications.length === 0" class="empty-msg">目前沒有新訊息</div>
@@ -219,9 +245,15 @@ const handleIconClick = (item) => {
     font-size: 14px;
 
     li {
+      .note-title {
+        font-weight: bold;
+      }
+      .note-content {
+        padding: 5px 10px;
+      }
       // 未讀訊息樣式
       padding: 5px;
-      border-bottom: 1px dashed #f0f0f0;
+      border-bottom: 1px dashed #333333;
       &:last-child {
         border: none;
       }

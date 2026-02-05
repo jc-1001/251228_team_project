@@ -2,6 +2,14 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 
+import personIcon from '@/assets/images/shop/icon/person.svg'
+import creditIcon from '@/assets/images/shop/icon/credit_card.svg'
+import receiptIcon from '@/assets/images/shop/icon/receipt_long.svg'
+
+// linepay icon
+import linepayIcon from '@/assets/images/shop/linepay_logo.png'
+
+
 const userStore = useUserStore()
 
 const form = ref({
@@ -12,7 +20,7 @@ const form = ref({
     address: '',
   },
   note: '',
-  paymentType: 'credit', // 預設信用卡
+  paymentType: 'linepay', // 預設linepay
   creditInfo: { // 信用卡資訊
     cardNumber: '',
     expiry: '',
@@ -33,7 +41,7 @@ const errors = ref({
     address: '',
   },
   note: '',
-  paymentType: 'credit', 
+  paymentType: 'linepay', 
   creditInfo: { 
     cardNumber: '',
     expiry: '',
@@ -192,7 +200,7 @@ defineExpose ({
   <div class="checkout_form">
     <section class="form_section">
       <h3 class="section_title">
-        <span class="material-symbols-rounded icon">person</span>
+        <span class="icon"><img :src="personIcon"></span>
         收件人資訊
       </h3>
       <div class="form_grid">
@@ -234,10 +242,23 @@ defineExpose ({
     </section>
     <section class="form_section">
       <h3 class="section_title">
-        <span class="material-symbols-rounded icon">credit_card</span>
+        <span class="icon"><img :src="creditIcon"></span>
         付款方式
       </h3>
       <div class="payment_options">
+        <div class="payment_card" :class="{'active': form.paymentType === 'linepay'}">
+          <div class="payment_header">
+            <label class="payment_radio">
+              <input type="radio" value="linepay" v-model="form.paymentType">
+              <span>
+                <img :src="linepayIcon" alt="linepay_icon" class="linepay">
+              </span>
+            </label>
+          </div>
+          <!-- <div class="payment_details info_box" v-if="form.paymentType === 'linepay'">
+            <p>即將跳轉至付款畫面</p>
+          </div> -->
+        </div>
         <div class="payment_card" :class="{'active': form.paymentType === 'credit'}">
           <div class="payment_header">
             <label class="payment_radio">
@@ -286,7 +307,9 @@ defineExpose ({
     </section>
     <section class="form_section">
       <h3 class="section_title">
-        <span class="material-symbols-rounded icon">receipt_long</span>
+        <span class="icon">
+          <img :src="receiptIcon" alt="">
+        </span>
         發票資訊
       </h3>
       <div class="form_grid">
@@ -328,6 +351,7 @@ defineExpose ({
 
 // 共用區塊樣式
 .form_section {
+  position: relative;
   padding: 24px;
   background-color: $white;
   border: 1px solid $gray;
@@ -341,10 +365,6 @@ defineExpose ({
     margin-bottom: 16px;
     @include body1(true);
     color: $primaryDark;
-
-    .icon {
-      @include subtitle2;
-    }
   }
 }
 
@@ -439,6 +459,10 @@ defineExpose ({
         }
         span {
           @include body2(true);
+          img.linepay {
+            padding: 3px 0;
+            width: 70px;
+          }
         }
       }
     }

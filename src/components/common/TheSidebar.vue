@@ -4,16 +4,17 @@ import { RouterLink } from 'vue-router'
 import sidebarLogo from '@/assets/images/common/logo.svg'
 import sidebarDeco from '@/assets/images/common/sidebar_deco.svg'
 
+import AppIcon from '@/components/common/AppIcon.vue'
+
 const isSidebarOpen = ref(false)
 
 const menuItems = ref([
-  { name: '首頁戰情室', icon: 'dashboard', path: '/home' },
-  { name: '飲食日記', icon: 'restaurant', path: '/DietLog' },
-  { name: '數位藥箱', icon: 'medication', path: '/medicine' },
-  { name: '身體數值中心', icon: 'bar_chart', path: '/Metrics' },
-  { name: '樂活商城', icon: 'storefront', path: '/shop' },
-  { name: '幫助中心', icon: 'help', path: '/support' },
-  // { name: '登入', icon: 'login', path: '/login' },
+  { name: '首頁戰情室', icon: 's_dashboard', path: '/home' },
+  { name: '飲食日記', icon: 's_restaurant', path: '/DietLog' },
+  { name: '數位藥箱', icon: 's_medication', path: '/medicine' },
+  { name: '身體數值中心', icon: 's_bar_chart', path: '/Metrics' },
+  { name: '樂活商城', icon: 's_storefront', path: '/shop' },
+  { name: '幫助中心', icon: 's_help', path: '/support' },
 ])
 </script>
 
@@ -36,7 +37,9 @@ const menuItems = ref([
       class="menu_item"
       @click="isSidebarOpen = false"
     >
-      <span class="material-symbols-rounded menu_icon">{{ item.icon }}</span>
+      <div class="menu_icon">
+        <AppIcon :name="item.icon" size="20" />
+      </div>
       <span class="menu_name">{{ item.name }}</span>
     </RouterLink>
     <div class="sidebar_deco">

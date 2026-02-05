@@ -29,6 +29,8 @@ export const useCartStore = defineStore('cart', () => {
 
   // 加入購物車
   const addToCart = (product, count = 1) => {
+    // 自動判斷是 id 還是 product_id
+    const productId = product.id || product.product_id
     const existingItem = cartList.value.find((item) => {
       return item.id === product.id
     })
@@ -38,10 +40,10 @@ export const useCartStore = defineStore('cart', () => {
       console.log(`商品已存在，數量增加 ${count}，目前數量:`, existingItem.qty)
     } else {
       cartList.value.push({
-        id: product.id,
+        id: productId,
         title: product.title,
         price: product.price,
-        image: product.image || product.gallery?.[0]?.small || '',
+        image: product.image || (product.gallery && product.gallery[0] ? product.gallery[0].small : ''),
         spec: product.spec,
         qty: count,
         checked: true

@@ -1,9 +1,10 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import { useOrderStore } from '@/stores/order';
 import { useCartStore } from '@/stores/cart';
 import { useToast } from '@/composable/useCartToast'
+import { parsePublicFile } from '@/utils/parseFile';
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 
@@ -12,10 +13,14 @@ const orderStore = useOrderStore()
 const cartStore = useCartStore()
 const { showToast } = useToast()
 
+onMounted(()=>{
+  orderStore.fetchUserOrders()
+})
+
 // status 訂單狀態設定
 const statusStyle = {
   '訂單成立': {
-    class: 'status_pending',
+    class: 'status_create',
     text: '訂單成立'
   },
   '備貨中': {
@@ -23,22 +28,22 @@ const statusStyle = {
     text: '備貨中'
   },
   '配送中': {
-    class: 'status_pending',
+    class: 'status_delivery',
     text: '配送中'
   },
   '已完成': {
     class: 'status_completed',
     text: '已完成'
   },
-  '取消': {
+  '已取消': {
     class: 'status_cancel',
     text: '已取消'
   },
 }
 
 // 查看詳情
-const goToDetail = (orderId) => {
-  router.push(`/order/${orderId}`)
+const goToDetail = (dbId) => {
+  router.push(`/order/${dbId}`)
 }
 
 // 再買一次功能
@@ -62,16 +67,16 @@ console.log(orderStore.orderList);
       <router-link to="/shop" class="btn_go_shop">去商城逛逛</router-link>
     </div>
     <div class="order_list" v-else>
-      <div class="order_card" v-for="order in orderStore.orderList" :key="order.id" @click="goToDetail(order.id)">
+      <div class="order_card" v-for="order in orderStore.orderList" :key="order.id" @click="goToDetail(order.db_id)">
         <div class="card_header">
-          <span :class="statusStyle[order.status]?.class">
-            {{ statusStyle[order.status]?.text }}
+          <span :class="statusStyle[order.status]?.class || 'status_pending'">
+            {{ statusStyle[order.status]?.text || order.status }}
           </span>
           <span class="order_date">{{ order.date }}</span>
         </div>
         <div class="card_body">
-          <div class="product_img">
-            <img :src="order.items[0].image" :alt="order.items[0].title">
+          <div class="product_img" v-if="order.items && order.items.length > 0">
+            <img :src="parsePublicFile(order.items[0].image)" :alt="order.items[0].title">
           </div>
           <div class="product_info">
             <h4 class="title">{{ order.items[0].title }}
@@ -159,10 +164,14 @@ console.log(orderStore.orderList);
         border: 1px solid $accent;
         border-radius: $radius_sm;
       }
+      span.status_create { 
+        color: #488EDE;
+        border-color: #488EDE;
+      }
       span.status_pending { 
         color: $accent;
       }
-      span.status_completed {
+      span.status_delivery {
         color: $primary;
         border-color: $primary;
       }

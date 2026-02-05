@@ -1,34 +1,50 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, defineProps, defineEmits, watch, reactive } from 'vue';
 const props = defineProps({
     isOpen: Boolean,
-    date: String
+    date: String,
+    initialMealType: String
 });
-const emit = defineEmits(['close', 'submit']);
+const emit = defineEmits(['close','refresh','submit']);
 // 初始狀態
 const formData = ref({
     type: '早餐',
     note: '',
-    image: null,
+    image_file: null,
     preview: null,
     time: ''
 });
 // 選項
 const mealTypes = ['早餐', '午餐', '晚餐'];
+const timeInput = ref(null);
 // 圖片上傳
 const handleImageUpload = (event) => {
-    const file = event.target.files?.[0] || event.dataTransfer?.files?.[0];
-    if (file) {
-        formData.value.image = file;
-        formData.value.preview = URL.createObjectURL(file);
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+        alert("格式錯誤，請上傳圖片檔案。");
+        return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+        alert("請上傳小於5MB的檔案。");
+        return;
+    }
+    if (formData.value.preview) URL.revokeObjectURL(formData.value.preview);
+    formData.value.image_file = file; // 關鍵：存入檔案物件
+    formData.value.preview = URL.createObjectURL(file);
 };
 const close = () => {
-    formData.value = { type: '早餐', note: '', image: null, preview: null, time: '' };
+    if (formData.value.preview) URL.revokeObjectURL(formData.value.preview);
+    formData.value = {
+        type: '早餐',
+        note: '',
+        image_file: null,
+        preview: null,
+        time: ''
+    };
     emit('close');
 };
 const submitForm = () => {
-    // 驗證是否放入照片
     if (!formData.value.preview) {
         alert("請先上傳照片再儲存！");
         return;
@@ -37,22 +53,33 @@ const submitForm = () => {
         ? (formData.value.time || '未定時') 
         : formData.value.type;
     emit('submit', { 
-        ...formData.value, 
-        type: displayType,
+        type: displayType, 
+        meal_type: formData.value.type,
+        note: formData.value.note,
+        preview: formData.value.preview,
+        image_file: formData.value.image_file,
+        time: formData.value.time,
+        date: props.date
     });
     close();
 };
-const timeInput = ref(null);
 const handleTimeClick = () => {
     formData.value.type = 'custom';
-    if (timeInput.value && timeInput.value.showPicker) {
+    if (timeInput.value?.showPicker) {
         timeInput.value.showPicker();
-    } else if (timeInput.value) {
-        timeInput.value.focus();
+    } else {
+        timeInput.value?.focus();
     }
 };
+watch(() => props.isOpen, (newVal) => {
+    if (newVal) {
+        console.log('收到初始餐別:', props.initialMealType);
+        if (props.initialMealType) {
+            formData.value.type = props.initialMealType;
+        }
+    }
+});
 </script>
-
 <template>
     <Transition name="fade">
         <div v-if="isOpen" class="diet-modal-overlay" @click.self="close">
@@ -65,9 +92,15 @@ const handleTimeClick = () => {
                     <p class="date-text">今日日期：{{ date }}</p>
                 </div>
                 <div class="upload-section" @click="$refs.fileInput.click()" @drop.prevent="handleImageUpload" @dragover.prevent>
-                    <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload">
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        @change="handleImageUpload" 
+                        ref="fileInput"
+                        style="display: none;">
                     <template v-if="formData.preview">
                         <img :src="formData.preview" class="preview-img">
+                        <div class="upload-overlay"></div>
                     </template>
                     <template v-else>
                         <div class="placeholder">
@@ -101,7 +134,7 @@ const handleTimeClick = () => {
                     <label class="label">文字描述(選填)</label>
                     <textarea v-model="formData.note" placeholder="例如：排骨便當、少飯" rows="3"></textarea>
                 </div>
-                <button class="btn-save" @click="submitForm">儲存</button>
+                <button class="btn-save" @click.stop.prevent="submitForm">儲存</button>
             </div>
         </div>
     </Transition>
@@ -255,6 +288,14 @@ const handleTimeClick = () => {
         color: $primaryDark;
         outline: 1px solid $primaryDark;
     }
+}
+.upload-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8 0;
+    opacity: 1;
 }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

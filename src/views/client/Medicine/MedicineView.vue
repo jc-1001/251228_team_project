@@ -1,6 +1,7 @@
 <script setup>
 import TheHeader from '@/components/common/TheHeader.vue'
 import MedicineSection from '@/views/client/Medicine/common/MedicineSection.vue'
+import SupplementSection from '@/views/client/Medicine/common/SupplementSection.vue';
 import medicinebanner from '@/assets/images/Banner_mdc.svg'
 
 
@@ -15,5 +16,6 @@ import medicinebanner from '@/assets/images/Banner_mdc.svg'
     :imageSrc="medicinebanner"
     />
     <MedicineSection />
+    <SupplementSection />
   </section>
 </template>

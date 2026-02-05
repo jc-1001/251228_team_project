@@ -1,34 +1,56 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue'
+﻿<script setup>
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMedicineStore } from '@/stores/medicine.js'
 
 const activeTab = ref(0)
 const tabs = [
-  { key: '早上', label: '早上' },
-  { key: '中午', label: '中午' },
-  { key: '晚上', label: '晚上' },
-  { key: '睡前', label: '睡前' },
+  { key: 'MORNING', label: '早上' },
+  { key: 'NOON', label: '中午' },
+  { key: 'EVENING', label: '晚上' },
+  { key: 'BEDTIME', label: '睡前' },
 ]
 
 const medicineStore = useMedicineStore()
-const { items } = storeToRefs(medicineStore)
-const { fetchItems } = medicineStore
+const { scheduleItems, isLoading } = storeToRefs(medicineStore)
+const { fetchScheduleItems, createMedicationRecords, fetchTodaySchedule } = medicineStore
 
 onMounted(() => {
-  fetchItems()
+  fetchScheduleItems()
 })
 
 const currentTabKey = computed(() => tabs[activeTab.value]?.key)
-const visibleItems = computed(() => {
-  return items.value.filter(
-    (item) => Array.isArray(item.timeCourse) && item.timeCourse.includes(currentTabKey.value),
-  )
-})
+const visibleItems = computed(() =>
+  scheduleItems.value.filter((item) => item.time_slot === currentTabKey.value)
+)
 
+const selectedIds = ref(new Set())
 const toggleChecked = (item) => {
-  item.checked = !item.checked
+  if (item.taken_today) return
+  if (selectedIds.value.has(item.schedule_id)) {
+    selectedIds.value.delete(item.schedule_id)
+  } else {
+    selectedIds.value.add(item.schedule_id)
+  }
 }
+
+const instructionLabel = (instruction) => {
+  const map = {
+    BEFORE_MEAL: '餐前',
+    AFTER_MEAL: '餐後',
+    ANY: '不拘',
+    BEDTIME: '睡前',
+  }
+  return map[instruction] || instruction
+}
+
+const todayLabel = computed(() => {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}/${m}/${d}`
+})
 
 const emit = defineEmits(['close'])
 const closeModal = () => {
@@ -42,17 +64,31 @@ const onKeydown = (event) => {
     closeModal()
   }
 }
+
+const handleSubmit = async () => {
+  const ids = Array.from(selectedIds.value)
+  if (!ids.length) return
+  try {
+    await createMedicationRecords(ids)
+    selectedIds.value.clear()
+    await fetchScheduleItems()
+    await fetchTodaySchedule()
+    closeModal()
+  } catch (error) {
+    console.error('Failed to create records:', error)
+  }
+}
 </script>
 
 <template>
   <div class="new-medicine__overlay" @click="onOverlayClick" @keydown="onKeydown" tabindex="0">
     <div class="new-medicine__modal" @click.stop>
       <header class="new-medicine__header">
-        <h2 class="new-medicine__title">吃藥紀錄</h2>
+        <h2 class="new-medicine__title">記錄服藥</h2>
         <button class="new-medicine__close" @click="closeModal" type="button" aria-label="Close">
           <span class="material-symbols-outlined">close</span>
         </button>
-        <p class="new-medicine__date">今日日期:2026/01/22</p>
+        <p class="new-medicine__date">今日：{{ todayLabel }}</p>
       </header>
 
       <div class="new-medicine__tabs">
@@ -71,31 +107,37 @@ const onKeydown = (event) => {
       <div class="new-medicine__content">
         <div
           v-for="item in visibleItems"
-          :key="item.id"
+          :key="item.schedule_id"
           class="new-medicine__item"
           @click="toggleChecked(item)"
+          :class="{ 'is-disabled': item.taken_today }"
           role="button"
           tabindex="0"
           @keydown.enter="toggleChecked(item)"
           @keydown.space.prevent="toggleChecked(item)"
         >
           <div class="new-medicine__thumb">
-            <img :src="item.image" alt="" />
+            <img v-if="item.image" :src="item.image" alt="" />
           </div>
           <div class="new-medicine__info">
-            <div class="new-medicine__name">{{ item.name }}</div>
+            <div class="new-medicine__name">{{ item.medication_name }}</div>
             <div class="new-medicine__chips">
-              <span v-if="item.eatTimes" class="new-medicine__chip">{{ item.eatTimes }}</span>
-              <span v-if="item.oneTime" class="new-medicine__chip">{{ item.oneTime }}份</span>
+              <span class="new-medicine__chip">{{ instructionLabel(item.instruction) }}</span>
+              <span class="new-medicine__chip">一次 {{ item.dose_qty }} 份</span>
             </div>
           </div>
-          <div class="new-medicine__status" :class="{ 'is-checked': item.checked }">
-            <span v-if="item.checked" class="material-symbols-outlined">check</span>
+          <div
+            class="new-medicine__status"
+            :class="{ 'is-checked': selectedIds.has(item.schedule_id), 'is-disabled': item.taken_today }"
+          >
+            <span v-if="selectedIds.has(item.schedule_id)" class="material-symbols-outlined">check</span>
           </div>
         </div>
+        <p v-if="!isLoading && !visibleItems.length" class="new-medicine__empty">此時段沒有用藥</p>
+        <p v-else-if="isLoading" class="new-medicine__empty">讀取中...</p>
       </div>
 
-      <button class="new-medicine__submit" type="button">完成</button>
+      <button class="new-medicine__submit" type="button" @click="handleSubmit">送出</button>
     </div>
   </div>
 </template>
@@ -147,7 +189,6 @@ const onKeydown = (event) => {
     @include closeButton;
     padding-top: 5px;
   }
-  
 
   .new-medicine__tabs {
     display: grid;
@@ -156,21 +197,22 @@ const onKeydown = (event) => {
   }
 
   .new-medicine__tab {
-        flex: 1;
-        padding: 4px 0;
-        border-radius: 30px;
-        @include body1(true);
-        border: 1px solid $primaryDark;
-        background: $white;
-        color: $primaryDark;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        &.is-active {
-            background: $primaryDark;
-            color: $white;
-        }
+    flex: 1;
+    padding: 4px 0;
+    border-radius: 30px;
+    @include body1(true);
+    border: 1px solid $primaryDark;
+    background: $white;
+    color: $primaryDark;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    &.is-active {
+      background: $primaryDark;
+      color: $white;
+    }
   }
+
   .new-medicine__content {
     gap: 12px;
     overflow: auto;
@@ -187,6 +229,10 @@ const onKeydown = (event) => {
     border-radius: 12px;
     align-items: center;
     background-color: $white;
+  }
+  .new-medicine__item.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 
   .new-medicine__thumb {
@@ -246,6 +292,10 @@ const onKeydown = (event) => {
       background: $primaryDark;
       border-color: $primaryDark;
     }
+    &.is-disabled {
+      background: $gray;
+      border-color: $gray;
+    }
   }
 
   .new-medicine__submit {
@@ -259,10 +309,15 @@ const onKeydown = (event) => {
     cursor: pointer;
     transition: background 0.3s;
     &:hover {
-        background-color: $white;
-        color: $primaryDark;
-        outline: 1px solid $primaryDark;
+      background-color: $white;
+      color: $primaryDark;
+      outline: 1px solid $primaryDark;
     }
+  }
+
+  .new-medicine__empty {
+    @include body3;
+    color: $grayDark;
   }
 }
 

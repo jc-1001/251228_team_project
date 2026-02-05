@@ -1,32 +1,62 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useOrderStore } from '@/stores/order'
 import { useCartStore } from '@/stores/cart'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 import { useToast } from '@/composable/useCartToast'
+import { parsePublicFile } from '@/utils/parseFile';
+import { publicApi } from '@/utils/publicApi'
+
+// icon
+import orderIcon from '@/assets/images/shop/icon/order.svg'
+import inventoryIcon from '@/assets/images/shop/icon/inventory.svg'
+import shipping from '@/assets/images/shop/icon/shipping.svg'
+import checkIcon from '@/assets/images/shop/icon/order_check.svg'
+import personIcon from '@/assets/images/shop/icon/person.svg'
+import creditIcon from '@/assets/images/shop/icon/credit_card.svg'
+import shoppingIcon from '@/assets/images/shop/icon/shopping_cart.svg'
 
 const route = useRoute()
 const router = useRouter()
-const orderStore = useOrderStore()
 const cartStore = useCartStore()
 const { showToast } = useToast()
 
 // 從網址抓訂單id
 const currentOrderId = route.params.id
 
-// 從store裡面找出該筆訂單
-const order = computed(()=>{
-  return orderStore.orderList.find(item => item.id === currentOrderId)  
-})
+// 定義一個響應式變數來接 API 資料
+const order = ref(null)
+
+const fetchOrderDetail = async () => {
+  try {
+    const res = await publicApi.get('member_center/get_my_order_detail.php', {params:{id: currentOrderId}})
+
+    if(!res.data) {
+      alert('找不到該筆訂單')
+      router.push('/orderlist')
+      return
+    }
+    order.value = res.data
+
+    // 資料載入後，讓配送進度條動起來
+    setTimeout(()=>{
+    displayWidth.value = targetWidth.value
+  },300)
+
+  } catch (err){
+    console.error(err)
+    alert('讀取失敗')
+  }
+}
+
 
 // 訂單進度
 const steps = [
-  { label: '訂單成立', icon: 'assignment' },      
-  { label: '備貨中',   icon: 'inventory_2' },     
-  { label: '配送中',   icon: 'local_shipping' },  
-  { label: '已完成',   icon: 'check_circle' }
+  { label: '訂單成立', icon: `${orderIcon}` },      
+  { label: '備貨中',   icon: `${inventoryIcon}` },     
+  { label: '配送中',   icon: `${shipping}` },  
+  { label: '已完成',   icon: `${checkIcon}` }
 ]
 const currentStep = computed(()=>{
   if(!order.value) return 0
@@ -69,16 +99,8 @@ const buyAgain = ()=>{
   router.push('/cart')
 }
 
-// 避免使用者輸入不存在的網址
 onMounted(()=>{
-  if(!order.value) {
-    alert('找不到該筆訂單')
-    router.push('/orderlist')
-  }
-  // 讓進度條動起來
-  setTimeout(()=>{
-    displayWidth.value = targetWidth.value
-  },300)
+  fetchOrderDetail()
 })
 
 </script>
@@ -87,7 +109,7 @@ onMounted(()=>{
   <TheProfileHeader/>
 
   <TheprofileSide  title="訂單詳情" :showTitle="false">
-    <div class="detail_container">
+    <div class="detail_container" v-if="order">
       <div class="detail_header">
         <router-link to="/orderlist" class="back_link">
           &lt 返回我的訂單
@@ -97,7 +119,7 @@ onMounted(()=>{
           <p class="order_date">下單時間: {{ order.date }}</p>
         </div>
       </div>
-      <div v-if="order.status === '取消'" class="status_cancel_bar">
+      <div v-if="order.status === '已取消'" class="status_cancel_bar">
         訂單已取消
       </div>
       <div v-else class="stepper">
@@ -107,30 +129,43 @@ onMounted(()=>{
         </div>
         <div v-for="(step, index) in steps" :key="step.label" class="step_item" :class="{ 'active' : (index + 1) <= currentStep }">
           <div class="circle">
-            <span class="material-symbols-rounded step_icon">{{ step.icon }}</span>
+            <span class="step_icon">
+              <img :src="step.icon">
+            </span>
           </div>
           <p class="label">{{ step.label }}</p>
         </div>
       </div>
       <div class="info_grid">
         <section class="info_card">
-          <h4 class="title"><span class="material-symbols-rounded">person</span>收件資訊</h4>
+          <h4 class="title">
+            <span class="icon">
+              <img :src="personIcon">
+            </span>收件資訊
+          </h4>
           <p><strong>收件人 </strong>{{ order.user.name }}</p>
           <p><strong>電話 </strong>{{ order.user.phone }}</p>
           <p><strong>地址 </strong>{{ order.user.address }}</p>
         </section>
         <section class="info_card">
-          <h4 class="title"><span class="material-symbols-rounded">credit_card</span>付款資訊</h4>
+          <h4 class="title">
+            <span class="icon">
+              <img :src="creditIcon">
+            </span>付款資訊</h4>
           <p><strong>方式 </strong>{{ order.paymentType === 'credit'? '信用卡付款':'ATM轉帳' }}</p>
-          <p v-if="order.paymentType === 'credit'"><strong>卡號 </strong>{{ '*********'+(order.creditInfo.cardNumber).slice(-4) }}</p>
-          <p><strong>發票 </strong>{{ invoiceMap[order.invoiceType] || '個人發票' }}</p>
+          <p><strong>狀態 </strong>{{ order.isPaid == 0 ? '尚未付款' : '已付款' }}</p>
+          <p><strong>發票 </strong>{{ invoiceMap[order.invoiceType] }}</p>
         </section>
       </div>
       <section class="items_section">
-        <h4 class="title"><span class="material-symbols-rounded">shopping_bag</span>商品明細</h4>
+        <h4 class="title">
+          <span class="icon">
+            <img :src="shoppingIcon">
+          </span>商品明細
+        </h4>
         <ul class="item_list">
           <li class="item_row" v-for="item in order.items" :key="item.id">
-            <img :src="item.image" alt="item.title">
+            <img :src="parsePublicFile(item.image)" alt="item.title">
             <div class="item_detail">
               <p class="title">{{ item.title }}</p>
               <p class="price">${{ item.price }}</p>
@@ -297,9 +332,15 @@ onMounted(()=>{
       border: 1px solid $gray;
       border-radius: $radius_md;
       h4.title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
         margin-bottom: 6px;
         @include body2(true);
         color: $primaryDark;
+        .icon {
+          width: 20px;
+        }
       }
       strong {
         margin-right: 8px;
@@ -317,8 +358,14 @@ onMounted(()=>{
     border: 1px solid $gray;
     border-radius: $radius_md;
     h4.title {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       @include body2(true);
       color: $primaryDark;
+      .icon {
+        width: 20px;
+      }
     }
     .item_list {
       display: flex;

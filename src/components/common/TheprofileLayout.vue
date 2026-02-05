@@ -130,6 +130,7 @@ const handleUserLogout = () => {
         margin-bottom: 8px;
         text-decoration: none;
         color: $primaryDark;
+        background-color: $white;
         border-radius: 8px;
         transition: all 0.3s;
         .menu-icon {
@@ -201,7 +202,7 @@ const handleUserLogout = () => {
           justify-content: center;
           padding: 8px 16px;
           margin-bottom: 0;
-          border: 1px solid $primaryDark;
+          border: 1px solid $grayDark;
           border-radius: 50px;
           white-space: nowrap;
 

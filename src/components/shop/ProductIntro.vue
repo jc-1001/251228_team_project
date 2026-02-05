@@ -5,6 +5,10 @@ import QuantitySelector from '@/components/shop/QuantitySelector.vue'
 import { useCartStore } from '@/stores/cart'
 import { useToast } from '@/composable/useCartToast';
 
+import checkCircleIcon from '@/assets/images/shop/icon/check_circle.svg'
+import warningIcon from '@/assets/images/shop/icon/warning.svg'
+import lineIcon from '@/assets/images/shop/line_icon.png'
+
 // sweetalert2
 const { showToast } = useToast()
 
@@ -53,23 +57,56 @@ const handleMinus = ()=> {
   }
 }
 
+// 分享到 LINE
+const shareToLine = () => {
+  // 分享的文字內容
+  const productName = props.product.title
+  const productPrice = props.product.price
+
+  // 拿到目前頁面的完整網址
+  const currentUrl = window.location.href
+  
+  // 組合成文案
+  const text = `好物推薦：${productName}\n優惠價：$${productPrice}，快來看看吧！\n ${currentUrl}`
+  
+  // LINE官方規定的分享網址格式
+  const lineShareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`
+  
+  // 開啟一個分享視窗 (寬500, 高500)
+  window.open(lineShareUrl, '_blank', 'width=500,height=500')
+}
+
 </script>
 <template>
   <div class="product_body">
     <div class="product_content">
       <div class="product_txt">
-        <p v-if="product.tag" class="product_tag">{{ product.tag }}</p>
+        <div class="info_wrapper">
+          <p v-if="product.tag" class="product_tag">{{ product.tag }}</p>
+          <button class="btn_share_line" @click="shareToLine">
+            <img :src="lineIcon" alt="line" width="24">
+            <span>分享</span>
+          </button>
+        </div>
         <h3 class="product_title">{{ product.title }}</h3>
-        <p class="product_desc">{{ product.desc }}</p>
+        <p class="product_desc">{{ product.description }}</p>
       </div>
       <div class="product_price_info">
         <p>價格: <span class="product_price">${{ product.price }}</span></p>
-        <p class="point_reminder"><span
-            class="material-symbols-rounded point_remind_icon">check_circle</span>本商品符合積分折抵資格(結帳時使用)</p>
+        <p class="point_reminder">
+          <span class="point_remind_icon">
+            <img :src="checkCircleIcon">
+          </span>本商品符合積分折抵資格(結帳時使用)
+        </p>
       </div>
     </div>
     <div class="product_action">
-      <p v-if="isLowStock" class="stock_warning"><span class="material-symbols-rounded warning_icon">warning</span>庫存量剩餘: {{ product.stock_quantity }}</p>
+      <p v-if="isLowStock" class="stock_warning">
+        <span class="warning_icon">
+          <img :src="warningIcon">
+        </span>
+        庫存量剩餘: {{ product.stock_quantity }}
+      </p>
       <div class="action_row">
         <QuantitySelector :qty="buyCount" @add="handleAdd" @minus="handleMinus"/>
         <button type="button" class="btn_add_to_cart" :disabled="isSoldOut" :class="{'disabled':isSoldOut}" @click="handleAddToCart">{{ isSoldOut ? '補貨中':'加入購物車' }}</button>
@@ -96,12 +133,29 @@ const handleMinus = ()=> {
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
-      .product_tag {
-        padding: 2px 8px;
-        @include body3;
-        color: $white;
-        background-color: $accent;
-        border-radius: $radius-sm;
+      .info_wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .product_tag {
+          padding: 2px 8px;
+          @include body3;
+          color: $white;
+          background-color: $accent;
+          border-radius: $radius-sm;
+        }
+        .btn_share_line {
+          display: flex;
+          gap: 4px;
+          padding: 2px 8px;
+          @include body3(true);
+          color: $white;
+          background-color: #06C755;
+          border: none;
+          border-radius: $radius_sm;
+          cursor: pointer;
+        }
       }
       .product_title {
         margin-bottom: 12px;
@@ -129,6 +183,8 @@ const handleMinus = ()=> {
         @include subtitle1(true);
       }
       .point_reminder {
+        display: flex;
+        align-items: center;
         @include body3(true);
         .point_remind_icon {
           @include body1;
@@ -139,6 +195,8 @@ const handleMinus = ()=> {
   }
   .product_action {
     .stock_warning {
+      display: flex;
+      align-items: center;
       margin-bottom: 4px;
       @include body3;
       color: $accent;
