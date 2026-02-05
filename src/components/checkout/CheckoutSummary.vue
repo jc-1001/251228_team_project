@@ -1,6 +1,9 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useCartStore } from '@/stores/cart';
+import { publicApi } from '@/utils/publicApi';
+
+import shoppingIcon from '@/assets/images/shop/icon/shopping_cart.svg'
 
 const cartStore = useCartStore();
 
@@ -9,8 +12,27 @@ const emit = defineEmits(['submit'])
 
 // 模擬資料區
 const shippingFee = ref(100)
-const userPoint = ref(3500)
-const maxDiscount = ref(350)
+const userPoint = ref(0)
+const maxDiscount = computed (() => {
+  if(userPoint.value <= 0) return 0
+
+  return Math.floor(userPoint.value / 10)
+})
+
+// 抓取資料
+const fetchPoint = async () => {
+  try {
+    const res = await publicApi.get('member_center/get_total_points.php')
+
+    userPoint.value = res.data.total_points
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+onMounted(() => {
+  fetchPoint()
+})
 
 // 使用積分
 const isUsePoints = ref(false) 
@@ -44,12 +66,14 @@ const handleSubmit = ()=>{
 <template>
   <div class="summary_card">
     <h3 class="summary_title">
-      <span class="material-symbols-rounded icon">shopping_cart</span>
+      <span class="material-symbols-rounded icon">
+        <img :src="shoppingIcon">
+      </span>
       訂單摘要
     </h3>
     <label class="points_section">
       <div class="checkbox_wrapper">
-        <input type="checkbox" v-model="isUsePoints">
+        <input type="checkbox" v-model="isUsePoints" :disabled="userPoint <= 0">
       </div>
       <div class="points_info">
         <p class="title">使用積分折抵</p>

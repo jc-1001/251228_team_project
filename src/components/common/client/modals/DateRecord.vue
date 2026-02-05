@@ -1,35 +1,54 @@
 <script setup>
 import { ref } from 'vue';
+import { fileBaseUrl } from '@/utils/publicApi';
 const props = defineProps({
     isOpen: Boolean,
     date: String,
     meals: Array
 });
 const emit = defineEmits(['close', 'open-add', 'open-edit']);
-// 左右切換
+// 統一圖片路徑與編輯頁面完全對齊
+const IMAGE_BASE_URL = fileBaseUrl.endsWith('/') 
+    ? `${fileBaseUrl}diet/uploads/` 
+    : `${fileBaseUrl}/diet/uploads/`;
 const scrollContainer = ref(null);
 const scroll = (direction) => {
     if (scrollContainer.value){
-        const scrollAmount = 220; // 卡片尺寸+間距
+        const scrollAmount = 220;
         scrollContainer.value.scrollBy({
             left: direction === 'next' ? scrollAmount : -scrollAmount,
             behavior: 'smooth'
         });
     }
 }
-const closeModal = () => {
-    emit('close');
-};
+const closeModal = () => emit('close');
 const handleEdit = (meal) => {
-    console.log('編輯:', meal);
-    emit('open-edit', meal);
+    // 檢查是否有ID (排除 null, undefined 或包含 'empty' 的字串)
+    const isRealRecord = meal.diet_log_id && !String(meal.diet_log_id).includes('empty');
+    if (isRealRecord) {
+        // 有紀錄，觸發編輯
+        emit('open-edit', meal);
+    } else {
+        // 無紀錄，觸發新增
+        emit('open-add', {
+            meal_type: meal.meal_type,
+            date: props.date
+        });
+    }
 };
-const handleAddMeal = () => {
-    console.log('新增');
-    emit('open-add');
+const handleAddMeal = () => emit('open-add');
+// 修正圖片路徑轉換
+const getMealImage = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http') || url.startsWith('blob:')) return url;
+    // 清理路徑確保拼接正確
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    return IMAGE_BASE_URL + cleanPath;
 };
-const saveEdit = (updatedMeal) => {
-    emit('update-diet', { date: props.date, meal: updatedMeal });
+// 處理圖片載入失敗
+const handleImageError = (e) => {
+    // 隱藏破圖
+    console.error("圖片載入失敗:", e.target.src);
 };
 </script>
 <template>
@@ -46,13 +65,18 @@ const saveEdit = (updatedMeal) => {
             <div class="meals-wrapper">
                 <span class="material-symbols-outlined arrow-btn prev" @click="scroll('prev')">arrow_back_ios</span>
                 <div class="meals-scroll-container" ref="scrollContainer">
-                    <div v-for="meal in meals" :key="meal.diet_log_id" class="meal-card">
+                    <div v-for="meal in meals" :key="`${meal.diet_log_id}-${meal.food_image_url}`" class="meal-card">
                         <div class="meal-type">{{ meal.meal_type }}</div>
                         <div class="image-wrapper">
                             <div class="image-box" :class="{ 'is-empty': !meal.food_image_url }">
-                                <img v-if="meal.food_image_url" :src="meal.food_image_url" alt="meal" />
+                                <img v-if="meal.food_image_url" 
+                                    :src="getMealImage(meal.food_image_url)" 
+                                    alt="meal"
+                                    class="meal-card-img"
+                                    @error="handleImageError"
+                                    @load="() => console.log('圖片加載成功')"/>
                                 <span v-else class="empty-text">無記錄</span>
-                                <div class="hover-mask edit-trigger" @click.stop="$emit('open-edit', meal)">
+                                <div class="hover-mask edit-trigger" @click.stop="handleEdit(meal)">
                                     <div class="pencil-icon">
                                         <img src="@/assets/images/pen.svg" alt="edit">
                                     </div>
@@ -185,6 +209,7 @@ const saveEdit = (updatedMeal) => {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
+                object-position: center;
             }
             .empty-text {
                 color: $black;

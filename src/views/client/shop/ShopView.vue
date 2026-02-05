@@ -1,12 +1,19 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { allProducts } from '@/data/shop/productInfo'
+import { ref, computed, onMounted } from 'vue'
+// 引入商品資料庫資料
+import { useProductStore } from '@/stores/product'
 import ProductCard from '@/components/shop/ProductCard.vue'
 import TheHeader from '@/components/common/TheHeader.vue'
 import bannerImage from '@/assets/images/shop/banner_img_shop.svg'
 
+import searchIcon from '@/assets/images/shop/icon/search.svg'
+
 // 商品列表
-const product = ref(allProducts)
+const productStore = useProductStore()
+
+onMounted(() => {
+  productStore.fetchProducts()
+})
 
 // 分類按鈕
 const categories = ref(['全部商品', '骨骼關節保養', '心血管循環', '晶亮護眼'])
@@ -14,6 +21,13 @@ const currentCategory = ref('全部商品')
 // 切換分類
 const selectCategory = (name) => {
   currentCategory.value = name
+}
+
+// 對接資料庫的category_id
+const categoryMap = {
+  '骨骼關節保養': 1,
+  '心血管循環': 2,
+  '晶亮護眼': 3
 }
 
 // 搜尋文字
@@ -24,9 +38,18 @@ const searchQuery = ref('')
 const filteredProducts = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
 
-  return product.value.filter((item) => {
-    const matchCategory = currentCategory.value === '全部商品' || item.category === currentCategory.value
-    
+  return productStore.products.filter((item) => {
+    // 1. 處理分類切換
+    let matchCategory = false
+    if(currentCategory.value === '全部商品') {
+      matchCategory = true
+    } else {
+      // 把選到的"分類名稱"轉成數字，與資料庫對接
+      const targetId = categoryMap[currentCategory.value]
+      matchCategory = Number(item.category_id) === targetId
+    }
+
+    // 2.處理搜尋過濾
     const matchSearch = query === '' || item.title.toLowerCase().includes(query) || (item.keywords && item.keywords.toLowerCase().includes(query))
 
     return matchCategory && matchSearch
@@ -48,12 +71,14 @@ const filteredProducts = computed(() => {
         <button v-for="cat in categories" :key="cat" class="category_btns_el" :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
       </div>
       <div class="search_wrapper">
-        <span class="material-symbols-rounded search_icon">search</span>
+        <span class="search_icon">
+          <img :src="searchIcon" alt="">
+        </span>
         <input type="text" v-model="searchQuery" placeholder="請輸入商品名稱或關鍵字">
       </div>
     </div>
     <div class="product_card_list">
-      <ProductCard v-for="item in filteredProducts" :key="item.id" v-bind="item"/>
+      <ProductCard v-for="item in filteredProducts" :key="item.product_id" v-bind="item" :id="item.product_id"/>
       <div v-if="filteredProducts.length === 0" class="no-result">
         未找到相關商品
       </div>
@@ -120,9 +145,8 @@ const filteredProducts = computed(() => {
   gap: 16px;
   margin-bottom: 40px;
   .search_wrapper {
-    // flex: 1;
     position: relative;
-    width: 400px;
+    width: 320px;
     @media screen and (max-width: 768px) {
       width: 100%;
     }

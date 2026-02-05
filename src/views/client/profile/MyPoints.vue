@@ -1,47 +1,105 @@
 <script setup>
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
+import { publicApi } from '@/utils/publicApi'
+
+// icon
+import coinIcon from '@/assets/images/shop/icon/coin.svg'
+import touchIcon from '@/assets/images/shop/icon/touch.svg'
+import touchIconWhite from '@/assets/images/shop/icon/touch_white.svg'
+import check from '@/assets/images/shop/icon/order_check.svg'
 
 // 積分資料設定
-const currentPoints = ref(1250)
+const currentPoints = ref(0)
 const isSigned = ref(false)
-const reward = 50
+// 歷史紀錄
+const historyList = ref([])
+// 取得今日日期字串 (YYYY-MM-DD)
+const getTodayStr = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0') // 修正括號位置
+  return `${year}-${month}-${day}`
+}
 
-// 模擬歷史紀錄
-const historyList = ref([
-  { id: 1, title: '商城訂單折抵(ORD-1768920638629-978)', date: '2026-01-21 14:35', amount: -3500 },
-  { id: 2, title: '每日登入獎勵', date: '2026-01-21 11:48', amount: 50 },
-  { id: 3, title: '每日登入獎勵', date: '2026-01-20 09:25', amount: 50 },
-])
+
+// 獲取總分&歷史紀錄 (合併呼叫)
+
+const initData = async () => {
+  try {
+    // 1. 抓總積分
+    const resTotal = await publicApi.get('member_center/get_total_points.php')
+    currentPoints.value = resTotal.data.total_points || 0
+
+    // 2. 抓歷史紀錄
+    const resHistory = await publicApi.get('member_center/get_my_points.php')
+    historyList.value = resHistory.data.data
+
+    // 3. 判斷今日有沒有簽到 (檢查歷史紀錄第一筆是不是今天且是簽到)
+    checkIfSignedToday()
+
+  } catch (err) {
+    console.error('初始化資料失敗:', err)
+  }
+}
+
+onMounted(()=>{
+  initData()
+})
+
+
+// 判斷是否已簽到
+const checkIfSignedToday = () => {
+  if(historyList.value.length === 0) return
+
+  const lastRecord = historyList.value[0]
+  const todayStr = getTodayStr()
+
+  if(lastRecord.source == 2 && lastRecord.date.startsWith(todayStr)) {
+    isSigned.value = true
+  }
+}
+
+// 點擊簽到
+const handleCheckIn = async () => {
+  if (isSigned.value === true) return
+
+  try {
+    const res = await publicApi.get('member_center/check_in.php')
+    
+    if(res.data.success) {
+      isSigned.value = true
+
+      // 數字滾動動畫
+      animateValue(currentPoints.value, currentPoints.value + res.data.point, 1000)
+      // 發送金幣函式
+      triggerCoinAnimation()
+
+      // 手動插一筆紀錄到list最前面
+      historyList.value.unshift({
+        id: Date.now(),
+        title: '每日簽到獎勵',
+        date: getTodayStr(),
+        amount: res.data.point,
+        source: 2
+      })
+    } else {
+      isSigned.value = true
+      alert(res.data.message)
+    }
+
+  } catch (err) {
+    console.error(err)
+    alert('簽到失敗，請檢查網路')
+  }
+  
+}
 
 // DOM元素定位
 const checkInBtnRef = ref(null) // 發送
 const coinTargetRef = ref(null) // 接收
-
-// 點擊簽到
-const handleCheckIn = () => {
-  if (isSigned.value === true) return
-
-  isSigned.value = true
-
-  // 數字滾動動畫
-  animateValue(currentPoints.value, currentPoints.value + reward, 1000)
-
-  // 新增一筆歷史紀錄
-  const now = new Date()
-  const timeStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours()}:${now.getMinutes()}`
-
-  historyList.value.unshift({
-    id: Date.now(),
-    title: '每日簽到獎勵',
-    date: timeStr,
-    amount: reward
-  })
-
-  // 發送金幣函式
-  triggerCoinAnimation()
-}
 
 // 工具函式-數字滾動效果 =========
 const animateValue = (start, end, duration) => {
@@ -116,7 +174,6 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
   }
 }
 
-
 </script>
 
 <template>
@@ -136,20 +193,24 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
           </div>
         </div>
         <div class="banner_icon" ref="coinTargetRef">
-          <span class="material-symbols-rounded icon">monetization_on</span>
+          <span class="icon">
+            <img :src="coinIcon">
+          </span>
         </div>
       </div>
 
       <div class="checkin_card">
         <div class="checkin_info">
           <h4>每日簽到活動</h4>
-          <p v-if="!isSigned">現在簽到立即獲得 {{ reward }} 點！</p>
+          <p v-if="!isSigned">現在簽到立即獲得 50 點！</p>
           <p v-else>明天記得再來領取積分喔！</p>
         </div>
 
-        <button ref="checkInBtnRef" class="btn_checkin" :class="{ disabled: isSigned }" @click="handleCheckIn">
-          <span class="material-symbols-rounded">
-            {{ isSigned ? 'check_circle' : 'touch_app' }}
+        <button ref="checkInBtnRef" class="btn_checkin" :class="{ 'disabled': isSigned }" @click="handleCheckIn">
+          <span class="icon">
+            <img :src="touchIcon" v-if="!isSigned" class="icon_default">
+            <img :src="touchIconWhite" v-if="!isSigned" class="icon_hover">
+            <img :src="check" v-if="isSigned">
           </span>
           {{ isSigned ? '已完成簽到' : '立即簽到' }}
         </button>
@@ -203,6 +264,9 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
   background: $linear2;
   border-radius: $radius_md;
   box-shadow: $shadow;
+  @media screen and (max-width: 576px) {
+    padding: 24px 24px;
+  }
 
   .banner_content {
     .label {
@@ -227,8 +291,11 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
     }
   }
 
-  .banner_icon .icon {
-    font-size: 64px;
+  .banner_icon .icon img {
+    width: 80px;
+    @media screen and (max-width: 576px) {
+      width: 54px;
+    }
   }
 }
 
@@ -269,6 +336,20 @@ const createFlyingCoin = (x, y, targetX, targetY) => {
     box-shadow: $shadow;
     cursor: pointer;
     transition: all .3s;
+    .icon {
+      display: flex;
+      .icon_hover {
+        display: none;
+      }
+    }
+    &:not(.disabled):hover {
+      .icon_hover {
+        display: block;
+      }
+      .icon_default {
+        display: none;
+      }
+    }
 
     &:active,
     &:hover {

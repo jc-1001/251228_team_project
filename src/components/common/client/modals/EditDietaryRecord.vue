@@ -1,18 +1,15 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { fileBaseUrl } from '@/utils/publicApi';
 const props = defineProps({
     isOpen: Boolean,
     date: String,
     initialData: Object // 接收點擊的那筆資料
 });
 const emit = defineEmits(['close', 'submit', 'delete']);
-const confirmDelete = () => {
-    // 彈窗
-    if (confirm("確定要刪除這筆飲食記錄？")) {
-        emit('delete', formData.value.diet_log_id);
-        close();
-    }
-};
+const IMAGE_BASE_URL = fileBaseUrl.endsWith('/') 
+    ? `${fileBaseUrl}diet/uploads/` 
+    : `${fileBaseUrl}/diet/uploads/`;
 // 初始狀態
 const formData = ref({
     diet_log_id: null,
@@ -23,48 +20,66 @@ const formData = ref({
     meal_time: ''
 });
 const mealTypes = ['早餐', '午餐', '晚餐'];
-// 監聽燈箱開啟，帶入資料
+const previewImage = ref(null);
+onMounted(() => {
+    if (props.initialData && props.initialData.food_image_url) {
+        previewImage.value = props.initialData.food_image_url.startsWith('http') 
+            ? props.initialData.food_image_url 
+            : IMAGE_BASE_URL + props.initialData.food_image_url;
+    }
+});
+const updatePreview = (url) => {
+    if (!url) {
+        previewImage.value = null;
+        return;
+    }
+    // 統一判斷邏輯
+    if (url.startsWith('blob:') || url.startsWith('http')) {
+        previewImage.value = url;
+    } else {
+        const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+        previewImage.value = IMAGE_BASE_URL + cleanPath;
+    }
+};
 watch(() => props.isOpen, (newVal) => {
     if (newVal && props.initialData) {
         const rawType = props.initialData.meal_type;
-        const isCustomTime = !mealTypes.includes(rawType);
+        const isCustomTime = !mealTypes.includes(rawType) && rawType !== 'custom';
         formData.value = {
             diet_log_id: props.initialData.diet_log_id,
             meal_type: isCustomTime ? 'custom' : rawType,
             description: props.initialData.description || '',
             image_file: null,
-            preview: props.initialData.food_image_url,// 顯示原本圖片
+            preview: null,
             meal_time: isCustomTime ? rawType.substring(0, 5) : ''
         };
+        updatePreview(props.initialData.food_image_url);
     }
 }, { immediate: true }); // 確保開啟時就執行
 const handleImageUpload = (event) => {
-    const file = event.target.files?.[0] || event.dataTransfer?.files?.[0];
+    const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
         alert("格式錯誤，請選擇圖片檔案。");
-        if (event.target) {
-            event.target.value = '';
-        }
         return;
     }
     if (file.size > 5 * 1024 * 1024) {
         alert("請上傳小於5MB的檔案。");
         return;
     }
-        if (formData.value.preview) {
-            if (formData.value.preview.startsWith('blob:')) {
-                URL.revokeObjectURL(formData.value.preview);
-            }
+        if (previewImage.value && previewImage.value.startsWith('blob:')) {
+            URL.revokeObjectURL(previewImage.value);
         }
+        const newUrl = URL.createObjectURL(file);
+        previewImage.value = newUrl; 
+        formData.value.preview = newUrl;
         formData.value.image_file = file;
-        formData.value.preview = URL.createObjectURL(file);
 };
 const close = () => {
     emit('close');
 };
 const submitForm = () => {
-    if (!formData.value.preview) {
+    if (!previewImage.value) {
         alert("照片不能為空！");
         return;
     }
@@ -75,7 +90,7 @@ const submitForm = () => {
         diet_log_id: formData.value.diet_log_id,
         meal_type: displayType,
         description: formData.value.description,
-        preview: formData.value.preview,
+        preview: previewImage.value,
         image_file: formData.value.image_file,
         meal_time: formData.value.meal_type === 'custom' ? `${formData.value.meal_time}:00` : null
     });
@@ -102,7 +117,7 @@ const handleTimeClick = () => {
                 </div>
                 <div class="upload-section" @click="$refs.fileInput.click()">
                     <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload">
-                    <img v-if="formData.preview" :src="formData.preview" class="preview-img">
+                    <img v-if="previewImage" :src="previewImage" class="preview-img">
                     <div v-else class="placeholder">
                         <span class="material-symbols-outlined camera-icon">
                             <img src="@/assets/images/camera.svg" alt="camera">
@@ -136,8 +151,8 @@ const handleTimeClick = () => {
                     <textarea v-model="formData.description" placeholder="修改描述..." rows="3"></textarea>
                 </div>
                 <div class="action-buttons">
-                    <button class="btn-save" @click="submitForm">儲存</button>
-                    <button class="btn-delete" @click="confirmDelete">刪除</button>
+                    <button class="btn-save" @click.stop.prevent="submitForm">儲存</button>
+                    <button class="btn-delete" @click="$emit('delete', initialData.diet_log_id)">刪除</button>
                 </div>
             </div>
         </div>

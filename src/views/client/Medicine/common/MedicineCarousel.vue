@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import SectionHeader from '@/views/client/Medicine/common/SectionHeader.vue'
 import MedicineCard from '@/views/client/Medicine/common/MedicineCard.vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
@@ -7,7 +8,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/effect-cards'
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: '',
@@ -19,6 +20,10 @@ defineProps({
   items: {
     type: Array,
     default: () => [],
+  },
+  variant: {
+    type: String,
+    default: 'medicine',
   },
   slidesPerView: {
     type: Number,
@@ -63,7 +68,12 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['createClick', 'showCardDetail'])
+const emit = defineEmits(['createClick', 'editMedication'])
+
+const effectiveLoop = computed(() => {
+  const count = Array.isArray(props.items) ? props.items.length : 0
+  return props.loop && count > (props.slidesPerView ?? 1)
+})
 </script>
 
 <template>
@@ -73,14 +83,18 @@ const emit = defineEmits(['createClick', 'showCardDetail'])
       :modules="[Navigation, EffectCards]"
       :slides-per-view="slidesPerView"
       :space-between="spaceBetween"
-      :loop="loop"
+      :loop="effectiveLoop"
       :navigation="navigation"
       :breakpoints="breakpoints"
       :effect="effect"
       class="medicine-swiper"
     >
       <SwiperSlide v-for="item in items" :key="item.id">
-        <MedicineCard :item="item" @showCardDetail="emit('showCardDetail', item)" />
+        <MedicineCard
+          :item="item"
+          :variant="variant"
+          @editMedication="emit('editMedication', item)"
+        />
       </SwiperSlide>
     </Swiper>
   </section>

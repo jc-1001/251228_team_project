@@ -9,18 +9,21 @@ import CheckoutForm from '@/components/checkout/CheckoutForm.vue'
 import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
 
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
+import { publicApi } from '@/utils/publicApi'
 
 const router = useRouter()
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
 
-const showSuccess = ref(false)
+// const showSuccess = ref(false)
 
 // Template Refs - 樣板參考
 const checkoutFormRef = ref(null)
 
+const successModal = ref(null)
+
 // 處理結帳送出
-const handleCheckoutSubmit = (summaryData)=>{
+const handleCheckoutSubmit = async (summaryData)=>{
   if(!checkoutFormRef.value) {
     return
   }
@@ -35,8 +38,16 @@ const handleCheckoutSubmit = (summaryData)=>{
     // JSON.stringify將物件轉成字串後，就會切斷與原本物件的連結(因為字串沒有連結功能)
     const formData = JSON.parse(JSON.stringify(checkoutFormRef.value.form))
     // orderPayLoad
+    // 修改成跟"資料庫欄位"一樣
     const orderPayLoad = {
-      ...formData,
+      recipient_name: formData.user.name,
+      recipient_phone: formData.user.phone,
+      recipient_email: formData.user.email,
+      recipient_address: formData.user.address,
+      note: formData.note,
+      payment_type: formData.paymentType,
+      invoice_type: formData.invoiceType,
+      invoice_info: formData.invoiceType === 'company' ? formData.invoiceTaxId : formData.invoiceMobile,
       // 購物車商品快照
       items: cartStore.checkoutList,
       // 金額資訊
@@ -46,16 +57,35 @@ const handleCheckoutSubmit = (summaryData)=>{
     }
 
     // 呼叫orderStore建立訂單
-    orderStore.createOrder( orderPayLoad )
+    const success = await orderStore.createOrder( orderPayLoad )
 
-    // 訂單成立燈箱
-    showSuccess.value = true
+    if(success) {
+    if(orderPayLoad.payment_type === 'linepay') {
+      try {
+        const res = await publicApi.post('shop/linepay_request.php', {
+          orderId: orderStore.currentOrder.orderNumber
+        })
+
+        if(res.data.success) {
+          // 跳轉到linepay付款頁面
+          window.location.href = res.data.paymentUrl
+        } else {
+          alert('LINE Pay 請求失敗')
+        }
+      } catch(err) {
+        console.error(err)
+          alert('LINE Pay 連線錯誤')
+      }
+    } else {
+      successModal.value.show();
+    }
+    }
   } else {
     alert('部分欄位有誤，請檢查紅字部分！')
   }
 }
 const handleSuccessConfirm = ()=>{
-  showSuccess.value = false
+  // showSuccess.value = false
   cartStore.clearCart()
   // 導到訂單管理頁
   router.push('/orderlist')
@@ -63,7 +93,7 @@ const handleSuccessConfirm = ()=>{
 
 </script>
 <template>
-  <SuccessMessageModal v-if="showSuccess" :title="'已送出訂單!'" @confirmed="handleSuccessConfirm"/>
+  <SuccessMessageModal ref="successModal" :title="'已送出訂單!'" @confirmed="handleSuccessConfirm" />
   <div class="checkout_page">
     <div class="breadcrumb">
       <router-link :to="'/cart'" class="breadcrumb_location">&lt 返回購物車</router-link>

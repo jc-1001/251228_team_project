@@ -1,12 +1,14 @@
 <script setup>
 import { useCartStore } from '@/stores/cart'
 
+import shoppingBagIcon from '@/assets/images/shop/icon/shopping_bag.svg'
+
 const cartStore = useCartStore()
 </script>
 <template>
   <section class="checkout_section">
     <h3 class="section_title">
-      <span class="material-symbols-rounded icon icon">shopping_bag</span>
+      <span class="icon"><img :src="shoppingBagIcon" alt=""></span>
       商品明細
     </h3>
     <ul class="item_list">

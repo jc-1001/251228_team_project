@@ -1,19 +1,68 @@
-<script setup>
+﻿<script setup>
+import { ref, onBeforeUnmount } from 'vue'
+import { useMedicineStore } from '@/stores/medicine.js'
+
+const previewUrl = ref('')
+
 const timeSlots = ['早上', '中午', '晚上', '睡前']
 const usageOptions = [
-  { label: '餐前', value: 'before' },
-  { label: '餐後', value: 'after' },
-  { label: '睡前', value: 'bedtime' },
+  { label: '無', value: 'NONE' },
+  { label: '餐前', value: 'BEFORE_MEAL' },
+  { label: '餐後', value: 'AFTER_MEAL' },
+  { label: '不拘', value: 'ANY' },
+  { label: '睡前', value: 'BEDTIME' },
 ]
-const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const quantityOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 const usageOptionsBySlot = (slot) => {
   if (slot === '睡前') {
-    return [{ label: '睡前', value: 'bedtime' }]
+    return usageOptions.filter((opt) => ['NONE', 'BEDTIME'].includes(opt.value))
   }
-  return usageOptions
+  return usageOptions.filter((opt) => opt.value !== 'BEDTIME')
 }
+const scheduleFieldMap = {
+  早上: 'morning',
+  中午: 'noon',
+  晚上: 'evening',
+  睡前: 'bedtime',
+}
+const instructionMap = {
+  NONE: 'NONE',
+  BEFORE_MEAL: 'BEFORE_MEAL',
+  AFTER_MEAL: 'AFTER_MEAL',
+  ANY: 'ANY',
+  BEDTIME: 'BEDTIME',
+}
+const { category } = defineProps({
+  category: {
+    type: String,
+    default: '藥品',
+  },
+})
+
 const emit = defineEmits(['closeModal'])
+
+const medicineName = ref('')
+const expirationDate = ref('')
+const quantity = ref(1)
+const notes = ref('')
+const imageFile = ref(null)
+const schedule = ref(
+  timeSlots.map((slot) => ({
+    slot,
+    usage: 'NONE',
+    quantity: 0,
+  })),
+)
+const isSubmitting = ref(false)
+const errors = ref({
+  name: '',
+  quantity: '',
+  expiryDate: '',
+})
+
+const medicineStore = useMedicineStore()
+const { createMedication, fetchItems } = medicineStore
 
 const closeModal = () => {
   emit('closeModal')
@@ -28,6 +77,99 @@ const onKeydown = (event) => {
     closeModal()
   }
 }
+
+const clearPreview = () => {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = ''
+  }
+}
+
+const handleFileChange = (event) => {
+  const file = event.target.files?.[0]
+  if (!file) {
+    clearPreview()
+    imageFile.value = null
+    return
+  }
+  clearPreview()
+  previewUrl.value = URL.createObjectURL(file)
+  imageFile.value = file
+}
+
+const getTodayString = () => {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+const validate = () => {
+  errors.value = { name: '', quantity: '', expiryDate: '' }
+  const name = medicineName.value.trim()
+  if (!name) {
+    errors.value.name = '藥品名必填'
+  }
+  const qty = Number(quantity.value)
+  if (!Number.isFinite(qty) || qty <= 0) {
+    errors.value.quantity = '藥品數量必填'
+  }
+  if (expirationDate.value) {
+    const today = getTodayString()
+    if (expirationDate.value < today) {
+      errors.value.expiryDate = '有效期限不可小於今天'
+    }
+  }
+  return !errors.value.name && !errors.value.quantity && !errors.value.expiryDate
+}
+
+const handleSubmit = async () => {
+  if (isSubmitting.value) return
+  if (!validate()) return
+  isSubmitting.value = true
+
+  const payload = new FormData()
+  payload.append('category', category)
+  payload.append('medication_name', medicineName.value.trim())
+  payload.append('expiry_date', expirationDate.value)
+  payload.append('stock_qty', String(quantity.value ?? ''))
+  payload.append('note', notes.value.trim())
+
+  for (const entry of schedule.value) {
+    const fieldKey = scheduleFieldMap[entry.slot]
+    if (!fieldKey) continue
+
+    const instruction = instructionMap[entry.usage] ?? 'NONE'
+    const doseQty = entry.quantity ?? ''
+
+    if (instruction !== 'NONE' && Number(doseQty) <= 0) {
+      console.warn('Invalid dose quantity for slot:', entry.slot)
+      isSubmitting.value = false
+      return
+    }
+
+    payload.append(`${fieldKey}_instruction`, instruction)
+    payload.append(`${fieldKey}_dose_qty`, instruction === 'NONE' ? '' : String(doseQty))
+  }
+  if (imageFile.value) {
+    payload.append('photo', imageFile.value)
+  }
+
+  try {
+    await createMedication(payload)
+    await fetchItems(category)
+    closeModal()
+  } catch (error) {
+    console.error('Failed to create medication:', error)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+onBeforeUnmount(() => {
+  clearPreview()
+})
 </script>
 
 <template>
@@ -37,50 +179,67 @@ const onKeydown = (event) => {
         <span class="material-symbols-outlined">close</span>
       </button>
       <h1 class="medicine-modal__title">新增藥品</h1>
-      <form class="medicine-modal__content" action="#">
+      <form class="medicine-modal__content" action="#" @submit.prevent="handleSubmit">
         <div class="medicine-modal__body">
           <section class="medicine-modal__image">
-            <input type="file" id="medicine-image" class="medicine-modal__file" />
+            <div class="medicine-modal__image-form">
+              <div class="form-group">
+                <div class="form-label">
+                  <label for="medicine-name">藥品名</label>
+                  <span v-if="errors.name" class="field-error">{{ errors.name }}</span>
+                </div>
+                <input
+                  id="medicine-name"
+                  v-model.trim="medicineName"
+                  type="text"
+                  placeholder="例如：阿斯匹靈"
+                />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <div class="form-label">
+                    <label for="expiration-date">有效期限</label>
+                    <span v-if="errors.expiryDate" class="field-error">{{ errors.expiryDate }}</span>
+                  </div>
+                  <input id="expiration-date" v-model="expirationDate" type="date" />
+                </div>
+                <div class="form-group">
+                  <div class="form-label">
+                    <label for="quantity">藥品數量</label>
+                    <span v-if="errors.quantity" class="field-error">{{ errors.quantity }}</span>
+                  </div>
+                  <input id="quantity" v-model.number="quantity" type="number" min="1" />
+                </div>
+              </div>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              id="medicine-image"
+              class="medicine-modal__file"
+              @change="handleFileChange"
+            />
             <label class="medicine-modal__image-drop" for="medicine-image">
-              <img src="@/assets/images/camera.svg" alt="camera icon" />
-              點擊或拖曳上傳藥品照片
+              <img v-if="previewUrl" :src="previewUrl" alt="medicine preview" class="input-img" />
+              <img v-else src="@/assets/images/camera.svg" alt="camera icon" />
+              <span v-if="!previewUrl">點擊或拖曳上傳藥品照片</span>
             </label>
           </section>
 
           <section class="medicine-modal__form">
             <div class="form-group">
-              <label for="medicine-name">藥品名</label>
-              <input id="medicine-name" type="text" placeholder="例如：阿斯匹靈" />
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="expiration-date">有效期限</label>
-                <input id="expiration-date" type="date" />
-              </div>
-              <div class="form-group">
-                <label for="quantity">藥品數量</label>
-                <input id="quantity" type="text" />
-              </div>
-            </div>
-
-            <div class="form-group">
               <label for="notes">備註</label>
-              <input id="notes" type="text" />
+              <input id="notes" v-model.trim="notes" type="text"  maxlength="20"/>
             </div>
-
-            <p class="medicine-modal__hint">
-              當藥品數量低於七日用量或離有效期限小於 30 日會發出提醒
-            </p>
 
             <div class="medicine-modal__schedule">
               <div class="schedule__head"></div>
               <div class="schedule__head">醫囑用法</div>
               <div class="schedule__head">服用數量</div>
 
-              <template v-for="slot in timeSlots" :key="slot">
+              <template v-for="(slot, index) in timeSlots" :key="slot">
                 <div class="schedule__row-label">{{ slot }}</div>
-                <select class="schedule__select">
+                <select v-model="schedule[index].usage" class="schedule__select">
                   <option
                     v-for="opt in usageOptionsBySlot(slot)"
                     :key="opt.value"
@@ -89,7 +248,7 @@ const onKeydown = (event) => {
                     {{ opt.label }}
                   </option>
                 </select>
-                <select class="schedule__select">
+                <select v-model.number="schedule[index].quantity" class="schedule__select">
                   <option v-for="qty in quantityOptions" :key="qty" :value="qty">
                     {{ qty }}
                   </option>
@@ -100,7 +259,8 @@ const onKeydown = (event) => {
         </div>
 
         <div class="medicine-modal__footer">
-          <button class="btn-primary" type="submit">儲存</button>
+          <button class="btn-primary" type="submit" 
+          :disabled="isSubmitting">加入藥箱</button>
         </div>
       </form>
     </div>
@@ -117,21 +277,20 @@ const onKeydown = (event) => {
 .medicine-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.5);
   display: grid;
   place-items: center;
   z-index: 1000;
 
   .medicine-modal__card {
     position: relative;
-    width: 1200px;
+    width: 800px;
     max-width: 90vw;
-    height: min(667px, 80vh);
-    // max-height: 90vh;
+    max-height: 90vh;
     background-color: $white;
     border-radius: $radius_md;
     box-shadow: $shadowDark;
-    padding: 32px 40px;
+    padding: 16px 40px;
     gap: 16px;
     overflow: auto;
 
@@ -155,12 +314,49 @@ const onKeydown = (event) => {
       .medicine-modal__body {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 32px;
-        align-items: center;
+        gap: 16px;
+        align-items: self-start;
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+
+        .form-group {
+          display: grid;
+          gap: 8px;
+        }
+
+        .form-label {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .field-error {
+          font-size: 11px;
+          color: $accent;
+          line-height: 1.2;
+        }
+
+        label {
+          @include body2;
+          color: $primaryDark;
+        }
+
+        input,
+        select {
+          padding: 8px;
+          border: 1px solid $primaryDark;
+          border-radius: $radius_sm;
+          @include body3;
+        }
 
         .medicine-modal__image {
-          display: flex;
-          justify-content: center;
+          display: grid;
+          gap: 8px;
 
           .medicine-modal__file {
             display: none;
@@ -169,7 +365,7 @@ const onKeydown = (event) => {
           .medicine-modal__image-drop {
             width: 100%;
             max-width: 520px;
-            height: 520px;
+            height: 164px;
             border-radius: $radius_sm;
             border: 1px solid $primaryDark;
             background-color: $primaryLight;
@@ -179,42 +375,22 @@ const onKeydown = (event) => {
             text-align: center;
             color: $primaryDark;
             @include body3;
+            .input-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              border-radius: $radius_sm;
+            }
+
+            .medicine-modal__image-form {
+              display: grid;
+              gap: 16px;
+            }
           }
         }
-
         .medicine-modal__form {
           display: grid;
           gap: 16px;
-
-          .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-          }
-
-          .form-group {
-            display: grid;
-            gap: 8px;
-          }
-
-          label {
-            @include body2;
-            color: $primaryDark;
-          }
-
-          input,
-          select {
-            padding: 10px 12px;
-            border: 1px solid $primaryDark;
-            border-radius: $radius_sm;
-            @include body3;
-          }
-
-          .medicine-modal__hint {
-            margin: 0;
-            color: $primaryDark;
-            @include body3;
-          }
 
           .medicine-modal__schedule {
             display: grid;
@@ -250,7 +426,7 @@ const onKeydown = (event) => {
         justify-content: center;
 
         .btn-primary {
-          flex: .3;
+          flex: 0.3;
           background: $primaryDark;
           color: $white;
           padding: 8px;
@@ -321,15 +497,6 @@ const onKeydown = (event) => {
       .medicine-modal__content {
         .medicine-modal__body {
           .medicine-modal__form {
-            .form-row {
-              grid-template-columns: 1fr;
-            }
-
-            input,
-            select {
-              min-height: 44px;
-            }
-
             .medicine-modal__schedule {
               grid-template-columns: 64px 1fr;
               gap: 16px 20px;
@@ -343,9 +510,21 @@ const onKeydown = (event) => {
               }
             }
           }
+
+          .form-row {
+            grid-template-columns: 1fr;
+          }
+
+          input,
+          select {
+            min-height: 44px;
+          }
         }
       }
     }
   }
 }
 </style>
+
+
+
