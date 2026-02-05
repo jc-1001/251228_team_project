@@ -4,8 +4,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
-import axios from 'axios' 
 const router = useRouter()
+import { publicApi } from '@/utils/publicApi';
 
 // 對應資料庫與註冊 API 
 const profile = ref({
@@ -46,7 +46,7 @@ onMounted(() => {
 const handleSave = async () => {
   try {
     // 1. 呼叫後端 API 更新資料庫
-    const res = await axios.post('http://localhost:8888/unicare_api/member/update_api.php', profile.value);
+    const res = await publicApi.post('member/update_api.php', profile.value);
 
     if (res.data.status === 'success') {
       // 2. 成功後，同步更新瀏覽器的快取 (localStorage)

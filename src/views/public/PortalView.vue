@@ -1,6 +1,8 @@
 <script setup>
 
     import { useRouter } from 'vue-router'
+    import { publicApi } from '@/utils/publicApi';
+    
     const router = useRouter()
 
     const navigateTo = (type) => {

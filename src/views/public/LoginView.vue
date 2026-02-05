@@ -2,7 +2,7 @@
 // --- 1. Import 區塊必須在最上方 ---
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { publicApi } from '@/utils/publicApi';
 
 // --- 2. ER-Model定義變數 ---
 const router = useRouter();
@@ -13,7 +13,7 @@ const rememberMe = ref(false);
 // --- 3. 登入邏輯 (連動資料庫) ---
 const handleLogin = async () => {
     try {
-        const response = await axios.post('http://localhost:8888/unicare_api/member/login_api.php', {
+        const response = await publicApi.post('member/login_api.php', {
             email: email.value,      // 對應 ER-Model
             password: password.value
         });
