@@ -79,6 +79,7 @@ const initForm = () => {
   formValue.value = ''
   formSYS.value = ''
   formDIA.value = ''
+  formHeartRate.value = ''
 }
 
 /** ✅ activeMetricKey 變動時：重置表單 + 內容自然跟著 currentMetric 切換 */
@@ -87,12 +88,55 @@ watch(() => props.activeMetricKey, initForm, { immediate: true })
 // ✅ 關閉彈窗（按 X、按遮罩）
 const closePop = () => emit('close')
 
+// 🔥 新增：驗證數值的函數
+const validateValues = () => {
+  // 驗證時間
+  if (!formTime.value) {
+    alert('請選擇測量時間')
+    return false
+  }
+
+  // 血壓/心律的驗證
+  if (isBloodPressure.value) {
+    const sys = Number(formSYS.value)
+    const dia = Number(formDIA.value)
+    const hr = Number(formHeartRate.value)
+
+    if (!formSYS.value || sys <= 0) {
+      alert('請輸入有效的收縮壓數值（需大於 0）')
+      return false
+    }
+    if (!formDIA.value || dia <= 0) {
+      alert('請輸入有效的舒張壓數值（需大於 0）')
+      return false
+    }
+    if (!formHeartRate.value || hr <= 0) {
+      alert('請輸入有效的心律數值（需大於 0）')
+      return false
+    }
+  } else {
+    // 單值欄位的驗證
+    const value = Number(formValue.value)
+    
+    if (!formValue.value || value <= 0) {
+      alert(`請輸入有效的${currentMetric.value?.title}數值（需大於 0）`)
+      return false
+    }
+  }
+
+  return true
+}
+
 // 串接API 儲存數值(POST)
 const onSave = async () => {
   if (!currentMetric.value) return
 
+  // 🔥 先進行驗證
+  if (!validateValues()) {
+    return
+  }
+
   // 你可以依 currentMetric.url/valueField/timeField 組 payload 或 fetch
-  // 這裡只示範組資料
   const measured_at = formTime.value
     ? `${formDate.value} ${formTime.value}`
     : `${formDate.value} 00:00:00`
@@ -127,6 +171,7 @@ const onSave = async () => {
     }
   } catch (err) {
     console.log('儲存失敗', err)
+    alert('儲存失敗，請稍後再試')
     // 這裡會觸發 HomeView 的 catch 區塊跳出錯誤燈箱
   }
 }
@@ -135,7 +180,7 @@ const onSave = async () => {
 <template>
   <div class="pop-overlay" @click.self="closePop">
     <form class="input" @submit.prevent="onSave">
-      <button class="close-pop__btn" @click="closePop">
+      <button type="button" class="close-pop__btn" @click="closePop">
         <span class="material-symbols-outlined">close</span>
       </button>
       <div class="input__header">
@@ -166,14 +211,14 @@ const onSave = async () => {
               v-model="formSYS"
               placeholder="請輸入收縮壓"
               type="number"
-              required
+              step="1"
             />
             <input
               class="input__card__value"
               v-model="formDIA"
               placeholder="請輸入舒張壓"
               type="number"
-              required
+              step="1"
             />
           </div>
 
@@ -185,7 +230,6 @@ const onSave = async () => {
             :placeholder="`請輸入${currentMetric.title}`"
             type="number"
             :step="currentMetric.step ?? 1"
-            required
           />
         </div>
 
@@ -197,7 +241,7 @@ const onSave = async () => {
             v-model="formHeartRate"
             placeholder="請輸入心律"
             type="number"
-            required
+            step="1"
           />
         </div>
 
@@ -209,7 +253,6 @@ const onSave = async () => {
             v-model="formTime"
             step="60"
             placeholder="請選擇時間"
-            required
           />
         </div>
       </div>
