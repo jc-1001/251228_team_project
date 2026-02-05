@@ -9,6 +9,7 @@ import CheckoutForm from '@/components/checkout/CheckoutForm.vue'
 import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
 
 import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
+import { publicApi } from '@/utils/publicApi'
 
 const router = useRouter()
 const cartStore = useCartStore()
@@ -59,7 +60,25 @@ const handleCheckoutSubmit = async (summaryData)=>{
     const success = await orderStore.createOrder( orderPayLoad )
 
     if(success) {
+    if(orderPayLoad.payment_type === 'linepay') {
+      try {
+        const res = await publicApi.post('shop/linepay_request.php', {
+          orderId: orderStore.currentOrder.orderNumber
+        })
+
+        if(res.data.success) {
+          // 跳轉到linepay付款頁面
+          window.location.href = res.data.paymentUrl
+        } else {
+          alert('LINE Pay 請求失敗')
+        }
+      } catch(err) {
+        console.error(err)
+          alert('LINE Pay 連線錯誤')
+      }
+    } else {
       successModal.value.show();
+    }
     }
   } else {
     alert('部分欄位有誤，請檢查紅字部分！')

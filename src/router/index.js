@@ -91,6 +91,11 @@ const routes = [
     }
   },
   {
+    path: '/payment/confirm',
+    name: 'PaymentConfirm',
+    component: () => import('@/views/PaymentConfirm.vue')
+  },
+  {
     path: '/medicine',
     name: 'Medicine',
     component: () => import('@/views/client/Medicine/MedicineView.vue'),

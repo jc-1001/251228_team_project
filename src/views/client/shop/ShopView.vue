@@ -50,7 +50,7 @@ const filteredProducts = computed(() => {
     }
 
     // 2.處理搜尋過濾
-    const matchSearch = query === '' || item.title.toLowerCase().includes(query)
+    const matchSearch = query === '' || item.title.toLowerCase().includes(query) || (item.keywords && item.keywords.toLowerCase().includes(query))
 
     return matchCategory && matchSearch
   })
