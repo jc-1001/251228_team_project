@@ -183,27 +183,22 @@ const scrollTestimonials = (amount) => {
 };
 
 const scrollToSection = (elementId) => {
-  const element = document.querySelector(`#${elementId}`)
-  //console.log( element.offsetTop );
-  const parentEl = document.querySelectorAll('.main_content')
-  parentEl[0].scrollTo({
-    top: element.offsetTop - 120,
-    behavior: "smooth"
-  });
-  /*
-  if (!element) return
-  const elementBounding = element.getBoundingClientRect()
+  const element = document.getElementById(elementId);
 
-  console.log(elementBounding)
-  const parentEl = document.querySelectorAll('.main_content')
+    const offset = 80; // header 高度
+    const bodyRect = document.body.getBoundingClientRect().top;
+    const elementRect = element.getBoundingClientRect().top;
+    const elementPosition = elementRect - bodyRect;
+    const offsetPosition = elementPosition - offset;
 
-  parentEl[0].scrollTo({
-    top: elementBounding.top - 150,
-    left: 0,
-    behavior: 'smooth'
-  })
-  */
-}
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
+
+    // 關閉手機版選單 (如果點擊導覽連結後需要關閉選單)
+    isMenuOpen.value = false;
+};
 
 const scrollSlider = (direction) => {
   const container = slider.value;
@@ -276,32 +271,32 @@ const scrollSlider = (direction) => {
 }
 
 @media screen and (max-width: 768px) {
-    .hb{
+    .hb {
         position: relative;
-        display: block;
-        width: 45px;
-        height: 45px;
-        border: rgba(0, 0, 0, 0.540) solid 3px;
+        display: flex;             /* flex 佈局 */
+        flex-direction: column;    /* 垂直 */
+        justify-content: space-between; /* 關鍵 */
+        align-items: center;
+        width: 40px;               
+        height: 32px;              
+        padding: 6px 0;            /* 透過 padding 控制線條與邊框的距離 */
+        /* border: #2E6669 solid 2px;  */
         border-radius: 6px;
         background-color: transparent;
+        cursor: pointer;
     }
-    .hb .bar{
+
+    .hb .bar {
         display: block;
-        width: 75%;
-        height: 3px;
+        width: 27px;               /* 線條寬度 */
+        height: 2px;               /* 線條厚度 */
+        background-color: #2E6669; 
+        transition: all 0.3s ease; /* 加動畫 */
+    }
+
+    .bar1, .bar2, .bar3 {
         position: relative;
-        margin: 0% auto;
-        
-        background-color: #2E6669;
-    }
-    .bar1 {
-        top: 12px;
-    }
-    .bar2 {
-        top: 18px;
-    }
-    .bar3{
-        top: 25px;
+        top: 0;                    /* 重設為 0 */
     }
     .main-menu{
         position: absolute;

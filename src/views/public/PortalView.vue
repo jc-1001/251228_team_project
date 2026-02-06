@@ -44,7 +44,7 @@
                 </small>
             </p>
     </main>
-    <p style="color: darkgrey;">
+    <p style="color: darkgrey; margin: 13px;">
         <small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
             本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
             均由學員負法律上責任,緯育公司概不負責。若有侵權疑慮,您可以私訊
@@ -58,36 +58,40 @@
 
     .entry-container {
         width: 100%;
-        height: 100%;
+        min-height: 87vh; // 改為 min-height 確保內容過長時可捲動
         background-color: $primaryLight;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 0;
+        padding: 40px 20px; // 加入 padding 防止手機版貼邊
+        box-sizing: border-box;
     }
 
     .logo-section {
         width: 100%;
         display: flex;
         justify-content: center;
-        margin-bottom: 100px;
+        margin-bottom: 60px; // 縮小間距更符合比例
     }
 
     .logo {
-        width: 400px;
+        width: 100%; // 改為百分比配合 max-width
+        max-width: 400px;
         height: auto;
         object-fit: contain;
     }
 
     .selection-grid {
         display: flex;
-        gap: 80px;
+        gap: 40px; // 縮小間距
+        flex-wrap: wrap; // 允許換行
+        justify-content: center;
     }
 
     .entry-card {
-        width: 320px;
-        height: 260px;
+        width: 280px; // 稍微收窄，增加手機版相容性
+        height: 220px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -98,18 +102,18 @@
         border: none;
         outline: none;
         border-radius: $radius_md;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
 
         &:hover {
-        transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
-
     }
 
     .icon-wrapper {
-        width: 120px;
-        height: 120px;
-        margin-bottom: 20px;
+        width: 100px;
+        height: 100px;
+        margin-bottom: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -124,5 +128,43 @@
     .label {
         color: $black;
         @include subtitle2(true)
+    }
+
+    // --- RWD 響應式設定 ---
+
+    // 平板與手機 (960px以下)
+    @media (max-width: 960px) {
+        .selection-grid {
+            gap: 30px;
+        }
+        .entry-card {
+            width: 240px;
+            height: 200px;
+        }
+    }
+
+    // 手機版 (600px以下)
+    @media (max-width: 600px) {
+        .logo-section {
+            margin-bottom: 40px;
+        }
+        .logo {
+            max-width: 280px; // 縮小手機版 Logo
+        }
+        .selection-grid {
+            flex-direction: column; // 關鍵：改為垂直排列
+            gap: 20px;
+            width: 100%;
+            align-items: center;
+        }
+        .entry-card {
+            width: 100%; // 手機版按鈕寬度撐滿
+            max-width: 320px; // 但限制最大寬度
+            height: 180px;
+        }
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+        }
     }
 </style>

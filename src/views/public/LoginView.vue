@@ -93,17 +93,20 @@ const handleLogin = async () => {
   align-items: center;
   justify-content: center;
   background-color: #f6f7f9;
+  padding: 20px; // 手機版增加邊距避免貼邊
 }
+
 .login-wrapper {
   display: flex;
   width: 100%;
   max-width: 1100px;
-  height: 650px;
+  min-height: 650px; // 改為 min-height 讓高度可彈性延伸
   background: white;
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
+
 .login-visual {
   flex: 1.2;
   background-color: #e0f2f1;
@@ -114,6 +117,7 @@ const handleLogin = async () => {
   .brand-info .logo { height: 45px; }
   .illustration { width: 100%; max-height: 350px; object-fit: contain; }
 }
+
 .login-form-container {
   flex: 1;
   display: flex;
@@ -139,4 +143,52 @@ const handleLogin = async () => {
 .register-icon { display: flex; justify-content: center; gap: 30px; margin-top: 15px; }
 .register-hint, .register-way { text-align: center; margin-top: 20px; font-size: 14px; }
 .link { color: #2E6669; text-decoration: none; }
+
+// RWD
+@media screen and (max-width: 1024px) {
+  .login-wrapper {
+    max-width: 900px;
+  }
+  .login-visual {
+    padding: 40px;
+  }
+}
+
+// 手機版 (768px以下)
+@media screen and (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column; // 改為垂直排列
+    height: auto;           // 高度改為自動，由內容撐開
+    max-width: 450px;       // 限制寬度
+  }
+
+  .login-visual {
+    display: none;          // 隱藏插圖
+  }
+
+  .login-form-container {
+    padding: 40px 30px;     // 縮小內距
+  }
+
+  .form-box h2 {
+    font-size: 24px;
+    text-align: center;     // 標題置中
+  }
+}
+
+// 極小螢幕優化 (480px以下)
+@media screen and (max-width: 480px) {
+  .login-page {
+    padding: 10px;
+  }
+  .login-form-container {
+    padding: 30px 20px;
+  }
+  .form-footer {
+    flex-direction: column; // 上下排列
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
 </style>

@@ -48,15 +48,13 @@ const handleSave = async () => {
     // 1. 呼叫後端 API 更新資料庫
     const res = await publicApi.post('member/update_api.php', profile.value);
 
-    if (res.data.status === 'success') {
-      // 2. 成功後，同步更新瀏覽器的快取 (localStorage)
-      localStorage.setItem('userProfile', JSON.stringify(profile.value));
-      
-      alert('個人資料已同步');
-      
-      // 3. (選做) 跳轉回首頁或重新整理
-      // router.push({ name: 'Home' });
-    } else {
+    if (response.data.status === 'success') {
+    // 1. 更新當前頁面的 profile 變數
+    profile.value = response.data.user;
+    // 2. 更新 localStorage
+    localStorage.setItem('userProfile', JSON.stringify(response.data.user));
+    alert('更新成功！');
+  } else {
       alert('更新失敗：' + res.data.message);
     }
   } catch (error) {
