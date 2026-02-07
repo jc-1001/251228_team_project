@@ -2,8 +2,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { API_ENDPOINTS } from '@/config/apiConfig'; 
+import { publicApi } from '@/utils/publicApi';
 
 const router = useRouter();
 
@@ -112,7 +111,7 @@ const handleRegister = async () => {
 
   try {
     // 在 apiConfig.js還沒定義，API_ENDPOINTS.REGISTER可以先保留原本的網址，但建議統一
-    const res = await axios.post('http://localhost:8888/unicare_api/member/register_api.php', memberProfile);
+    const res = await publicApi.post('member/register_api.php', memberProfile);
 
     if (res.data.status === 'success') {
       alert('註冊成功！歡迎加入 UniCare');

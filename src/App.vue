@@ -17,6 +17,7 @@ import DietBg from '@/assets/images/BG_diary.svg?url'
 
 import medicinebg from '@/assets/images/BG_mdc.svg?url'
 import { publicApi } from './utils/publicApi'
+import { useRouter } from 'vue-router';
 const route = useRoute()
 
 const mainContainer = ref(null)
@@ -175,8 +176,6 @@ onMounted(() => {
   background-color: $bgBody;
 }
 
-// route.params.id = '/Landing'
-// scroll-behavior: smooth
 
 .main_content {
   flex: 1;
