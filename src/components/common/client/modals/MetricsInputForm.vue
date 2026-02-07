@@ -3,6 +3,18 @@ import { ref, computed, watch } from 'vue'
 import { publicApi } from '@/utils/publicApi'
 import Metrics from '@/views/client/Metrics.vue'
 
+// 直接從 localStorage 抓
+const getMemberId = () => {
+  const profileString = localStorage.getItem('userProfile')
+  if (!profileString) return null
+  try {
+    const profile = JSON.parse(profileString)
+    return profile.member_id || profile.id
+  } catch (e) {
+    return parseInt(profileString)
+  }
+}
+
 const props = defineProps({
   activeMetricKey: {
     type: String,
@@ -117,7 +129,7 @@ const validateValues = () => {
   } else {
     // 單值欄位的驗證
     const value = Number(formValue.value)
-    
+
     if (!formValue.value || value <= 0) {
       alert(`請輸入有效的${currentMetric.value?.title}數值（需大於 0）`)
       return false
@@ -136,6 +148,12 @@ const onSave = async () => {
     return
   }
 
+  // 取得member id
+  const mid = getMemberId()
+  if (!mid) {
+    alert('找不到會員資訊，請重新登入')
+    return
+  }
   // 你可以依 currentMetric.url/valueField/timeField 組 payload 或 fetch
   const measured_at = formTime.value
     ? `${formDate.value} ${formTime.value}`
@@ -152,6 +170,8 @@ const onSave = async () => {
 
   try {
     const res = await publicApi.post('home_modal/save_metrics.php', {
+      // 真實的ID
+      member_id: mid,
       type: props.activeMetricKey,
       payload: payload,
     })

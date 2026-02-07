@@ -35,9 +35,9 @@ defineProps({
 
 const handleUserLogout = () => {
   if (confirm('確定要登出嗎？')) {
-    localStorage.removeItem('isUserLogin'); // 清除會員通行證
-    localStorage.removeItem('userProfile');  // 清除主要使用者資料標記
-    window.location.href = '/';       // 導回登陸首頁或登入頁
+    localStorage.removeItem('isUserLogin') // 清除會員通行證
+    localStorage.removeItem('userProfile') // 清除主要使用者資料標記
+    window.location.href = '/' // 導回登陸首頁或登入頁
   }
 }
 </script>
@@ -59,7 +59,7 @@ const handleUserLogout = () => {
       </nav>
 
       <button class="logout-btn" @click="handleUserLogout">
-        <span class="material-symbols-rounded">logout</span>
+        <AppIcon name="logout" size="20" class="logout-icon-svg" />
         登出
       </button>
     </aside>
@@ -147,6 +147,10 @@ const handleUserLogout = () => {
     }
 
     .logout-btn {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      align-items: center;
       width: 100%;
       padding: 12px;
       background-color: $primaryDark;
