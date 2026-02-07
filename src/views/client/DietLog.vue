@@ -100,8 +100,14 @@ const allDietRecords = ref({});
 const fetchDietRecords = async () => {
   try {
     // 直接對準你的 PHP 讀取檔案
+    const userData = JSON.parse(localStorage.getItem('user_info') || '{}');
+    const memberId = userData.id || localStorage.getItem('member_id');
+    if (!memberId) {
+        console.error('未找到會員 ID');
+        return;
+    }
     const response = await publicApi.get('diet/get_diets.php', {
-      params: { member_id: 1 },
+      params: { member_id: memberId },
     })
     console.log('Vue 收到 PHP 資料了！', response.data)
     if (response.data) {
@@ -114,8 +120,14 @@ const fetchDietRecords = async () => {
 const handleNewRecord = async (formData) => {
   const { type, note, preview, image_file, time } = formData
   const dateKey = selectedDate.value
+  const userData = JSON.parse(localStorage.getItem('user_info') || '{}');
+  const memberId = userData.id || localStorage.getItem('member_id');
+  if (!memberId) {
+    alert('登入狀態已失效，請重新登入');
+    return;
+  }
   const fd = new FormData()
-  fd.append('member_id', 1)
+  fd.append('member_id', memberId)
   fd.append('meal_date', dateKey)
   fd.append('meal_type', type)
   fd.append('description', note)
