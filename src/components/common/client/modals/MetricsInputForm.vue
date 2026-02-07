@@ -32,6 +32,7 @@ const metricConfig = {
     url: 'data/metrics/weight.json',
     valueField: 'weight', // json 裡的數值欄位
     timeField: 'recorded_at',
+    step: 0.1,
   },
   bloodOxygen: {
     title: '血氧',
@@ -305,7 +306,6 @@ const onSave = async () => {
   flex-direction: column;
   width: 400px;
   padding: 20px;
-  border: solid 1px;
   border-radius: 10px;
   background-color: white;
 }

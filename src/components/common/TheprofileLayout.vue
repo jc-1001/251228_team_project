@@ -37,6 +37,7 @@ const handleUserLogout = () => {
   if (confirm('確定要登出嗎？')) {
     localStorage.removeItem('isUserLogin') // 清除會員通行證
     localStorage.removeItem('userProfile') // 清除主要使用者資料標記
+    localStorage.removeItem('myCart') // 清除購物車項目
     window.location.href = '/' // 導回登陸首頁或登入頁
   }
 }

@@ -8,6 +8,10 @@ import bannerImage from '@/assets/images/shop/banner_img_shop.svg'
 
 import searchIcon from '@/assets/images/shop/icon/search.svg'
 
+// 獲取積分小互動
+import LuckyChest from '@/components/shop/LuckyChest.vue' 
+
+
 // 商品列表
 const productStore = useProductStore()
 
@@ -56,6 +60,15 @@ const filteredProducts = computed(() => {
   })
 })
 
+// 最近瀏覽紀錄
+const recentProducts = computed(()=>{
+  const viewedIds = JSON.parse(localStorage.getItem('recent_viewed')) || []
+
+  return viewedIds.map(id => {
+    return productStore.products.find(p => String(p.product_id) === String(id))
+  }).filter(item => item !== undefined)
+})
+
 
 </script>
 
@@ -66,6 +79,8 @@ const filteredProducts = computed(() => {
       subtitle="用健康積分兌換好禮，照顧自己也照顧家人!"
       :imageSrc="bannerImage"
     class="banner" />
+    <LuckyChest />
+
     <div class="controls_container">
       <div class="category_btns">
         <button v-for="cat in categories" :key="cat" class="category_btns_el" :class="{ 'active': currentCategory === cat }" @click="selectCategory(cat)">{{ cat }}</button>
@@ -83,6 +98,19 @@ const filteredProducts = computed(() => {
         未找到相關商品
       </div>
     </div>
+    <section v-if="recentProducts.length > 0" class="recent_section">
+      <div class="divider">
+        <span class="text">您最近看過的商品</span>
+      </div>
+      <div class="product_card_list">
+        <ProductCard 
+          v-for="item in recentProducts" 
+          :key="item.product_id" 
+          v-bind="item" 
+          :id="item.product_id"
+        />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -172,6 +200,32 @@ const filteredProducts = computed(() => {
       transform: translateY(-50%);
       color: $primaryDark;
       pointer-events: none;
+    }
+  }
+}
+
+// 最近瀏覽紀錄
+.recent_section {
+  margin-top: 60px;
+  
+  .divider {
+    display: flex;
+    align-items: center;
+    margin-bottom: 36px;
+    color: $grayDark;
+    
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background-color: $gray;
+    }
+    
+    .text {
+      padding: 0 16px;
+      @include subtitle2(true);
+      color: $primaryDark;
     }
   }
 }
