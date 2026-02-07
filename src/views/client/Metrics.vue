@@ -1124,7 +1124,8 @@ watch([activePeriod, activeTrendsBtn], () => {
 }
 
 .value-card__value {
-  font-size: 30px;
+  font-size: 26px;
+  color: $primaryDark;
   line-height: $lineHeightHeading;
   font-weight: $fontWeightBold;
   letter-spacing: $letterSpacing;
