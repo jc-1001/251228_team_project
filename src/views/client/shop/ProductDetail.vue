@@ -18,7 +18,23 @@ onMounted(async () => {
 
   if(data) {
     currentProduct.value = data
-    console.log('詳情頁資料拿到囉：', currentProduct.value)
+    // console.log('詳情頁資料拿到囉：', currentProduct.value)
+
+    // 最近瀏覽紀錄
+    let viewedList = JSON.parse(localStorage.getItem('recent_viewed')) || []
+
+    // 避免重複記錄
+    viewedList = viewedList.filter(itemId => String(itemId) !== String(id))
+
+    viewedList.unshift(id)
+
+    // 只留前4筆
+    if(viewedList.length > 4) viewedList.pop()
+    
+    
+    localStorage.setItem('recent_viewed', JSON.stringify(viewedList))
+
+
   } else {
     console.log('找不到商品')
   }

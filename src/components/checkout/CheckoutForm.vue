@@ -123,11 +123,15 @@ const validateField = (fieldCategory, fieldName)=>{
 
 // 資料自動填入
 onMounted(()=>{
-  if(userStore.isLoggedIn) {
-    form.value.user.name = userStore.userData.name
-    form.value.user.phone = userStore.userData.phone
-    form.value.user.email = userStore.userData.email
-    form.value.user.address = userStore.userData.address
+  const profileStr = localStorage.getItem('userProfile')
+
+  if(profileStr) {
+    const profile = JSON.parse(profileStr)
+    
+    form.value.user.name = profile.full_name || ''
+    form.value.user.phone = profile.phone_number || '' 
+    form.value.user.email = profile.email || ''
+    form.value.user.address = profile.address || ''  
   }
 })
 
