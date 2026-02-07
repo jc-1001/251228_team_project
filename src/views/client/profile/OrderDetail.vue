@@ -30,7 +30,18 @@ const order = ref(null)
 
 const fetchOrderDetail = async () => {
   try {
-    const res = await publicApi.get('member_center/get_my_order_detail.php', {params:{id: currentOrderId}})
+    // 會員大改1
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+    const memberId = profile.member_id || 0
+
+    // 會員大改2
+    const res = await publicApi.get('member_center/get_my_order_detail.php', {
+      params:{
+        id: currentOrderId,
+        member_id: memberId
+      }
+    })
+    // const res = await publicApi.get('member_center/get_my_order_detail.php', {params:{id: currentOrderId}})
 
     if(!res.data) {
       alert('找不到該筆訂單')
