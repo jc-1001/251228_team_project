@@ -7,12 +7,8 @@
       </header>
       
       <div class="modal-body">
-        <slot></slot>
+        <slot></slot> 
       </div>
-
-      <footer class="modal-footer">
-        <button class="confirm-btn" @click="$emit('close')">我已了解</button>
-      </footer>
     </div>
   </div>
 </template>
@@ -44,12 +40,5 @@ defineEmits(['close']);
 }
 .modal-body {
   padding: 20px; overflow-y: auto; line-height: 1.6; color: #444;
-}
-.modal-footer {
-  padding: 15px; border-top: 1px solid #eee; text-align: center;
-}
-.confirm-btn {
-  background: #2E6669; color: white; border: none;
-  padding: 8px 30px; border-radius: 4px; cursor: pointer;
 }
 </style>

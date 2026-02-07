@@ -118,9 +118,9 @@
         <router-link to="/"><img :src="logo"></router-link>
         <div class="footer_left">
           <ul class="list">
-            <li><a href="#">隱私權保護政策</a></li>
+            <li><a @click.prevent="showPrivacyModal = true">隱私權保護政策</a></li>
             <li><a href="#">銷售條款</a></li>
-            <li><a href="#">服務條款</a></li>
+            <li><a @click.prevent="showServiceModal = true">服務條款</a></li>
           </ul>
         </div>        
       </div>
@@ -132,6 +132,15 @@
           <li class="menu-item"><router-link to="/login">立即體驗</router-link></li>
         </ul>
       </nav>
+
+      <PolicyModal v-if="showServiceModal" title="服務條款" @close="showServiceModal = false">
+        <PolicyContent type="service" />
+      </PolicyModal>
+
+      <PolicyModal v-if="showPrivacyModal" title="隱私權保護政策" @close="showPrivacyModal = false">
+        <PolicyContent type="privacy" />
+      </PolicyModal>
+      
     </footer>
       <p style="margin: 0px 3% 3% 3%;"><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
             本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
@@ -144,7 +153,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import logo from '/src/assets/images/common/logo.svg';
+import logo from '/src/assets/images/client/logo.png';
 import problem1 from '/src/assets/images/public/LP_problem1.svg';
 import problem2 from '/src/assets/images/public/LP_problem2.svg';
 import problem3 from '/src/assets/images/public/LP_problem3.svg';
@@ -161,6 +170,11 @@ import LP_function1 from '/src/assets/images/public/LP_function1.jpg';
 import LP_function2 from '/src/assets/images/public/LP_function2.jpg';
 import LP_function3 from '/src/assets/images/public/LP_function3.jpg';
 import LP_function4 from '/src/assets/images/public/LP_function4.jpg';
+
+import PolicyModal from '@/components/register/PolicyModal.vue';
+import PolicyContent from '@/components/register/PolicyContent.vue';
+const showServiceModal = ref(false);
+const showPrivacyModal = ref(false);
 
 const isMenuOpen = ref(false);
 const testimonialContainer = ref(null);
@@ -345,6 +359,17 @@ const scrollSlider = (direction) => {
         padding: 10px 1em;
         background-color: white;
     }
+}
+
+/* 選單開啟動畫 */
+.main-header:has(.menu-switch:checked) .bar1 {
+    transform: translateY(9px) rotate(45deg);
+}
+.main-header:has(.menu-switch:checked) .bar2 {
+    opacity: 0; /* 線消失 */
+}
+.main-header:has(.menu-switch:checked) .bar3 {
+    transform: translateY(-9px) rotate(-45deg);
 }
 
 body,html{
@@ -670,6 +695,24 @@ div.footer_left{
             padding: 5px 10px;
             text-decoration: none;
         }
+        
+        .footer_left .list {
+            li {
+              display: inline-block;
+              margin-right: 15px;
+              
+              a {
+                cursor: pointer; /* 強制顯示手指符號 */
+                color: #666;
+                text-decoration: none;
+                
+                &:hover {
+                  color: #2E6669; /* hover變色 */
+                  text-decoration: none;
+                }
+              }
+            }
+          }
 
 
 @media screen and (min-width: 480px) and (max-width: 768px) {
@@ -965,7 +1008,7 @@ div.footer_left{
   .partThree .item {
     /* 3. 調整單個項目的外距 */
     margin: 20px auto !important;
-    width: 90%; /* 讓內容稍微縮減，更有呼吸感 */
+    width: 90%; /* 讓內容稍微縮減 */
   }
 
   .partThree img {
