@@ -37,9 +37,16 @@ const handleCheckoutSubmit = async (summaryData)=>{
     // 使用"深拷貝"將訂單資料成為一個不能被修改的紀錄，成為快照
     // JSON.stringify將物件轉成字串後，就會切斷與原本物件的連結(因為字串沒有連結功能)
     const formData = JSON.parse(JSON.stringify(checkoutFormRef.value.form))
+
+    // 會員大改1
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+    const memberId = profile.member_id || 0
+
     // orderPayLoad
     // 修改成跟"資料庫欄位"一樣
     const orderPayLoad = {
+      // 會員大改2
+      member_id: memberId,
       recipient_name: formData.user.name,
       recipient_phone: formData.user.phone,
       recipient_email: formData.user.email,
