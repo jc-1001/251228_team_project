@@ -46,8 +46,19 @@ const todayDate = ref(dayjs().format('YYYY-MM-DD'))
 // 處理儲存後的動作
 const handleDietSubmit = async (formData) => {
   const { type, note, image_file, time } = formData
+
+  const memberId = getMemberId()
+  if (!memberId) {
+    console.error('找不到會員 ID')
+    if (errorModal.value) {
+      errorModal.value.show()
+    }
+    return
+  }
+
   const fd = new FormData()
-  fd.append('member_id', 1) // 這裡配合你目前日記頁面寫法
+
+  fd.append('member_id', memberId) // 這裡配合你目前日記頁面寫法
   fd.append('meal_date', todayDate.value)
   fd.append('meal_type', type)
   fd.append('description', note)
@@ -323,11 +334,7 @@ onMounted(() => {
   <SuccessMessageModal ref="successModal" title="儲存成功" />
   <ErrorMessageModal ref="errorModal" title="儲存失敗" />
   <div class="home-container">
-    <TheHeader
-      :title="greetingTitle"
-      :subtitle="'今天感覺如何？\n別忘了記錄喔~'"
-      :imageSrc="HeaderImage"
-    />
+    <TheHeader :title="greetingTitle" :subtitle="'今天感覺如何？\n別忘了記錄喔~'" :imageSrc="HeaderImage" />
 
     <router-view />
     <!-- 左欄 -->
@@ -340,12 +347,8 @@ onMounted(() => {
             <p>快速記錄</p>
           </div>
           <div class="buttonlist">
-            <button
-              v-for="item in fastButton"
-              :key="item.name"
-              :class="['record-card', `is-${item.type}`]"
-              @click="openPopup(item)"
-            >
+            <button v-for="item in fastButton" :key="item.name" :class="['record-card', `is-${item.type}`]"
+              @click="openPopup(item)">
               <AppIcon :name="item.icon" size="18" />
               <span class="button-text">{{ item.name }}</span>
             </button>
@@ -360,18 +363,9 @@ onMounted(() => {
                 @update:modelValue="closePopup"
                 @close="closePopup"
               /> -->
-              <NewDietaryRecord
-                v-if="popupInfo && popupInfo.type === 'diet'"
-                :isOpen="true"
-                :date="todayDate"
-                @close="closePopup"
-                @submit="handleDietSubmit"
-              />
-              <NewMedicineModals
-                v-if="popupInfo.type === 'medicine'"
-                :info="popupInfo"
-                @close="closePopup"
-              />
+              <NewDietaryRecord v-if="popupInfo && popupInfo.type === 'diet'" :isOpen="true" :date="todayDate"
+                @close="closePopup" @submit="handleDietSubmit" />
+              <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" />
               <!-- <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" /> -->
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
@@ -380,11 +374,7 @@ onMounted(() => {
               <!-- <Popup1 :info="popupInfo" @close="closePopup" /> -->
             </Teleport>
             <Teleport v-if="isMetricsModalOpen" to="body">
-              <MetricsInputForm
-                :activeMetricKey="metricsKey"
-                @close="closeMetricsPopup"
-                @save="handleMetricSave"
-              />
+              <MetricsInputForm :activeMetricKey="metricsKey" @close="closeMetricsPopup" @save="handleMetricSave" />
             </Teleport>
           </div>
         </div>
@@ -394,11 +384,7 @@ onMounted(() => {
             <p>今日狀態</p>
           </div>
           <div class="todayLog-cardlist">
-            <div
-              :class="['todayLog-card', `status-${item2.statusType}`]"
-              v-for="item2 in todayLog"
-              :key="item2.name"
-            >
+            <div :class="['todayLog-card', `status-${item2.statusType}`]" v-for="item2 in todayLog" :key="item2.name">
               <div class="card-icon">
                 <AppIcon :name="item2.icon" size="20" />
               </div>
@@ -410,22 +396,17 @@ onMounted(() => {
               <div class="card-body">
                 <span class="log-num">{{ item2.num }}</span>
                 <span class="unit">{{ item2.unit }}</span>
-                <small
-                  v-if="item2.name === '體重' && userHeight > 0"
-                  style="font-size: 12px; color: #999; margin-left: 5px"
-                >
+                <small v-if="item2.name === '體重' && userHeight > 0"
+                  style="font-size: 12px; color: #999; margin-left: 5px">
                   ({{ userHeight }}cm)
                 </small>
               </div>
 
               <div class="state-footer">
                 <div class="state-badge">{{ item2.statusText }}</div>
-                <AppIcon
-                  v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
-                  :name="item2.statusType === 'danger' ? 'trending_up' : 'trending_down'"
-                  size="18"
-                  class="warning-icon"
-                />
+                <AppIcon v-if="item2.statusType === 'danger' || item2.statusType === 'low'"
+                  :name="item2.statusType === 'danger' ? 'trending_up' : 'trending_down'" size="18"
+                  class="warning-icon" />
               </div>
             </div>
           </div>
@@ -452,6 +433,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 // 首頁限定greeting subtext(小手機換行)
 @media (max-width: 425px) {
+
   /* 穿透進去處理標題與副標題 */
   :deep(.greeting),
   :deep(.subtext) {
@@ -459,17 +441,20 @@ onMounted(() => {
     line-height: 1.45;
   }
 }
+
 @media (max-width: 320px) {
   :deep(.greeting) {
     font-size: 12px;
     white-space: pre-line !important;
     line-height: 1.45;
   }
+
   :deep(.subtext) {
     font-size: 8px;
     white-space: pre-line !important;
     line-height: 1.45;
   }
+
   :deep(.illustration) {
     width: 120%;
   }
