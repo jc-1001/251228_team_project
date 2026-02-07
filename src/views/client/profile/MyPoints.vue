@@ -24,33 +24,31 @@ const getTodayStr = () => {
   return `${year}-${month}-${day}`
 }
 
+// 獲取會員資料
+const getMemberId = () => {
+  const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+  return profile.member_id || 0
+}
+
 
 // 獲取總分&歷史紀錄 (合併呼叫)
 
 const initData = async () => {
   try {
-    const memberId = getMemberId() // 取得id
+    const memberId = getMemberId() // 取得 ID
 
-    // 會員大改1
+    // 1. 抓總積分 (加上 params)
     const resTotal = await publicApi.get('member_center/get_total_points.php', {
       params: { member_id: memberId }
     })
-
-    // 1. 抓總積分
-    // const resTotal = await publicApi.get('member_center/get_total_points.php')
     currentPoints.value = resTotal.data.total_points || 0
 
-    // 2. 抓歷史紀錄
-
-    // 會員大改2
+    // 2. 抓歷史紀錄 (加上 params)
     const resHistory = await publicApi.get('member_center/get_my_points.php', {
       params: { member_id: memberId }
     })
-
-    // const resHistory = await publicApi.get('member_center/get_my_points.php')
     historyList.value = resHistory.data.data
 
-    // 3. 判斷今日有沒有簽到 (檢查歷史紀錄第一筆是不是今天且是簽到)
     checkIfSignedToday()
 
   } catch (err) {
