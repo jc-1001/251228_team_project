@@ -413,31 +413,32 @@ const closePop = () => {
 
 // 🔥載入會員基本資料（身高和體重）
 const loadMemberInfo = async () => {
-  const member_id = 1;
+  const member_id = getMemberId()  // 用 getMemberId() 取得當前用戶 ID
 
   try {
     const res = await axios.get(`${API_BASE_URL}/get_metrics.php`, {
       params: {
         type: 'member_info',
-        member_id
+        member_id  // 🔥 使用當前用戶的 member_id
       },
       withCredentials: true
     })
 
     if (res.data) {
-      height.value = res.data.height || '175'  // 如果沒有資料，使用預設值
-      // weight 會在 updateCardValues() 中從 weight_logs 取得最新值
+      height.value = res.data.height || '175'
       console.log('✅ 會員基本資料載入成功:', res.data)
     }
   } catch (err) {
     console.error('❌ 載入會員基本資料失敗:', err)
-    height.value = '175'  // 失敗時使用預設值
+    height.value = '175'
   }
   console.log("身高: " + height.value)
 }
 
 const fetchData = async () => {
+  const member_id = getMemberId()  // 🔥 改用 getMemberId() 取得當前用戶 ID
   const config = metricsConfig[activeMetricKey.value]
+  
   try {
     // 🔥 血壓和心律都使用 blood_pressure 的 type
     const apiType = (activeMetricKey.value === 'heartRate' || activeMetricKey.value === 'bloodPressure')
@@ -446,13 +447,13 @@ const fetchData = async () => {
 
     const res = await axios.get(`${API_BASE_URL}/get_metrics.php`, {
       params: {
-        type: apiType,  // 🔥 使用統一的 type
-        member_id: 1
+        type: apiType,
+        member_id  // 🔥 使用當前用戶的 member_id
       },
       withCredentials: true
     })
     records__data.value = res.data
-    console.log(`✅ 載入 ${config.title} 歷史記錄:`, res.data)  // 🔥 除錯用
+    console.log(`✅ 載入 ${config.title} 歷史記錄:`, res.data)
   } catch (err) {
     console.error('❌ 載入歷史記錄失敗:', err)
     records__data.value = []
@@ -1198,7 +1199,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 }
 
 .records__table {
-  height: 360px;
+  height: 460px;
   overflow-y: auto;
 }
 
