@@ -17,6 +17,18 @@ import MetricsInputForm from '@/components/common/client/modals/MetricsInputForm
 import NewDietaryRecord from '@/components/common/client/modals/NewDietaryRecord.vue'
 // 引入API
 import { publicApi } from '@/utils/publicApi'
+// 統一從 localStorage 抓取抓會員ID(localStorage裡面的key name:userProfile)
+
+const getMemberId = () => {
+  const profileString = localStorage.getItem('userProfile')
+  if (!profileString) return null
+  try {
+    const profile = JSON.parse(profileString)
+    return profile.member_id || profile.id
+  } catch (e) {
+    return parseInt(profileString)
+  }
+}
 
 // 共用燈箱初始化
 const successModal = ref(null)
@@ -33,42 +45,42 @@ const userHeight = ref(0)
 const todayDate = ref(dayjs().format('YYYY-MM-DD'))
 // 處理儲存後的動作
 const handleDietSubmit = async (formData) => {
-  const { type, note, image_file, time } = formData;
-  const fd = new FormData();
-  fd.append('member_id', 1); // 這裡配合你目前日記頁面寫法
-  fd.append('meal_date', todayDate.value);
-  fd.append('meal_type', type);
-  fd.append('description', note);
+  const { type, note, image_file, time } = formData
+  const fd = new FormData()
+  fd.append('member_id', 1) // 這裡配合你目前日記頁面寫法
+  fd.append('meal_date', todayDate.value)
+  fd.append('meal_type', type)
+  fd.append('description', note)
   // 時間處理
-  const formattedTime = time ? `${time}:00` : (type.includes(':') ? `${type}:00` : '00:00:00');
-  fd.append('meal_time', formattedTime);
+  const formattedTime = time ? `${time}:00` : type.includes(':') ? `${type}:00` : '00:00:00'
+  fd.append('meal_time', formattedTime)
   // 處理圖片
   if (image_file) {
-    fd.append('food_image', image_file);
+    fd.append('food_image', image_file)
   }
   try {
-    const response = await publicApi.post('diet/create_diet.php', fd);
+    const response = await publicApi.post('diet/create_diet.php', fd)
     if (response.data && response.data.success) {
-      closePopup(); // 儲存成功後關閉燈箱
+      closePopup() // 儲存成功後關閉燈箱
       // 成功提示燈箱
       if (successModal.value) {
-        successModal.value.show();
+        successModal.value.show()
       }
-      console.log('飲食紀錄儲存成功');
+      console.log('飲食紀錄儲存成功')
     } else {
       // 失敗提示燈箱
       if (errorModal.value) {
-        errorModal.value.show();
+        errorModal.value.show()
       }
-      console.error('儲存失敗：', response.data.message);
+      console.error('儲存失敗：', response.data.message)
     }
   } catch (error) {
-    console.error("提交失敗:", error);
+    console.error('提交失敗:', error)
     if (errorModal.value) {
-      errorModal.value.show();
+      errorModal.value.show()
     }
   }
-};
+}
 const fastButton = ref([
   { name: '吃藥', icon: 'medication', type: 'medicine' },
   { name: '飲食日記', icon: 'restaurant', type: 'diet' },
@@ -153,8 +165,11 @@ const closeMetricsPopup = () => {
 
 // 抓取最新身體數值串接API
 const fetchTodayStats = async () => {
+  const mid = getMemberId()
+  if (!mid) return
+
   try {
-    const res = await publicApi.get('home_modal/get_latest_metrics.php')
+    const res = await publicApi.get(`home_modal/get_latest_metrics.php?mid=${mid}`)
     // if (!res.ok) throw new Error('網路回應不正確')
     const data = res.data
 
@@ -266,8 +281,32 @@ const greetingTitle = computed(() => {
 })
 
 const fetchMemberHeader = async () => {
+  // 抓會員(localStorage裡面的key name:userProfile)
+  const profileString = localStorage.getItem('userProfile')
+  // 變成字串
+  let mid = 0
+  if (profileString) {
+    try {
+      // 假設key裡面存的是存的是物件{.......}
+      const profile = JSON.parse(profileString)
+      mid = profile.member_id || profile.id
+    } catch (e) {
+      // 如果存的是純數字字串，直接轉型
+      mid = parseInt(profileString)
+    }
+  }
+  // 找不到ID
+  if (!mid) {
+    console.warn('找不到會員 ID ，請重新登入')
+    memberInfo.value = {
+      lastName: '訪客',
+      title: '您好',
+    }
+    return
+  }
+
   try {
-    const res = await publicApi.get('home_modal/get_member_header.php')
+    const res = await publicApi.get(`home_modal/get_member_header.php?mid=${mid}`)
     memberInfo.value = res.data
   } catch (error) {
     console.log('抓取會員資料失敗', error)
@@ -321,7 +360,7 @@ onMounted(() => {
                 @update:modelValue="closePopup"
                 @close="closePopup"
               /> -->
-              <NewDietaryRecord 
+              <NewDietaryRecord
                 v-if="popupInfo && popupInfo.type === 'diet'"
                 :isOpen="true"
                 :date="todayDate"
@@ -332,7 +371,7 @@ onMounted(() => {
                 v-if="popupInfo.type === 'medicine'"
                 :info="popupInfo"
                 @close="closePopup"
-              /> 
+              />
               <!-- <NewMedicineModals v-if="popupInfo.type === 'medicine'" :info="popupInfo" @close="closePopup" /> -->
               <!-- <div :style="{ position: 'fixed', inset: 0 }">
                 {{ popupInfo.name }}
@@ -464,7 +503,6 @@ main {
   width: 100%;
   margin-top: 65px;
 
-
   @media (max-width: 1025px) {
     margin-top: 0px;
   }
@@ -485,7 +523,7 @@ main {
   margin-top: 20px;
 
   .block-title {
-    padding:  20px 20px 0 20px;
+    padding: 20px 20px 0 20px;
     color: $primaryDark;
     @include subtitle1(true);
     font-size: 18px; // 有改字體大小

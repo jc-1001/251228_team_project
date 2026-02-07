@@ -3,6 +3,17 @@ import { ref, computed, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import AppIcon from '@/components/common/AppIcon.vue'
 import { publicApi } from '@/utils/publicApi'
+// 真實會員ID key userProfile
+const getMemberId = () => {
+  const profileString = localStorage.getItem('userProfile')
+  if (!profileString) return null
+  try {
+    const profile = JSON.parse(profileString)
+    return profile.member_id || profile.id
+  } catch (e) {
+    return parseInt(profileString)
+  }
+}
 
 const cartStore = useCartStore()
 
@@ -30,10 +41,12 @@ const isDropdownOpen = ref(false) // 控制選單顯示
 
 // 串接API(個人通知訊息)
 const fetchNotification = async () => {
+  const mid = getMemberId()
+  if (!mid) return
   try {
     //http://localhost:8888/unicare_api/notifications/get_notification.php
 
-    const response = await publicApi.get('notifications/get_notification.php')
+    const response = await publicApi.get(`notifications/get_notification.php?mid=${mid}`)
     const data = response.data
 
     // 判斷 data 是否為陣列，若不是則包成陣列
@@ -58,9 +71,20 @@ const unreadCount = computed(() => {
 // 點擊訊息後、標記為已讀
 // 串接API已讀之後動態更新(PATCH)
 const markAsRead = async (note) => {
+  // 如果是第一次註冊welcome_bonus不跑後端 API
+  if (note.notification_id === 'welcome_bonus') {
+    note.is_read = true
+    notifications.value = notifications.value.filter(
+      (n) => n.notification_id !== note.notification_id,
+    )
+    return //直接結束不跑API
+  }
+
+  const mid = getMemberId()
+  if (!mid) return
   try {
     // http://localhost:8888/unicare_api/notifications/mark_as_read.php
-    const response = await publicApi.patch('notifications/mark_as_read.php', {
+    const response = await publicApi.patch(`notifications/mark_as_read.php?mid=${mid}`, {
       notification_id: note.notification_id,
       is_read: true, // 點擊要修改成已讀
     })
