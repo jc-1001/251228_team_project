@@ -17,6 +17,25 @@ const fallbackSupplements = []
 
 const IMAGE_BASE = 'http://localhost:8888/unicare_api'
 
+const getMemberId = () => {
+  try {
+    const raw = localStorage.getItem('userProfile')
+    if (!raw) return null
+    const data = JSON.parse(raw)
+    const id = Number(data?.member_id)
+    return Number.isFinite(id) && id > 0 ? id : null
+  } catch {
+    return null
+  }
+}
+
+const appendMemberId = (formData) => {
+  const memberId = getMemberId()
+  if (memberId) {
+    formData.append('member_id', String(memberId))
+  }
+}
+
 const resolveImageUrl = (url) => {
   if (!url) return ''
   if (/^https?:\/\//i.test(url)) return url
@@ -112,7 +131,10 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
-      const url = `${API_URL}?category=${encodeURIComponent(category)}`
+      const memberId = getMemberId()
+      const url = new URL(API_URL, window.location.origin)
+      url.searchParams.set('category', category)
+      if (memberId) url.searchParams.set('member_id', String(memberId))
       const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -144,6 +166,7 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
+      appendMemberId(formData)
       const res = await fetch(CREATE_URL, {
         method: 'POST',
         credentials: 'include',
@@ -166,6 +189,7 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
+      appendMemberId(formData)
       const res = await fetch(UPDATE_URL, {
         method: 'POST',
         credentials: 'include',
@@ -189,7 +213,10 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
-      const url = `${DETAIL_URL}?medication_id=${encodeURIComponent(medicationId)}`
+      const memberId = getMemberId()
+      const url = new URL(DETAIL_URL, window.location.origin)
+      url.searchParams.set('medication_id', String(medicationId))
+      if (memberId) url.searchParams.set('member_id', String(memberId))
       const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -214,16 +241,14 @@ export const useMedicineStore = defineStore('medicine', () => {
   }
 
 
-  async function deleteMedication(medicationId, memberId = 1) {
+  async function deleteMedication(medicationId) {
     if (!medicationId) return
     isLoading.value = true
     error.value = null
     try {
       const payload = new FormData()
       payload.append('medication_id', String(medicationId))
-      if (memberId) {
-        payload.append('member_id', String(memberId))
-      }
+      appendMemberId(payload)
       const res = await fetch(DELETE_URL, {
         method: 'POST',
         credentials: 'include',
@@ -246,7 +271,10 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
-      const res = await fetch(LOW_STOCK_URL, {
+      const memberId = getMemberId()
+      const url = new URL(LOW_STOCK_URL, window.location.origin)
+      if (memberId) url.searchParams.set('member_id', String(memberId))
+      const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
       })
@@ -268,7 +296,10 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
-      const res = await fetch(TODAY_SCHEDULE_URL, {
+      const memberId = getMemberId()
+      const url = new URL(TODAY_SCHEDULE_URL, window.location.origin)
+      if (memberId) url.searchParams.set('member_id', String(memberId))
+      const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
       })
@@ -295,7 +326,10 @@ export const useMedicineStore = defineStore('medicine', () => {
     isLoading.value = true
     error.value = null
     try {
-      const res = await fetch(MED_SCHEDULE_URL, {
+      const memberId = getMemberId()
+      const url = new URL(MED_SCHEDULE_URL, window.location.origin)
+      if (memberId) url.searchParams.set('member_id', String(memberId))
+      const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
       })
@@ -326,6 +360,7 @@ export const useMedicineStore = defineStore('medicine', () => {
     try {
       const payload = new FormData()
       scheduleIds.forEach((id) => payload.append('schedule_ids[]', String(id)))
+      appendMemberId(payload)
       const res = await fetch(CREATE_RECORDS_URL, {
         method: 'POST',
         credentials: 'include',

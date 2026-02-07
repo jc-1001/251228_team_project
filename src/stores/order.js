@@ -40,7 +40,18 @@ export const useOrderStore = defineStore('order',()=>{
   // 抓訂單列表
   const fetchUserOrders = async () => {
     try {
-      const res = await publicApi.get('member_center/get_my_orders.php')
+
+      // 會員大改1
+      const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+      const memberId = profile.member_id || 0
+
+      // 會員大改2
+      const res = await publicApi.get('member_center/get_my_orders.php', {
+        params: { member_id: memberId }
+      })
+
+      // const res = await publicApi.get('member_center/get_my_orders.php')
+      
       orderList.value = res.data
     } catch (err) {
       console.error('抓取訂單列表失敗:', err)
