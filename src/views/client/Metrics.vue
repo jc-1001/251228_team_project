@@ -2,13 +2,11 @@
 
 import { ref, computed, onMounted, watch, nextTick } from "vue"
 
-// import { publicApi } from "@/utils/publicApi"
-// import { parsePublicFile } from "@/utils/parseFile";
-
 import axios from 'axios'
 import TheHeader from "@/components/common/TheHeader.vue";
 import HeaderImage from "@/assets/images/Banner_metrics.svg"
 import status_label from "@/components/common/metrics/status_label.vue";
+import SuccessMessageModal from '@/components/common/client/modals/SuccessMessageModal.vue'
 
 import { Chart, registerables } from 'chart.js'
 //🔥 註冊 Chart.js 的所有組件（包含 scale）
@@ -16,19 +14,48 @@ Chart.register(...registerables)
 
 import { useCountUp } from '@/composable/useCountUp' //數字跳動
 
-
 // 🔥 修改：API 基礎路徑（根據你的 PHP 伺服器 port）
 // const API_BASE_URL = 'http://localhost:8888/unicare_api/metrics'
 const API_BASE_URL = import.meta.env.VITE_API_DOMAIN + 'metrics'
 
+// 🔥 創建彈窗的 ref
+const successModalRef = ref(null)
+
+// 🔥 修改：從 localStorage 的 userProfile 取得 member_id
+const getMemberId = () => {
+  const userProfile = localStorage.getItem('userProfile')
+
+  if (!userProfile) {
+    console.log('⚠️ 未登入喔，使用預設 member_id = 1')
+    return 1  // 沒有登入就回傳 1
+  }
+
+  try {
+    const profile = JSON.parse(userProfile)  // 解析 JSON 字串
+    const memberId = profile.member_id
+
+    if (!memberId) {
+      console.log('⚠️ userProfile 中沒有 member_id，使用預設值 1')
+      return 1
+    }
+
+    console.log('✅ 從 localStorage 取得 member_id:', memberId)
+    return parseInt(memberId)
+
+  } catch (error) {
+    console.error('❌ 解析 userProfile 失敗:', error)
+    return 1  // 解析失敗就用預設值
+  }
+}
+
 // 🔥 載入所有指標的數據
 const loadAllMetrics = async () => {
-  const member_id = 1;
+  const member_id = getMemberId()
 
   for (const key in metricsConfig) {
     const config = metricsConfig[key]
     try {
-      // 🔥 統一使用 get_metrics.php
+      // 統一使用 get_metrics.php
       const res = await axios.get(`${API_BASE_URL}/get_metrics.php`, {
         params: {
           type: config.type,
@@ -46,9 +73,9 @@ const loadAllMetrics = async () => {
     }
   }
 }
-
 const records__data = ref([])
-// 定義各項指標的配置 
+
+// 🔥 定義各項指標的配置 
 const metricsConfig = {
   weight: {
     title: "體重",
@@ -191,7 +218,7 @@ const calculateBPAverage = (data) => {
 
 //各項動態數值
 const weight = ref('')
-const height = ref('175')
+const height = ref('')
 
 const bloodOxygen = ref('')
 const bloodSugar = ref('')
@@ -237,8 +264,9 @@ const changeStatus = (status) => {
 
 // 🔥 初始化時載入所有數據
 onMounted(async () => {
-  await loadAllMetrics()
-  updateCardValues()
+  await loadMemberInfo()      // 先載入身高
+  await loadAllMetrics()      // 再載入所有指標
+  updateCardValues()          // 更新卡片數值（包含體重）
 
   // 等待 DOM 渲染完成後初始化圖表
   await nextTick()
@@ -383,8 +411,34 @@ const closePop = () => {
   isPopOpen.value = false
 }
 
+// 🔥載入會員基本資料（身高和體重）
+const loadMemberInfo = async () => {
+  const member_id = getMemberId()  // 用 getMemberId() 取得當前用戶 ID
+
+  try {
+    const res = await axios.get(`${API_BASE_URL}/get_metrics.php`, {
+      params: {
+        type: 'member_info',
+        member_id  // 🔥 使用當前用戶的 member_id
+      },
+      withCredentials: true
+    })
+
+    if (res.data) {
+      height.value = res.data.height || '175'
+      console.log('✅ 會員基本資料載入成功:', res.data)
+    }
+  } catch (err) {
+    console.error('❌ 載入會員基本資料失敗:', err)
+    height.value = '175'
+  }
+  console.log("身高: " + height.value)
+}
+
 const fetchData = async () => {
+  const member_id = getMemberId()  // 🔥 改用 getMemberId() 取得當前用戶 ID
   const config = metricsConfig[activeMetricKey.value]
+  
   try {
     // 🔥 血壓和心律都使用 blood_pressure 的 type
     const apiType = (activeMetricKey.value === 'heartRate' || activeMetricKey.value === 'bloodPressure')
@@ -393,13 +447,13 @@ const fetchData = async () => {
 
     const res = await axios.get(`${API_BASE_URL}/get_metrics.php`, {
       params: {
-        type: apiType,  // 🔥 使用統一的 type
-        member_id: 1
+        type: apiType,
+        member_id  // 🔥 使用當前用戶的 member_id
       },
       withCredentials: true
     })
     records__data.value = res.data
-    console.log(`✅ 載入 ${config.title} 歷史記錄:`, res.data)  // 🔥 除錯用
+    console.log(`✅ 載入 ${config.title} 歷史記錄:`, res.data)
   } catch (err) {
     console.error('❌ 載入歷史記錄失敗:', err)
     records__data.value = []
@@ -476,6 +530,12 @@ const fillFormFromRecord = (record, index) => {
   }
 }
 
+// 🔥 成功提示彈窗的處理函數
+const handleSuccessConfirmed = () => {
+  // 關閉成功提示後的處理（如果需要）
+  console.log('使用者確認了成功訊息')
+}
+
 //右邊輸入值儲存到資料庫
 const onSave = async () => {
   const config = metricsConfig[activeMetricKey.value]
@@ -488,7 +548,7 @@ const onSave = async () => {
     }
 
     let postData = {
-      member_id: 1,
+      member_id: getMemberId(),
       measured_at: recorded_at
     }
 
@@ -541,7 +601,15 @@ const onSave = async () => {
       // 清空表單
       setDefaultForm()
 
-      alert(`${config.title}記錄${isEditMode.value ? '更新' : '新增'}成功！`)
+      closePop()
+
+      //  顯示成功提示彈窗（使用 nextTick 確保 DOM 更新完成）
+      await nextTick()
+      if (successModalRef.value) {
+        // 根據模式設定不同的標題
+        const title = isEditMode.value ? '修改成功！' : '新增成功！'
+        successModalRef.value.show()
+      }
     }
 
   } catch (error) {
@@ -762,7 +830,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 
           <!-- 🌟單值顯示 -->
           <div class="value-card__content" v-if="!card.isDoubleValue">
-            <span class="value-card__value"> 
+            <span class="value-card__value">
               {{ card.getValue() }}
             </span>
             <span class="value-card__unit">
@@ -843,7 +911,7 @@ watch([activePeriod, activeTrendsBtn], () => {
                       ? metricsConfig[activeMetricKey].renderValue(record)
                       :
                       Number(record[metricsConfig[activeMetricKey].valueField]).toFixed(metricsConfig[activeMetricKey].decimals
-                  || 0)
+                        || 0)
                   }}
                 </span>
                 <span class="records__record_at">
@@ -939,6 +1007,9 @@ watch([activePeriod, activeTrendsBtn], () => {
       </div>
     </section>
 
+    <!-- 🔥 成功提示彈窗 -->
+    <SuccessMessageModal ref="successModalRef" :title="isEditMode ? '修改成功！' : '新增成功！'"
+      @confirmed="handleSuccessConfirmed" />
   </div>
 
 </template>
@@ -1054,7 +1125,8 @@ watch([activePeriod, activeTrendsBtn], () => {
 }
 
 .value-card__value {
-  font-size: 30px;
+  font-size: 26px;
+  color: $primaryDark;
   line-height: $lineHeightHeading;
   font-weight: $fontWeightBold;
   letter-spacing: $letterSpacing;
@@ -1127,7 +1199,7 @@ watch([activePeriod, activeTrendsBtn], () => {
 }
 
 .records__table {
-  height: 360px;
+  height: 460px;
   overflow-y: auto;
 }
 

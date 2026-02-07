@@ -95,27 +95,49 @@ const handleDateClick = (date) => {
     // 開啟燈箱邏輯
     console.log("開啟燈箱:", date.format('YYYY-MM-DD'));
 };
+const getMemberId = () => {
+  const info = localStorage.getItem('userProfile');
+  if (!info) return null;
+  try {
+    const userData = JSON.parse(info);
+    return userData.member_id || null;
+  } catch (e) {
+    console.error('解析會員資料失敗', e);
+    return null;
+  }
+};
 //燈箱內容
 const allDietRecords = ref({});
 const fetchDietRecords = async () => {
+  const memberId = getMemberId();
+  if (!memberId) {
+    console.warn('[飲食日記] 未登入，取消讀取');
+    return;
+  }
   try {
     // 直接對準你的 PHP 讀取檔案
     const response = await publicApi.get('diet/get_diets.php', {
-      params: { member_id: 1 },
+      params: { member_id: memberId },
     })
     console.log('Vue 收到 PHP 資料了！', response.data)
     if (response.data) {
       allDietRecords.value = response.data
+      console.log('成功讀取會員', memberId, '的資料');
     }
   } catch (error) {
     console.error('抓取資料失敗:', error)
   }
 }
 const handleNewRecord = async (formData) => {
+  const memberId = getMemberId();
+  if (!memberId) {
+    alert('登入已逾時，請重新登入');
+    return;
+  }
   const { type, note, preview, image_file, time } = formData
   const dateKey = selectedDate.value
   const fd = new FormData()
-  fd.append('member_id', 1)
+  fd.append('member_id', memberId)
   fd.append('meal_date', dateKey)
   fd.append('meal_type', type)
   fd.append('description', note)

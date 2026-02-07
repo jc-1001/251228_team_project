@@ -30,7 +30,18 @@ const order = ref(null)
 
 const fetchOrderDetail = async () => {
   try {
-    const res = await publicApi.get('member_center/get_my_order_detail.php', {params:{id: currentOrderId}})
+    // 會員大改1
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+    const memberId = profile.member_id || 0
+
+    // 會員大改2
+    const res = await publicApi.get('member_center/get_my_order_detail.php', {
+      params:{
+        id: currentOrderId,
+        member_id: memberId
+      }
+    })
+    // const res = await publicApi.get('member_center/get_my_order_detail.php', {params:{id: currentOrderId}})
 
     if(!res.data) {
       alert('找不到該筆訂單')
@@ -76,6 +87,12 @@ const invoiceMap = {
   company: '公司統編',
   mobile: '手機載具',
   personal: '個人發票'
+}
+
+const paymentMap = {
+  linepay: 'LINE Pay',
+  credit: '信用卡付款',
+  atm: 'ATM轉帳'
 }
 
 // 預設進度條
@@ -152,7 +169,7 @@ onMounted(()=>{
             <span class="icon">
               <img :src="creditIcon">
             </span>付款資訊</h4>
-          <p><strong>方式 </strong>{{ order.paymentType === 'credit'? '信用卡付款':'ATM轉帳' }}</p>
+          <p><strong>方式 </strong>{{ paymentMap[order.paymentType] }}</p>
           <p><strong>狀態 </strong>{{ order.isPaid == 0 ? '尚未付款' : '已付款' }}</p>
           <p><strong>發票 </strong>{{ invoiceMap[order.invoiceType] }}</p>
         </section>
