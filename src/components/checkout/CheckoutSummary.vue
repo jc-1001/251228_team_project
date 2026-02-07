@@ -22,7 +22,17 @@ const maxDiscount = computed (() => {
 // 抓取資料
 const fetchPoint = async () => {
   try {
-    const res = await publicApi.get('member_center/get_total_points.php')
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+    const memberId = profile.member_id || 0
+
+    if(memberId === 0) {
+      userPoint.value = 0
+      return
+    }
+
+    const res = await publicApi.get('member_center/get_total_points.php', {
+      params: { member_id: memberId }
+    })
 
     userPoint.value = res.data.total_points
   } catch (err) {
