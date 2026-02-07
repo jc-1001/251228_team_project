@@ -100,7 +100,6 @@ const getMemberId = () => {
   if (!info) return null;
   try {
     const userData = JSON.parse(info);
-    // 優先取 id，若無則取 user_id (視你後端欄位而定)
     return userData.member_id || null;
   } catch (e) {
     console.error('解析會員資料失敗', e);
