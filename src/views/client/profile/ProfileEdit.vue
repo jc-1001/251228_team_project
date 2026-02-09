@@ -1,13 +1,12 @@
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import TheProfileHeader from '@/components/common/TheProfileHeader.vue'
 import TheprofileSide from '@/components/common/TheprofileLayout.vue'
 const router = useRouter()
-import { publicApi } from '@/utils/publicApi';
+import { publicApi } from '@/utils/publicApi'
 
-// 對應資料庫與註冊 API 
+// 對應資料庫與註冊 API
 const profile = ref({
   full_name: '',
   email: '',
@@ -17,7 +16,7 @@ const profile = ref({
   blood_type: 'A',
   height: null,
   weight: null,
-  
+
   // // 健康檔案習慣
   // has_chronic_disease: false,
   // chronic_disease_description: '',
@@ -31,8 +30,8 @@ const profile = ref({
   // 緊急聯絡人 (對齊 register_api.php 接收的名稱)
   contact_name: '',
   relationship: '',
-  emergency_phone_number: '' // 需跟註冊一致
-});
+  emergency_phone_number: '', // 需跟註冊一致
+})
 
 onMounted(() => {
   const savedData = localStorage.getItem('userProfile')
@@ -46,22 +45,22 @@ onMounted(() => {
 const handleSave = async () => {
   try {
     // 1. 呼叫後端 API 更新資料庫
-    const res = await publicApi.post('member/update_api.php', profile.value);
+    const res = await publicApi.post('member/update_api.php', profile.value)
 
     if (res.data.status === 'success') {
-      // 2. 成功後，同步更新瀏覽器的快取 (localStorage)
-      localStorage.setItem('userProfile', JSON.stringify(profile.value));
-      
-      alert('個人資料已同步');
-      
-      // 3. (選做) 跳轉回首頁或重新整理
-      // router.push({ name: 'Home' });
+      // 1. 更新當前頁面的 profile 變數
+      profile.value = res.data.user
+      // 2. 更新 localStorage
+      const userDataString = JSON.stringify(res.data.user)
+      localStorage.setItem('userProfile', userDataString)
+
+      alert('更新成功！')
     } else {
-      alert('更新失敗：' + res.data.message);
+      alert('更新失敗：' + res.data.message)
     }
   } catch (error) {
-    console.error("更新出錯：", error);
-    alert('無法連線到伺服器，更新失敗。');
+    console.error('更新出錯：', error)
+    alert('無法連線到伺服器，更新失敗。')
   }
 }
 </script>
@@ -76,7 +75,7 @@ const handleSave = async () => {
           <div class="form-grid-single">
             <div class="form-group">
               <label>姓名</label>
-              <input v-model="profile.full_name" type="text" placeholder="請輸入姓名">
+              <input v-model="profile.full_name" type="text" placeholder="請輸入姓名" />
             </div>
             <div class="form-group">
               <label>性別</label>
@@ -88,15 +87,15 @@ const handleSave = async () => {
             </div>
             <div class="form-group">
               <label>電子信箱 (帳號)</label>
-              <input v-model="profile.email" type="email" disabled class="disabled-input">
+              <input v-model="profile.email" type="email" disabled class="disabled-input" />
             </div>
             <div class="form-group">
               <label>聯絡電話</label>
-              <input v-model="profile.phone_number" type="text" placeholder="09xxxxxxxx">
+              <input v-model="profile.phone_number" type="text" placeholder="09xxxxxxxx" />
             </div>
             <div class="form-group">
               <label>生日</label>
-              <input v-model="profile.birth_date" type="date">
+              <input v-model="profile.birth_date" type="date" />
             </div>
             <div class="form-group">
               <label>血型</label>
@@ -115,11 +114,11 @@ const handleSave = async () => {
           <div class="form-grid-single">
             <div class="form-group">
               <label>身高 (cm)</label>
-              <input v-model="profile.height" type="number" step="0.1" placeholder="例如 170.5">
+              <input v-model="profile.height" type="number" step="0.1" placeholder="例如 170.5" />
             </div>
             <div class="form-group">
               <label>體重 (kg)</label>
-              <input v-model="profile.weight" type="number" step="0.1" placeholder="例如 65.2">
+              <input v-model="profile.weight" type="number" step="0.1" placeholder="例如 65.2" />
             </div>
           </div>
         </div>
@@ -129,15 +128,15 @@ const handleSave = async () => {
           <div class="form-grid-single">
             <div class="form-group">
               <label>聯絡人姓名</label>
-              <input v-model="profile.contact_name">
+              <input v-model="profile.contact_name" />
             </div>
             <div class="form-group">
               <label>關係</label>
-              <input v-model="profile.relationship">
+              <input v-model="profile.relationship" />
             </div>
             <div class="form-group">
               <label>聯絡電話</label>
-              <input v-model="profile.emergency_phone_number">
+              <input v-model="profile.emergency_phone_number" />
             </div>
           </div>
         </div>
@@ -161,15 +160,15 @@ const handleSave = async () => {
     padding: 20px;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   }
 
   .form-title {
     font-size: 1.1rem;
-    color: #2E6669;
+    color: #2e6669;
     font-weight: bold;
     margin-bottom: 20px;
-    border-left: 4px solid #2E6669;
+    border-left: 4px solid #2e6669;
     padding-left: 12px;
   }
 
@@ -183,22 +182,29 @@ const handleSave = async () => {
   .form-group {
     display: flex;
     flex-direction: column;
-    label { 
-      font-weight: 600; 
-      margin-bottom: 8px; 
-      color: #4a5568; 
-      font-size: 0.9rem; 
+    label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #4a5568;
+      font-size: 0.9rem;
     }
-    input, select { 
-      padding: 12px; 
-      border: 1px solid #cbd5e0; 
+    input,
+    select {
+      padding: 12px;
+      border: 1px solid #cbd5e0;
       border-radius: 8px;
       font-size: 1rem;
       width: 100%;
       box-sizing: border-box;
-      &:focus { outline: none; border-color: #2E6669; }
+      &:focus {
+        outline: none;
+        border-color: #2e6669;
+      }
     }
-    .disabled-input { background-color: #f7fafc; cursor: not-allowed; }
+    .disabled-input {
+      background-color: #f7fafc;
+      cursor: not-allowed;
+    }
   }
 
   .form-actions {
@@ -209,7 +215,7 @@ const handleSave = async () => {
       width: 100%; // 儲存按鈕全寬化，更適合單欄排版
       max-width: 300px;
       padding: 14px;
-      background: #2E6669;
+      background: #2e6669;
       color: white;
       border: none;
       border-radius: 30px;
@@ -217,15 +223,23 @@ const handleSave = async () => {
       font-weight: bold;
       cursor: pointer;
       transition: background 0.2s;
-      &:hover { background: #245254; }
+      &:hover {
+        background: #245254;
+      }
     }
   }
 }
 
 // 針對極小螢幕 (360px 以下) 的微調
 @media (max-width: 360px) {
-  .profile-edit-container { padding: 10px; }
-  .form-section { padding: 15px; }
-  .form-title { font-size: 1rem; }
+  .profile-edit-container {
+    padding: 10px;
+  }
+  .form-section {
+    padding: 15px;
+  }
+  .form-title {
+    font-size: 1rem;
+  }
 }
 </style>
