@@ -51,103 +51,126 @@ const toggleAccordion = (index) => {
     />
 
     <main class="support-container">
-      <div class="category-tabs">
-        <button 
-          v-for="cat in categories" 
-          :key="cat.id"
-          :class="['tab-btn', { active: currentCategory === cat.id }]"
-          @click="selectCategory(cat.id)"
-        >
-          {{ cat.title }}
-        </button>
-      </div>
+    <div class="category-tabs">
+      <button 
+        v-for="cat in categories" 
+        :key="cat.id"
+        :class="['tab-btn', { active: currentCategory === cat.id }]"
+        @click="selectCategory(cat.id)"
+      >
+        {{ cat.title }}
+      </button>
+    </div>
 
-      <div class="accordion-group">
-        <div 
-          v-for="(faq, index) in filteredFaqs" 
-          :key="index" 
-          class="accordion-item"
-          :class="{ 'is-active': activeIndex === index }"
-        >
-          <div class="accordion-header" @click="toggleAccordion(index)">
-            <span class="question-text">
-                <span class="q-badge">Q</span> {{ faq.question }}
-            </span>
-            <span class="icon-arrow"></span>
-          </div>
+    <div class="layout-wrapper">
+      
+      <div class="faq-section">
+        <div class="accordion-group">
+          <div 
+            v-for="(faq, index) in filteredFaqs" 
+            :key="index" 
+            class="accordion-item"
+            :class="{ 'is-active': activeIndex === index }"
+          >
+            <div class="accordion-header" @click="toggleAccordion(index)">
+              <span class="question-text">
+                  <span class="q-badge">Q</span> {{ faq.question }}
+              </span>
+              <span class="icon-arrow"></span>
+            </div>
 
-          <div class="accordion-content">
-            <div class="content-inner">
-              {{ faq.answer }}
+            <div class="accordion-content">
+              <div class="content-inner">
+                {{ faq.answer }}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <p v-if="filteredFaqs.length === 0" class="no-data">目前該分類下沒有相關問題。</p>
-    </main>
-  </section>
-  <section class="contact-section">
-        <div class="contact-header">
-          <h2>聯絡我們</h2>
-        </div>
-        <div class="contact-grid">
-          <div class="contact-card">
-            <h3></h3>
-            <p icon="@">service@unicare.com</p>
-            <p>02-8685-6789 ( 09:00-19:00 ) </p>
-            <!-- <p class="time"></p> -->
+      <aside class="contact-sidebar">
+        <div class="contact-card">
+          <div class="contact-header">
+            <h2>聯絡我們</h2>
+          </div>
+          <div class="contact-info">
+            <p class="email-text">service@unicare.com</p>
+            <p class="phone-text">02-8685-6789</p>
+            <p class="time-text">( 09:00-19:00 )</p>
           </div>
         </div>
-    </section>
+      </aside>
+
+    </div>
+  </main>
+  </section>
 </template>
 
 <style lang="scss" scoped>
+
+/* 1. 頁面總容器 */
 .support-container {
-  max-width: 900px;
-  margin: 0 auto 80px; /* 移除負的 margin-top，讓內容自然往下走 */
+  max-width: 1100px;
+  margin: 40px auto;
   padding: 0 20px;
 }
 
-/* 分類按鈕樣式修改 */
+/* 2. 分類標籤 */
 .category-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 15px ;
-    gap: 16px;
-    // margin-bottom: 40px;
-    // padding-bottom: 4px;
-    .tab-btn {
-      padding: 0 12px;
-      width: 150px;
-      // width: 170px;
-      height: 45px;
-      @include body1(true);
-      line-height: 43px;
-      background-color: $white;
-      color: $grayDark;
-      text-align: center;
-      border: 1px solid $grayDark;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: all .3s;
-      white-space: nowrap;
-      &:hover,
-      &.active {
-        color: $white;
-        background-color: $primary;
-        border: 1px solid $primary;
-      }
-      @media screen and (max-width: 768px) {
-        flex: 1 1 150px;
-      }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 30px;
+  width: 100%;
+
+  .tab-btn {
+    flex: 0 0 auto;
+    width: 150px; // 預設寬度
+    height: 45px;
+    padding: 0 12px;
+    @include body1(true);
+    line-height: 43px;
+    background-color: $white;
+    color: $grayDark;
+    text-align: center;
+    border: 1px solid $grayDark;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+
+    &:hover,
+    &.active {
+      color: $white;
+      background-color: $primary;
+      border: 1px solid $primary;
+    }
+
+    @media screen and (max-width: 768px) {
+      flex: 1 1 140px; // 手機版
+      width: auto;
     }
   }
+}
 
+/* 3. 核心佈局 */
+.layout-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  align-items: start;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* 4. 手風琴 */
 .accordion-group {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 
   .accordion-item {
@@ -166,6 +189,7 @@ const toggleAccordion = (index) => {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+
     .q-badge {
       display: inline-block;
       width: 24px; height: 24px; line-height: 24px;
@@ -189,6 +213,47 @@ const toggleAccordion = (index) => {
   }
 }
 
+/* 5. 側邊聯絡欄位 */
+.contact-sidebar {
+  .contact-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    position: sticky;
+    top: 100px; // 避開 Header
+    text-align: left;
+    transition: transform 0.3s;
+
+    &:hover { transform: translateY(-5px); }
+
+    .contact-header h2 {
+      color: #2E6669;
+      font-size: 1.3rem;
+      margin: 0 0 20px 0;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e9f0f0;
+    }
+
+    .contact-info {
+      p {
+        margin-bottom: 12px;
+        color: #2E6669;
+        font-weight: 600;
+        font-size: 1rem;
+        
+        &.time-text {
+          color: #999;
+          font-weight: 400;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
+
+/* 共通元件 */
 .icon-arrow {
   width: 10px; height: 10px;
   border-right: 2px solid #2E6669;
@@ -197,42 +262,9 @@ const toggleAccordion = (index) => {
   transition: 0.3s;
 }
 
-.no-data { text-align: center; color: #999; margin-top: 50px; }
-
-/* 聯絡我們區塊樣式 */
-
-.contact-section {
+.no-data {
   text-align: center;
-  .contact-header {
-    margin-bottom: 40px;
-    h2 { color: #2E6669; font-size: 1.8rem; margin-bottom: 10px; }
-    p { color: #666; }
-  }
-  margin: 0 18%;
-}
-
-.contact-card {
-  background: white;
-  padding: 30px 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-  transition: transform 0.3s;
-  
-  &:hover { transform: translateY(-5px); }
-  
-  span { font-size: 40px; color: #2E6669; margin-bottom: 15px; }
-  h3 { font-size: 1.2rem; color: #333; margin-bottom: 10px; }
-  p { font-weight: 600; color: #2E6669; margin-bottom: 5px; }
-  .time { font-weight: 400; font-size: 0.9rem; color: #999; }
-}
-
-/* RWD 斷點修正 */
-@media (max-width: 768px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .faq-header h1 { font-size: 2rem; }
-  .accordion-header .question { font-size: 1rem; }
+  color: #999;
+  margin-top: 50px;
 }
 </style>
