@@ -19,10 +19,12 @@
 
 ## 相關連結
 
-* [專案正式上線網址](https://www.google.com/search?q=https://youtube.com/...)
+* [專案正式上線網址](https://tibamef2e.com/cjd102/g1/front/)
 * [專案 Demo 影片](https://www.google.com/search?q=https://youtube.com/...)
-* [API 文件](https://www.google.com/search?q=https://...)
 * [系統設計文件](https://www.google.com/search?q=https://...)
+* [Figma連結](https://www.figma.com/design/X78x31tK2e6S5C17o5cA0N/%E5%9C%98%E9%AB%94%E5%B0%88%E9%A1%8C%E8%A8%AD%E8%A8%88%E6%AD%A3%E5%BC%8F-%E5%A4%9A%E9%A0%81%E9%9D%A2-?node-id=0-4&t=FtUkNAqiQ6REpRAA-1)
+
+---
 
 ## 技術架構
 
@@ -54,7 +56,7 @@
 | **身體數值中心** | • **數據視覺化**：體重、血壓、血糖、血氧、心率折線圖。<br>• **趨勢分析**：支援切換 7 天及 30 天趨勢檢視。 |
 | **數位藥箱** | • **互動翻卡**：點擊藥品卡片查看詳細成分與用法。<br>• **庫存管理**：視覺化呈現剩餘藥量。 |
 | **飲食日記** | • **行事曆檢視**：以底色直觀區分每日紀錄狀態。<br>• **圖文紀錄**：支援上傳餐點照片與詳細文字描述。 |
-| **樂活商城** | • **完整電商**：分類篩選、購物車、關鍵字搜尋。<br>• **金流串接**：整合 **LINE Pay** 支付功能。<br>• **訂單追蹤**：歷史訂單查詢與「再買一次」捷徑。 |
+| **樂活商城** | • **完整電商**：分類篩選、購物車、關鍵字搜尋。<br>• **金流串接**：整合 **LINE Pay** 支付功能。<br>• **訂單追蹤**：歷史訂單查詢與「再買一次」捷徑。<br>• **商城積分**：獲得方式 - 每日簽到、商城有獎徵答遊戲。|
 | **個人中心** | 會員資料管理、積分查詢、幫助中心 (FAQ)。 |
 
 ### 後台功能 (管理端)
@@ -62,7 +64,8 @@
 | 管理模組 | 功能亮點 |
 | :--- | :--- |
 | **儀表板** | 數據總覽 (使用者增長、營收)、圖表切換 (月/季/年)、熱銷排行。 |
-| **商品管理** | 商品上下架、庫存調整、富文本 (WangEditor) 編輯介紹。 |
+| **使用者管理** | 管理使用者帳號狀態。 |
+| **商品管理** | 商品上下架、庫存調整、商品介紹調整。 |
 | **訂單管理** | 訂單狀態變更 (連動前台通知)、出貨管理、條件篩選。 |
 | **系統管理** | 公告與優惠活動發布、權限控管。 |
 
@@ -72,28 +75,26 @@
 
 | 資料夾 | 說明 | GitHub連結 |
 | :--- | :--- | :--- |
-| `front/` | 前台源代碼 (Vue.js) | [前台](./front) |
-| `admin/` | 後台源代碼 (PHP) | [後台](./admin) |
-| `api/` | API 接口文件 | [API](./api) |
+| `front/` | 前台內容 | [前台](https://github.com/jc-1001/251228_team_project/tree/dev) |
+| `admin/` | 後台內容 | [後台](https://github.com/jc-1001/260110-backstage/tree/dev) |
+| `api/` | PHP內容 | [API](https://github.com/jc-1001/260128-api/tree/dev) |
 
 ---
 
-## 貢獻者
-
-感謝 UniCare 團隊成員的協作與貢獻：
+## 團隊成員
 
 | 成員 | 負責領域 | 詳細職責 | GitHub |
 | :--- | :--- | :--- | :---: |
-| **游佳純** | 前台 / 後台 / 文件 | Layout 切版、Banner、快速紀錄、後台 Element Plus 導入、系統活動管理 | [@User](https://github.com/) |
-| **徐子益** | 前台 | 數位藥箱、服藥提醒、翻卡特效、庫存視覺化 | [@User](https://github.com/) |
-| **羅方敏** | 前台 / 後台 | 登入註冊系統、幫助中心、個人資料、後台使用者管理 | [@User](https://github.com/) |
-| **劉岳霖** | 前台 / 設計 | 飲食日記、行事曆整合 (Day.js)、視覺生成 (AI)、系統文件 | [@User](https://github.com/) |
-| **李妮** | **全端 / 核心金流** | 商城系統、購物車、**LINE Pay 串接**、訂單管理、商品管理 | [@User](https://github.com/) |
-| **黃煜軒** | 前台 / 後台 | 身體數值中心 (Chart.js)、後台儀表板數據統計 | [@User](https://github.com/) |
+| **游佳純** | 前台 / 後台 / 文件 | Layout 切版、Banner、快速紀錄、後台 Element Plus 導入、系統活動管理 | [@jc-1001](https://github.com/jc-1001) |
+| **徐子益** | 前台 | 數位藥箱、服藥提醒、翻卡特效、庫存視覺化 | [@ziyi1114](https://github.com/ziyi1114-bot) |
+| **羅方敏** | 前台 / 後台 | 登入註冊系統、幫助中心、個人資料、後台使用者管理 | [@neoLuo00c](https://github.com/neoLuo00c) |
+| **劉岳霖** | 前台 | 飲食日記、行事曆整合 (Day.js) | [@yuelinnnnn](https://github.com/yuelinnnnn) |
+| **李妮** | 前台 / 後台 / 金流 | 商城系統、購物車、LINE Pay 串接、訂單管理、商品管理、積分管理 | [@NLeeii](https://github.com/NLeeii) |
+| **黃煜軒** | 前台 / 後台 | 身體數值中心 (Chart.js)、後台儀表板數據統計 | [@bruce3721180](https://github.com/bruce3721180) |
 
 ---
 
-## 如何開始 (Getting Started)
+## 如何開始
 
 1. **環境需求**： Node.js (v16+), npm 或 yarn。
 2. **安裝依賴**：
