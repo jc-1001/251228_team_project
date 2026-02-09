@@ -26,7 +26,7 @@
     </header>
 
     <div class="container">
-      <div class="banner" :style="{ '--banner-url': `url(${banner})` }">
+      <div class="banner" :style="{ '--banner-bg': `url(${currentBanner})` }">
         <div class="banner-txt">
           <ul><li>
           <h1>UniCare</h1>
@@ -165,11 +165,13 @@ import LP_promise3 from '/src/assets/images/public/LP_promise3.svg';
 import LP_reward1 from '/src/assets/images/public/LP_reward1.png';
 import LP_reward2 from '/src/assets/images/public/LP_reward2.png';
 import LP_reward3 from '/src/assets/images/public/LP_reward3.png';  
-import banner from '/src/assets/images/public/LP_hero.jpg';
 import LP_function1 from '/src/assets/images/public/LP_function1.jpg';
 import LP_function2 from '/src/assets/images/public/LP_function2.jpg';
 import LP_function3 from '/src/assets/images/public/LP_function3.jpg';
 import LP_function4 from '/src/assets/images/public/LP_function4.jpg';
+
+import banner from '/src/assets/images/public/LP_hero.jpg';
+import bannerImgMobile from '/src/assets/images/client/banner2.png'; 
 
 import PolicyModal from '@/components/register/PolicyModal.vue';
 import PolicyContent from '@/components/register/PolicyContent.vue';
@@ -182,6 +184,27 @@ const testimonialContainer = ref(null);
 
 const slider = ref(null);
 
+import { onMounted, onUnmounted } from 'vue';
+
+const currentBanner = ref(banner);
+
+const updateBanner = () => {
+  // 判斷視窗寬度是否小於等於 768px
+  if (window.innerWidth <= 768) {
+    currentBanner.value = bannerImgMobile;
+  } else {
+    currentBanner.value = banner;
+  }
+};
+
+onMounted(() => {
+  updateBanner();
+  window.addEventListener('resize', updateBanner);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateBanner);
+});
 
 const features = [
   { img: LP_function1, title: '輕鬆紀錄，生活不漏接', desc: '介面清楚便捷，在首頁即可快速紀錄與瀏覽當日狀態！<br>醒目的「今日待辦事項」清單，幫助長輩養成健康好習慣。' },
@@ -388,10 +411,11 @@ body,html{
         margin: auto;
         justify-content: flex-start;
     }
-    .banner{
+    .banner {
         width: 100%;
         height: calc(100vh - 64px);
-        background: var(--banner-url) no-repeat;
+        background-image: var(--banner-bg) !important; /* 變數名稱 */
+        background-repeat: no-repeat;
         background-size: cover;
         background-position: 70% 50%;
     }
@@ -868,7 +892,6 @@ div.footer_left{
   .banner {
     width: cover;
     height: 60vh;
-    background: url(src/assets/images/client/banner2.png);
     background-size: cover;
     background-position: 75% 70%;
     background-repeat: no-repeat;
@@ -897,7 +920,6 @@ div.footer_left{
   .banner {
     width: cover;
     height: 60vh;
-    background: url(src/assets/images/client/banner2.png);
     background-size: cover;
     background-position: 75% 70%;
     background-repeat: no-repeat;
