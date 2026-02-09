@@ -1,9 +1,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useToast } from '@/composable/useCartToast' // 假設你有這個，或者用 alert 代替
+import { publicApi } from '@/utils/publicApi'
 import giftIcon from '@/assets/images/shop/gift_vector.svg'
 import coinIcon from '@/assets/images/shop/icon/coin.svg'
 import chestIcon from '@/assets/images/shop/icon/inventory.svg'
+
+// 抓取member_id
+const getMemberId = () => {
+  const profile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+  return profile.member_id || 0
+}
 
 // 控制開關狀態
 const isVisible = ref(false)
@@ -67,15 +73,40 @@ const handleAnswer = (answer) => {
 
 // 領獎邏輯
 
-const handleOpen = () => {
-  // 模擬動畫時間
-  setTimeout(() => {
-    rewardPoints.value = Math.floor(Math.random() * 50) + 10
-    gamePhase.value = 'result'
+const handleOpen = async () => {
+  const memberId = getMemberId()
+  let points = 0
 
-    // 紀錄今天已領取
+  const apiRequest = memberId 
+    ? publicApi.post('member_center/quiz_reward.php', { member_id: memberId })
+    : Promise.resolve({ data: { success: true, points: Math.floor(Math.random() * 50) + 10 } }) // 訪客用的模擬數據
+
+  // 建立動畫延遲
+  const animationDelay = new Promise(resolve => setTimeout(resolve, 2500))
+
+  try {
+    // 等待 API 回傳 AND 動畫跑完
+    const [res] = await Promise.all([apiRequest, animationDelay])
+
+    if (res.data && res.data.success) {
+      points = res.data.points
+    } else {
+      points = 10 
+    }
+
+    // 更新畫面
+    rewardPoints.value = points
+    gamePhase.value = 'result'
+    
+    // 紀錄前端 localStorage
     localStorage.setItem('unicare_daily_chest', new Date().toDateString())
-  }, 2500)
+
+  } catch (err) {
+    console.error(err)
+    // 斷網也要讓使用者玩完
+    rewardPoints.value = 10
+    gamePhase.value = 'result'
+  }
 }
 
 // 關閉遊戲
