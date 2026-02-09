@@ -1,6 +1,8 @@
 ﻿import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
+
+
 const API_DOMAIN = (import.meta.env.VITE_API_DOMAIN || '').replace(/\/$/, '')
 const API_URL = `${API_DOMAIN}/medicine/get_member_medications.php`
 const CREATE_URL = `${API_DOMAIN}/medicine/create_medication.php`
@@ -15,7 +17,8 @@ const CREATE_RECORDS_URL = `${API_DOMAIN}/medicine/create_medication_records.php
 const fallbackMedicines = []
 const fallbackSupplements = []
 
-const IMAGE_BASE = 'http://localhost:8888/unicare_api'
+// 圖片基底：可用 VITE_FILE_URL / VITE_IMAGE_BASE，否則回退到 API_DOMAIN
+const IMAGE_BASE = (import.meta.env.VITE_FILE_URL || import.meta.env.VITE_IMAGE_BASE || API_DOMAIN).replace(/\/+$/, '')
 
 const getMemberId = () => {
   try {
@@ -40,6 +43,10 @@ const resolveImageUrl = (url) => {
   if (!url) return ''
   if (/^https?:\/\//i.test(url)) return url
   if (url.startsWith('/images/')) {
+    // 若 IMAGE_BASE 已含 /images，避免重複
+    if (IMAGE_BASE.endsWith('/images')) {
+      return `${IMAGE_BASE}${url.slice('/images'.length)}`
+    }
     return `${IMAGE_BASE}${url}`
   }
   if (url.startsWith('/')) return `${IMAGE_BASE}${url}`
