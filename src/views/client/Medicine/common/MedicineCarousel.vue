@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed } from 'vue'
 import SectionHeader from '@/views/client/Medicine/common/SectionHeader.vue'
 import MedicineCard from '@/views/client/Medicine/common/MedicineCard.vue'
@@ -26,8 +26,8 @@ const props = defineProps({
     default: 'medicine',
   },
   slidesPerView: {
-    type: Number,
-    default: 4,
+    type: [Number, String],
+    default: 1,
   },
   spaceBetween: {
     type: Number,
@@ -49,18 +49,23 @@ const props = defineProps({
         spaceBetween: 16,
         effect: 'cards',
       },
-      640: {
+      480: {
         slidesPerView: 2,
         spaceBetween: 16,
         effect: 'slide',
       },
-      1024: {
+      768: {
         slidesPerView: 3,
         spaceBetween: 16,
         effect: 'slide',
       },
-      1440: {
+      1200: {
         slidesPerView: 4,
+        spaceBetween: 16,
+        effect: 'slide',
+      },
+      1600: {
+        slidesPerView: 5,
         spaceBetween: 16,
         effect: 'slide',
       },
@@ -71,8 +76,8 @@ const props = defineProps({
 const emit = defineEmits(['createClick', 'editMedication'])
 
 const effectiveLoop = computed(() => {
-  const count = Array.isArray(props.items) ? props.items.length : 0
-  return props.loop && count > (props.slidesPerView ?? 1)
+  // Disable loop to prevent duplicated slides from inflating layout width in flex containers.
+  return false
 })
 </script>
 
@@ -84,6 +89,7 @@ const effectiveLoop = computed(() => {
       :slides-per-view="slidesPerView"
       :space-between="spaceBetween"
       :loop="effectiveLoop"
+      :watch-overflow="true"
       :navigation="navigation"
       :breakpoints="breakpoints"
       :effect="effect"
@@ -106,11 +112,23 @@ const effectiveLoop = computed(() => {
   padding: 48px 24px;
   box-shadow: $shadowDark;
   border-radius: $radius_md;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+
   .swiper-slide {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
+  :deep(.swiper-wrapper) {
+    min-width: 0;
+  }
+
   :deep(.swiper-button-next),
   :deep(.swiper-button-prev) {
     top: 50%;
@@ -119,4 +137,11 @@ const effectiveLoop = computed(() => {
     position: absolute;
   }
 }
+
+.medicine-section {
+  min-width: 0;
+  overflow: hidden;
+}
 </style>
+
+
