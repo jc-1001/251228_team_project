@@ -49,7 +49,7 @@ const goToDetail = (dbId) => {
 // 再買一次功能
 const buyAgain = (items) => {
   items.forEach(product => {
-    cartStore.addToCart(product, product.qty)
+    cartStore.addToCart(product, Number(product.qty))
   })
   showToast('已再次加入購物車！')
   router.push('/cart')

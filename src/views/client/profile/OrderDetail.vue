@@ -109,8 +109,9 @@ const targetWidth = computed(()=>{
 // 再買一次
 const buyAgain = ()=>{
   if(!order.value) return
+  console.log('再買一次的商品資料:', order.value.items)
   order.value.items.forEach(product => {
-    cartStore.addToCart(product, product.qty)
+    cartStore.addToCart(product, Number(product.qty))
   })
   showToast('已再次加入購物車')
   router.push('/cart')
