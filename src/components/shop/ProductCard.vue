@@ -45,7 +45,7 @@ const cartStore = useCartStore()
 
 // 售完狀態
 const isSoldOut = computed(() => {
-  return props.stock_quantity === 0
+  return Number(props.stock_quantity) <= 0
 })
 
 // 加入購物車

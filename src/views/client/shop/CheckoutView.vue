@@ -63,6 +63,8 @@ const handleCheckoutSubmit = async (summaryData)=>{
       discount: summaryData.discount
     }
 
+    console.log('送出的商品資料:', orderPayLoad.items)
+
     // 呼叫orderStore建立訂單
     const success = await orderStore.createOrder( orderPayLoad )
 

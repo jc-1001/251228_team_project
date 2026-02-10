@@ -172,7 +172,7 @@ const currentDayMeals = computed(() => {
     const getFullImageUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        return `${fileBaseUrl}diet/uploads/${path}`; // 根據後端存放圖片的目錄調整
+        return `${fileBaseUrl}/diet/uploads/${path}`; // 根據後端存放圖片的目錄調整
     };
     const defaultTemplates = [
         { meal_type: '早餐', timeWeight: 800 },

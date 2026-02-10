@@ -174,11 +174,16 @@ onMounted(() => {
   display: flex;
   min-height: 100vh;
   background-color: $bgBody;
+
+  > aside {
+    flex-shrink: 0;
+  }
 }
 
 
 .main_content {
   flex: 1;
+  min-width: 0;
   padding: 28px 54px 40px;
   // 首頁雙重卷軸解決
   max-width: 100vw; // 🔴 限制最大寬度為螢幕寬

@@ -564,6 +564,7 @@ body,html{
     text-align: center;
     justify-content: center;
     font-size: small;
+    cursor: pointer;
   }
   .pagetop:hover {
     background-color: #2E6669;
@@ -935,6 +936,10 @@ div.footer_left{
     font-size: 1.1rem !important;
     margin: 20px 5% !important;
   }
+}
+
+.menu-item{
+  cursor: pointer;
 }
 
 
