@@ -28,13 +28,13 @@ const buyCount = ref(1)
 
 // 庫存警示判斷
 const isLowStock = computed(()=>{
-  const stock = props.product.stock_quantity
-  return stock > 0 && stock <= 3 
+  const stock = Number(props.product.stock_quantity)
+  return stock > 0 && stock <= 3
 })
 
 // 售完判斷
 const isSoldOut = computed(()=>{
-  return props.product.stock_quantity === 0
+  return Number(props.product.stock_quantity) <= 0
 })
 
 // 接收加入購物車函式
@@ -46,7 +46,7 @@ const handleAddToCart = ()=>{
 
 // 處理暫存購買數量
 const handleAdd = ()=> {
-  if( buyCount.value < props.product.stock_quantity ) {
+  if( buyCount.value < Number(props.product.stock_quantity) ) {
     buyCount.value ++
   }
 }
