@@ -1,5 +1,6 @@
 // src/config/apiConfig.js
-const API_BASE_URL = 'http://localhost:8888/unicare_api'; // 確定的網址
+// const API_BASE_URL = 'http://localhost:8888/unicare_api'; // 確定的網址
+const API_BASE_URL = import.meta.env.VITE_API_DOMAIN
 
 // 具體功能入口
 export const API_ENDPOINTS = {
