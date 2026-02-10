@@ -1,4 +1,3 @@
-
 <template>
   <div class="landing-page" id="gotop">
     <header class="main-header">
@@ -12,7 +11,7 @@
         <span class="bar bar2"></span>
         <span class="bar bar3"></span>
       </label>
-      
+     
       <nav class="main-menu" :class="{ 'is-active': isMenuOpen }">
         <ul class="menu">
           <li class="menu-item"><a @click="scrollToSection('aboutUs')">關於我們</a></li>
@@ -58,7 +57,7 @@
           <li><p>我們深知健康不只是吞下一顆膠囊，而是來自於「持之以恆的紀錄」與「家人的陪伴」。<br>
           UniCare 的誕生，是為了打破傳統照護的冰冷，透過數位轉型，讓長輩能輕鬆上手，讓子女能隨時守護。<br>
           對長輩而言， 它是最直覺的操作手冊，紀錄健康就像拍照一樣簡單。對子女而言，它是遠端的一雙眼，看見父母每天的飲食與服藥情形。</p></li>
-        </ul> 
+        </ul>
       </div>
     </div>
 
@@ -99,16 +98,16 @@
 
     <div class="partFive">
     <div class="slick-btn slick-prev" @click="scrollSlider('left')"></div>
-    
+   
     <div class="slick-container" ref="slider">
         <div class="slick-item"><img src="@/assets/images/public/LP_reward1.png"></div>
         <div class="slick-item"><img src="@/assets/images/public/LP_reward2.png"></div>
         <div class="slick-item"><img src="@/assets/images/public/LP_reward3.png"></div>
     </div>
-    
+   
     <div class="slick-btn slick-next" @click="scrollSlider('right')"></div>
 </div>
-  
+
     <a @click="scrollToSection('gotop')" class="pagetop">
       <br>TOP<br>
     </a>
@@ -140,7 +139,7 @@
       <PolicyModal v-if="showPrivacyModal" title="隱私權保護政策" @close="showPrivacyModal = false">
         <PolicyContent type="privacy" />
       </PolicyModal>
-      
+     
     </footer>
       <p style="margin: 0px 3% 3% 3%;"><br><small>本網站為緯育TibaMe_前端工程師班第98期學員專題成果作品,
             本平台僅供學習、展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,
@@ -171,7 +170,7 @@ import LP_function3 from '/src/assets/images/public/LP_function3.jpg';
 import LP_function4 from '/src/assets/images/public/LP_function4.jpg';
 
 import banner from '/src/assets/images/public/LP_hero.jpg';
-import bannerImgMobile from '/src/assets/images/client/banner2.png'; 
+import bannerImgMobile from '/src/assets/images/client/banner2.png';
 
 import PolicyModal from '@/components/register/PolicyModal.vue';
 import PolicyContent from '@/components/register/PolicyContent.vue';
@@ -240,7 +239,7 @@ const scrollToSection = (elementId) => {
 const scrollSlider = (direction) => {
   const container = slider.value;
   const scrollAmount = container.clientWidth; // 每次捲動一個螢幕寬度
-  
+
   if (direction === 'left') {
     container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
   } else {
@@ -268,7 +267,7 @@ const scrollSlider = (direction) => {
     margin: 0px;
   }
   /* template */ /*  */
-  /* é è¨­ */
+  /* é è¨­ */
   h2,h3,h4,h5,h6{
     font-family: 'Noto Sans TC', Regular;
     color: #2E6669;
@@ -276,7 +275,7 @@ const scrollSlider = (direction) => {
   p{
     /* font-weight: bold; */
   }
-  
+
 /* header */
 
 .main-header{
@@ -292,10 +291,11 @@ const scrollSlider = (direction) => {
     font-family: 'Noto Sans TC', sans-serif;
     -webkit-text-stroke: #2E6669 0.3px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 15px 5%; /* 漢堡安全區 */
 }
 .logo img{
     display: block;
-    height: 40px;     
+    height: 40px;    
     width: auto;
 }
 
@@ -314,20 +314,21 @@ const scrollSlider = (direction) => {
         flex-direction: column;    /* 垂直 */
         justify-content: space-between; /* 關鍵 */
         align-items: center;
-        width: 40px;               
+        width: 40px;              
         height: 32px;              
         padding: 6px 0;            /* 透過 padding 控制線條與邊框的距離 */
         /* border: #2E6669 solid 2px;  */
         border-radius: 6px;
         background-color: transparent;
         cursor: pointer;
+        margin-left: auto; /* 漢堡向右對齊 */
     }
 
     .hb .bar {
         display: block;
         width: 27px;               /* 線條寬度 */
         height: 2px;               /* 線條厚度 */
-        background-color: #2E6669; 
+        background-color: #2E6669;
         transition: all 0.3s ease; /* 加動畫 */
     }
 
@@ -361,9 +362,9 @@ const scrollSlider = (direction) => {
             z-index: 1;
     }
 }
-@media screen and (width >= 768px) {
-    .hb { 
-        display: none; 
+@media screen and (min-width: 769px) {
+    .hb {
+        display: none;
     }
 
     .main-menu > ul {
@@ -401,16 +402,12 @@ body,html{
 }
 
     .container {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        width: 100%;
-        height: auto;
-        display: flex;
-        background-color: black;
-        margin: auto;
-        justify-content: flex-start;
-    }
+    margin: 0 auto;
+    padding: 0;
+    width: 100%;
+    display: flex; /* 確保子元素 banner 能正確撐開 */
+    justify-content: center;
+}
     .banner {
         width: 100%;
         height: calc(100vh - 64px);
@@ -440,7 +437,7 @@ body,html{
       border-radius: 10px;
       cursor: pointer;
     }
-    
+   
     button:hover{
         background-color: white;
         color: #2E6669;
@@ -462,7 +459,7 @@ body,html{
   grid-template-rows: repeat(2, 1fr);
   grid-auto-flow: row;
   gap: 20px 15%;
-  
+
 }
 
 .partOne .item{
@@ -575,10 +572,10 @@ body,html{
 
 
 .partFour{
-    width: 100%;             
-    display: flex;           
+    width: 100%;            
+    display: flex;          
     flex-direction: column;  
-    align-items: center;     
+    align-items: center;    
     margin: 0;
     padding: 40px 0; /*  */
 }
@@ -611,12 +608,12 @@ body,html{
 
 .partFour .card .txt{
     width: 35%;
-    padding: 0 40px; 
+    padding: 0 40px;
 }
 
 
 /* partFive */
-  
+
 .partFive {
   position: relative; /* 讓按鈕可以絕對定位在兩側 */
   display: flex;
@@ -692,7 +689,7 @@ body,html{
 }
 .main-footer .logo img{
     display: block;
-    height: 40px;     
+    height: 40px;    
     width: auto;
     margin: 5% 0px;
 }
@@ -712,24 +709,24 @@ div.footer_left{
             /* border: 1px solid orange; */
             vertical-align: top;
         }
-        
+       
         div.footer_left ul.list > li > a{
             display: inline-block;
             /* border: 1px solid orange; */
             padding: 5px 10px;
             text-decoration: none;
         }
-        
+       
         .footer_left .list {
             li {
               display: inline-block;
               margin-right: 15px;
-              
+             
               a {
                 cursor: pointer; /* 強制顯示手指符號 */
                 color: #666;
                 text-decoration: none;
-                
+               
                 &:hover {
                   color: #2E6669; /* hover變色 */
                   text-decoration: none;
@@ -740,7 +737,7 @@ div.footer_left{
 
 
 @media screen and (min-width: 480px) and (max-width: 768px) {
-    
+   
     .main-menu{
         position: absolute;
         /* display: none; */
@@ -773,7 +770,7 @@ div.footer_left{
   .partOne{
     grid-template-rows: repeat(4, 1fr);
     grid-template-columns: 100%;
-    
+   
   }
     .partTwo{
       display: grid;
@@ -797,11 +794,11 @@ div.footer_left{
   }
 
     .partFour{
-      width: 100%;             
+      width: 100%;            
       display: grid;
       grid-template-rows: repeat(4, 1fr);
-      grid-template-columns:100%; 
-      align-items: center;     
+      grid-template-columns:100%;
+      align-items: center;    
       margin: 0;
   }
 
@@ -811,7 +808,7 @@ div.footer_left{
       width: 100%;
       display: grid;
       grid-template-rows: repeat(2, 1fr);
-      grid-template-columns:100%; 
+      grid-template-columns:100%;
       justify-items: center;
       /* border: 1px solid red; */
   }
@@ -829,125 +826,19 @@ div.footer_left{
       width: 100%;
       text-align: center;
   }
-    
+   
 }
 
-/* ========================== */
 
-@media screen and (max-width: 1080px) {
-  .banner {
-    padding: 80px 40px; /* 縮小左右間距 */
-    flex-direction: row; /* 保持橫向但準備縮小內容 */
-    align-items: center;
-    background-position: 75% 50%;
-    align-items: center;
-  }
 
-  .banner-txt {
-    flex: 1.2; /* 稍微增加文字佔比 */
-    padding-right: 20px;
-    color: #333;
-    font-weight: normal;
-  }
 
-  .banner-txt h1 {
-    font-size: 3rem; /* 降低標題字體大小 */
-    line-height: 1.2;
-  }
-}
 
-/* ========================== */
-@media screen and (max-width: 1024px) {
-  .banner {
-    background-position: 80% 50%; 
-  }
-
-  .banner-txt {
-    flex: 1.5; /* 讓文字區塊佔據更多空間 */
-    max-width: 500px; /* 限制最大寬度防止文字拉得太散 */
-    color: #d0d0d0;
-    font-weight: normal;
-    
-    h1 {
-      font-size: 3rem; /* 縮小標題 */
-      line-height: 1.2;
-      margin-bottom: 20px;
-    }
-    
-    p {
-      font-size: 1.1rem; /* 稍微縮小段落文字 */
-      line-height: 1.6;
-    }
-  }
-
-  .banner-txt h1 {
-    font-size: 3rem; /* 降低標題字體大小 */
-    line-height: 1.2;
-  }
-}
-
-/* ========================== */
-
-@media screen and (width = 768px) {
-  .banner {
-    width: cover;
-    height: 60vh;
-    background-size: cover;
-    background-position: 75% 70%;
-    background-repeat: no-repeat;
-    display: grid;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-
-  }
-
-  .banner-txt {
-    height: 50vh;
-    width: fit-content;
-    display: grid;
-    grid-template-rows: repeat(3, 1fr);
-    color: #333;
-    /* border: #2E6669 solid 1px; */
-    text-align: center;
-
-  }
-}
 
 /* ========================== */
 
 @media screen and (max-width: 767px) {
-  .banner {
-    width: cover;
-    height: 60vh;
-    background-size: cover;
-    background-position: 75% 70%;
-    background-repeat: no-repeat;
-    
 
-  }
 
-  .banner-txt {
-    height: 90%;
-      width: fit-content;
-      display: grid;
-      grid-template-rows: repeat(3, 1fr);
-      color: #333;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-
-  }
-
-  .banner-txt h1 {
-    font-size: 2.5rem;
-  }
-
-  .banner-btn {
-    justify-content: center; /* 按鈕置中 */
-    gap: 15px;
-  }
-  
   /* 修正 Banner 內的裝飾圓圈或背景遮罩 */
   .mask {
     width: 120%; /* 擴大遮罩比例以覆蓋背景 */
@@ -958,28 +849,9 @@ div.footer_left{
 /* ===================== */
 
 
-@media screen and (max-width: 480px) {
-  
-  .banner-txt {
-      color: black;
-  }
-  .banner-txt h1 {
-    font-size: 2rem;
-  }
-  
-  .banner-btn {
-    flex-direction: column; /* 按鈕改為垂直排列 */
-    align-items: stretch;
-  }
-  
-  .banner-btn .btn {
-    margin: 5px 0;
-    width: 100%; /* 按鈕寬度撐滿 */
-  }
-}
 
 @media screen and (max-width: 480px) {
-  
+
   /* 1. Header 調整：確保 Logo 與漢堡選單有足夠空間 */
   .main-header {
     padding: 10px 3%;
@@ -1001,7 +873,7 @@ div.footer_left{
     grid-template-rows: auto !important;
     gap: 15px !important;
   }
-  
+
   .partOne .item img {
     width: 60%; /* 縮小圖片比例以免佔據整面 */
   }
@@ -1020,7 +892,7 @@ div.footer_left{
     /* 1. 強制從 3 欄改為 1 欄垂直排列 */
     grid-template-columns: 1fr !important;
     grid-auto-flow: row !important; /* 確保內容向下延伸 */
-    
+   
     /* 2. 調整間距，避免手機版左右太擠 */
     padding-left: 5% !important;
     padding-right: 5% !important;
@@ -1035,7 +907,7 @@ div.footer_left{
 
   .partThree img {
     /* 4. 確保圖片在手機上不會過大或過小 */
-    width: 120px; 
+    width: 120px;
     height: auto;
   }
 
@@ -1051,7 +923,7 @@ div.footer_left{
     width: 95% !important;
     flex-direction: column !important; /* 確保 Flexbox 轉為垂直 */
   }
-  .partFour .card .pic, 
+  .partFour .card .pic,
   .partFour .card .txt {
     width: 100% !important;
     padding: 10px 0 !important;
@@ -1065,5 +937,57 @@ div.footer_left{
   }
 }
 
-</style>
 
+/* 1. 將垂直置頂置底模式擴展至 768px (含 iPad Mini) */
+@media screen and (max-width: 768px) {
+  /* 修正 iPad Mini 漢堡偏移 */
+  .hb {
+    margin-left: auto;
+  }
+
+  .banner {
+    height: 85vh !important;
+    background-position: center center !important;
+    display: flex;
+    justify-content: center;
+    padding: 50px 0;
+  }
+
+  .banner-txt {
+    margin-left: 0;
+    width: 90%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 文字頂、按鈕底 */
+    align-items: center !important;
+    text-align: center;
+  }
+
+  /* 打平結構 */
+  .banner-txt ul, .banner-txt li {
+    list-style: none; padding: 0; margin: 0; width: 100%;
+  }
+
+  .banner-txt h1 { font-size: 2.2rem !important; }
+  .banner-txt button { width: 220px; padding: 16px; border-radius: 8px; }
+}
+
+/* 2. 僅保留 iPad Air 與 iPad Pro (769px~1024px) 的橫幅模式 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .banner {
+    height: 60vh !important;
+    background-position: 85% center !important;
+    display: flex;
+    align-items: center;
+  }
+  .banner-txt {
+    margin-left: 8%;
+    width: 40%;
+  }
+  .banner-txt h1, .banner-txt p strong {
+    color: #a9a9a9 !important; /* 換顏色 */
+  }
+}
+
+</style>
