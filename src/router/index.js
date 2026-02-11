@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Portal',
-    component: () => import('@/views/public/PortalView.vue'),
-    meta: {
-      title: '入口',
-    }
-  },
+  // {
+  //   path: '/',
+  //   name: 'Portal',
+  //   component: () => import('@/views/public/PortalView.vue'),
+  //   meta: {
+  //     title: '入口',
+  //   }
+  // },
   {
     path: '/support',
     name: 'support',
@@ -23,7 +23,7 @@ const routes = [
     name: 'Login',
     component: () => import('@/views/public/LoginView.vue'),
   },
-   {
+  {
     path: '/Register',
     name: 'Register',
     component: () => import('@/views/public/RegisterView.vue'),
@@ -194,7 +194,7 @@ router.beforeEach(async (to, from) => {
 })
 
 router.beforeEach((to, from, next) => {
-  const isUserAuthenticated = localStorage.getItem('userProfile')!== null;
+  const isUserAuthenticated = localStorage.getItem('userProfile') !== null;
 
   // 確保 ProfileEdit 路由名稱（name）有在下面這個清單中 增加「訪客白名單」：登入、註冊與商城
   const publicPages = ['Login', 'Register', 'shop', 'Landing', 'support', 'Portal'];
