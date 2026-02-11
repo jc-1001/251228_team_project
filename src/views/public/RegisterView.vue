@@ -5,6 +5,9 @@ import { useRouter } from 'vue-router';
 import { publicApi } from '@/utils/publicApi';
 
 import PolicyModal from '@/components/register/PolicyModal.vue';
+
+import { watch } from 'vue'; 
+
 // 控制燈箱顯示的狀態
 const showServiceModal = ref(false);
 const showPrivacyModal = ref(false);
@@ -54,6 +57,16 @@ const errors = reactive({
   weight: ''  
 });
 
+// 當布林值變為 false (選無) 時，清空描述文字
+watch(() => memberProfile.has_chronic_disease, (newVal) => {
+  if (!newVal) memberProfile.chronic_disease_description = '';
+});
+watch(() => memberProfile.has_family_history, (newVal) => {
+  if (!newVal) memberProfile.family_history_description = '';
+});
+watch(() => memberProfile.has_allergies, (newVal) => {
+  if (!newVal) memberProfile.allergy_description = '';
+});
 
 const handleRegister = async () => {
   // 錯誤訊息
@@ -254,7 +267,12 @@ const handleRegister = async () => {
                 <label><input type="radio" :value="true" v-model="memberProfile.has_chronic_disease"> 有</label>
                 <label><input type="radio" :value="false" v-model="memberProfile.has_chronic_disease"> 無</label>
               </div>
-              <input class="history-input" v-model="memberProfile.chronic_disease_description" placeholder="輸入描述">
+              <input 
+                class="history-input" 
+                v-model="memberProfile.chronic_disease_description" 
+                :disabled="!memberProfile.has_chronic_disease" 
+                :placeholder="memberProfile.has_chronic_disease ? '輸入相關病史' : ''"
+              >
             </div>
           </div>
 
@@ -265,7 +283,12 @@ const handleRegister = async () => {
                 <label><input type="radio" :value="true" v-model="memberProfile.has_family_history"> 有</label>
                 <label><input type="radio" :value="false" v-model="memberProfile.has_family_history"> 無</label>
               </div>
-              <input class="history-input" v-model="memberProfile.family_history_description" placeholder="輸入描述">
+              <input 
+                class="history-input" 
+                v-model="memberProfile.family_history_description" 
+                :disabled="!memberProfile.has_family_history" 
+                :placeholder="memberProfile.has_family_history ? '輸入家族病史' : ''"
+              >
             </div>
           </div>
 
@@ -276,7 +299,12 @@ const handleRegister = async () => {
                 <label><input type="radio" :value="true" v-model="memberProfile.has_allergies"> 有</label>
                 <label><input type="radio" :value="false" v-model="memberProfile.has_allergies"> 無</label>
               </div>
-              <input class="history-input" v-model="memberProfile.allergy_description" placeholder="輸入描述">
+              <input 
+                class="history-input" 
+                v-model="memberProfile.allergy_description" 
+                :disabled="!memberProfile.has_allergies" 
+                :placeholder="memberProfile.has_allergies ? '輸入藥物/食物過敏' : ''"
+              >
             </div>
           </div>
 

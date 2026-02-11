@@ -60,22 +60,23 @@ const handleLogin = async () => {
               <label>密碼</label>
               <input type="password" v-model="password" placeholder="123456" required />
             </div>
-
-            <div class="form-footer">
+            <br>
+            <!-- <div class="form-footer">
               <label class="checkbox-label">
                 <input type="checkbox" v-model="rememberMe"> 記住我
               </label>
               <router-link to="/forgot-password" class="link">忘記密碼？</router-link>
-            </div>
+            </div> -->
 
             <button type="submit" class="btn-login">登入</button>
           </form>
 
-          <div class="register-way">或是用其他方式</div>
+          <!-- <div class="register-way">或是用其他方式</div>
           <div class="register-icon">
             <img src="/src/assets/images/google.svg" alt="Google">
             <img src="/src/assets/images/fb.svg" alt="fb">
-          </div>
+          </div> -->
+          
           <div class="register-hint">
             還不是會員? <router-link to="/Register" class="link">註冊</router-link>
           </div>
