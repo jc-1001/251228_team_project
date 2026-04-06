@@ -172,9 +172,15 @@ const routes = [
   },
 
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
+  // {
+  //   path: '/:pathMatch(.*)*',
+  //   redirect: '/',
+  // },
+
+    // 輸入錯誤路徑時會通到LandingPage，上面的404我先註解起來，因為一直卡在這裡
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/',
+    redirect: { name: 'Landing' }, // 或者 'Login'，確保這個 name 是存在的
   },
 ]
 

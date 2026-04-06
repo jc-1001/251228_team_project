@@ -338,7 +338,7 @@ const handleRegister = async () => {
           </div>
           <div class="form-group">
             <label>關係</label>
-            <input v-model="memberProfile.relationship" placeholder="例如：父子">
+            <input v-model="memberProfile.relationship" placeholder="例如：父子" type="text">
           </div>
           <div class="form-group full-width">
             <label>聯絡人電話</label>
@@ -354,7 +354,7 @@ const handleRegister = async () => {
         <br>
           <div class="policy-check">
             <input type="checkbox" id="policy" v-model="agreePolicy" required>
-            <label for="policy">我已閱讀並同意
+            <label for="policy"> 我已閱讀並同意
               <a href="javascript:void(0)" @click.stop="showServiceModal = true">UniCare服務條款</a> 
               與 
               <a href="javascript:void(0)" @click.stop="showPrivacyModal = true">隱私權政策</a>
@@ -477,35 +477,79 @@ const handleRegister = async () => {
     color: #4a5568;
     font-weight: 500;
   }
-  input, select {
+  input[type="text"], 
+  input[type="email"], 
+  input[type="tel"], 
+  input[type="password"], 
+  input[type="date"], 
+  input[type="number"],
+  select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     padding: 10px;
     border: 1px solid #cbd5e0;
     border-radius: 6px;
     font-size: 0.95rem;
-    &:focus { outline: none; border-color: #2E6669; }
+    // -webkit-appearance: none;
+    &:focus {
+      outline: none;
+      border-color: #2e6669;
+    }
+  }
+  input[type="radio"] {
+    width: auto; 
+    margin-right: 5px;
   }
 }
 
-.full-width { grid-column: span 2; }
+.full-width {
+  grid-column: span 2;
+}
 
 .inline-row {
   display: flex;
   align-items: center;
   gap: 15px;
-  .radio-group { display: flex; gap: 10px; white-space: nowrap; }
-  .history-input { flex: 1; }
+  width: 100%;
+  min-width: 0; 
+
+  .radio-group { 
+    display: flex; 
+    gap: 12px; 
+    white-space: nowrap; 
+    flex-shrink: 0;    /* 禁止被擠壓 */
+    width: 120px;      /* 新增：固定寬度，給予「有/無」足夠空間 */
+    
+    
+    label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 50px;
+    }
+  }
+
+  .history-input { 
+    flex: 1;           /* 佔滿剩餘空間 */
+    min-width: 0;      /* 新增：強制 Safari 縮小 input 而非撐破外框 */
+    width: 100%;
+  }
 }
 
 .radio-group {
   display: flex;
   gap: 20px;
   padding: 8px 0;
+  flex-shrink: 0;
+  min-width: 0;
   label {
     display: flex;
     align-items: center;
     gap: 5px;
     cursor: pointer;
     font-weight: normal;
+    white-space: nowrap;
   }
 }
 
