@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Portal',
-  //   component: () => import('@/views/public/PortalView.vue'),
-  //   meta: {
-  //     title: '入口',
-  //   }
-  // },
+  {
+    path: '/',
+    name: 'Portal',
+    component: () => import('@/views/public/PortalView.vue'),
+    meta: {
+      title: '入口',
+    }
+  },
   {
     path: '/support',
     name: 'support',
@@ -172,16 +172,16 @@ const routes = [
   },
 
   // (!一定要放在最後一個!)這裡可以預留一個捕捉 404 的路由，避免輸入錯誤路徑時畫面全白
-  // {
-  //   path: '/:pathMatch(.*)*',
-  //   redirect: '/',
-  // },
-
-    // 輸入錯誤路徑時會通到LandingPage，上面的404我先註解起來，因為一直卡在這裡
   {
     path: '/:pathMatch(.*)*',
-    redirect: { name: 'Landing' }, // 或者 'Login'，確保這個 name 是存在的
+    redirect: '/',
   },
+
+    // 輸入錯誤路徑時會通到LandingPage，上面的404我先註解起來，因為一直卡在這裡
+  // {
+  //   path: '/:pathMatch(.*)*',
+  //   redirect: { name: 'Landing' }, // 或者 'Login'，確保這個 name 是存在的
+  // },
 ]
 
 const router = createRouter({
